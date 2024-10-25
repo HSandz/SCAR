@@ -4,15 +4,20 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 
 @Controller
-public class LoginController {
+public class HomeController {
 
     @GetMapping("/login")
     public String login() {
-        return "login";
+        return "login";  // return the login.html template
+    }
+
+    @GetMapping("/signup")
+    public String signUp() {
+        return "signup";  // return the signup.html template
     }
 
     @GetMapping("/home")
     public String home() {
-        return "home";
+        return "home";  // after successful login
     }
 }

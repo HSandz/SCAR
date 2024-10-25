@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>Sign Up</title>
+  <link rel="stylesheet" th:href="@{/css/main.css}">
+</head>
+<body>
+<h1>Sign Up</h1>
+<p>Please sign up using one of the following providers:</p>
+<div>
+  <a th:href="@{/oauth2/authorization/google}">
+    <button type="button">Sign Up with Google</button>
+  </a>
+  <a th:href="@{/oauth2/authorization/github}">
+    <button type="button">Sign Up with GitHub</button>
+  </a>
+</div>
+</body>
+</html>
