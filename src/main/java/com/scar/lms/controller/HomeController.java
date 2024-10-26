@@ -11,6 +11,11 @@ public class HomeController {
         return "login";  // return the login.html template
     }
 
+    @GetMapping("/logout")
+    public String logout() {
+        return "logout";
+    }
+
     @GetMapping("/signup")
     public String signUp() {
         return "signup";  // return the signup.html template

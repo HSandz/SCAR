@@ -10,21 +10,29 @@ import org.springframework.security.oauth2.client.registration.InMemoryClientReg
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
 import org.springframework.security.oauth2.core.oidc.IdTokenClaimNames;
+import org.springframework.security.web.authentication.logout.CookieClearingLogoutHandler;
 
 @Configuration
 public class OAuth2LoginConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+
+        CookieClearingLogoutHandler cookies = new CookieClearingLogoutHandler("our-custom-cookie");
+
         http
                 .authorizeHttpRequests(authz -> authz
-                        .requestMatchers("/login", "/css/**", "/signup").permitAll()  // allow access to log in and signup pages
+                        .requestMatchers("/login", "/css/**", "/signup").permitAll()
                         .anyRequest().authenticated()
                 )
                 .oauth2Login(oauth2 -> oauth2
                         .loginPage("/login")  // Custom login page
                         .defaultSuccessUrl("/home", true)
                         .permitAll()
+                )
+                .logout(logout -> logout
+                        .logoutSuccessUrl("/logout")
+                        .logoutUrl("/login")
                 );
         return http.build();
     }
@@ -62,7 +70,7 @@ public class OAuth2LoginConfig {
                 .authorizationUri("https://github.com/login/oauth/authorize")
                 .tokenUri("https://github.com/login/oauth/access_token")
                 .userInfoUri("https://api.github.com/user")
-                .userNameAttributeName("id")  // GitHub returns "id" as the unique user identifier
+                .userNameAttributeName("id")
                 .clientName("GitHub")
                 .build();
     }
