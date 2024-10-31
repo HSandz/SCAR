@@ -22,10 +22,10 @@ public class Book {
     private String title;
 
     @Column(name = "AUTHOR_NAME")
-    private String authorName;
+    private Integer authorId;
 
     @Column(name = "GENRE")
-    private Genre genre;
+    private Integer genreId;
 
     @Column(name = "ISBN")
     private String isbn;

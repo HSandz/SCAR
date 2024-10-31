@@ -25,8 +25,14 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<User> findUsersByUsername(String username) {
-        return userRepository.findByUsername(username);
+    public User findUsersByUsername(String username) {
+        Optional<User> userOptional = userRepository.findByUsername(username);
+
+        if (userOptional.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
+
+        return userOptional.get();
     }
 
     @Override
@@ -38,5 +44,10 @@ public class UserServiceImpl implements UserService {
         }
 
         return userOptional.get();
+    }
+
+    @Override
+    public List<User> searchUsers(String keyword) {
+        return userRepository.searchUsers(keyword);
     }
 }
