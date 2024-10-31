@@ -1,7 +1,6 @@
 package com.scar.lms.service.impl;
 
 import com.scar.lms.entity.Book;
-import com.scar.lms.entity.Genre;
 import com.scar.lms.repository.BookRepository;
 import com.scar.lms.service.BookService;
 import org.springframework.http.HttpStatus;
@@ -26,8 +25,8 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public List<Book> findBooksByAuthorName(String authorName) {
-        return bookRepository.findByAuthorName(authorName);
+    public List<Book> findBooksByAuthor(Integer authorId) {
+        return bookRepository.findByAuthorId(authorId);
     }
 
     @Override
@@ -36,8 +35,8 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public List<Book> findBookByGenre(Genre genre) {
-        return bookRepository.findByGenre(genre);
+    public List<Book> findBooksByGenre(Integer genreId) {
+        return bookRepository.findByGenreId(genreId);
     }
 
     @Override

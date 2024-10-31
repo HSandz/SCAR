@@ -1,7 +1,6 @@
 package com.scar.lms.repository;
 
 import com.scar.lms.entity.Book;
-import com.scar.lms.entity.Genre;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -14,9 +13,9 @@ public interface BookRepository extends JpaRepository<Book, Integer> {
 
     List<Book> findByTitle(String title);
 
-    List<Book> findByAuthorName(String authorName);
+    List<Book> findByAuthorId(Integer authorId);
 
-    List<Book> findByGenre(Genre genre);
+    List<Book> findByGenreId(Integer genreId);
 
     List<Book> findByPublicationYear(Integer publicationYear);
 
