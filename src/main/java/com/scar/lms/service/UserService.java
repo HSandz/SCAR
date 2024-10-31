@@ -8,7 +8,9 @@ public interface UserService {
 
     List<User> findAllUsers();
 
-    List<User> findUsersByUsername(String username);
+    User findUsersByUsername(String username);
+
+    List<User> searchUsers(String keyword);
 
     User findUserByEmail(String email);
 }
