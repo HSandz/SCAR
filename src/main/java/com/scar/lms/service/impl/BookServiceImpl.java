@@ -46,6 +46,11 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
+    public List<Book> searchBook(String keyword) {
+        return bookRepository.searchBooks(keyword);
+    }
+
+    @Override
     public Book findBookByIsbn(String isbn) {
         Optional<Book> bookOptional = bookRepository.findByIsbn(isbn);
 
