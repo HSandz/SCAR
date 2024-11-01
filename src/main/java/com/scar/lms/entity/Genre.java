@@ -26,7 +26,7 @@ public class Genre {
 
     @ManyToMany(fetch = FetchType.LAZY,
             cascade = { CascadeType.PERSIST, CascadeType.MERGE },
-            mappedBy = "GENRES")
+            mappedBy = "genres")
     private Set<Book> books = new HashSet<Book>();
 
 }
