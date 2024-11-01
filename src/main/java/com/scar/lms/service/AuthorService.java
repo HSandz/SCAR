@@ -12,5 +12,7 @@ public interface AuthorService {
 
     List<Author> findAuthorsByAge(Integer age);
 
+    Author findAuthorById(Integer id);
+
     Author findAuthorByEmail(String email);
 }

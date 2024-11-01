@@ -50,4 +50,16 @@ public class UserServiceImpl implements UserService {
     public List<User> searchUsers(String keyword) {
         return userRepository.searchUsers(keyword);
     }
+
+    @Override
+    public User findUserById(Integer id) {
+
+        Optional<User> userOptional = userRepository.findById(id);
+
+        if (userOptional.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
+
+        return userOptional.get();
+    }
 }

@@ -18,5 +18,7 @@ public interface BookService {
 
     List<Book> searchBook(String keyword);
 
+    Book findBookById(Integer id);
+
     Book findBookByIsbn(String isbn);
 }
