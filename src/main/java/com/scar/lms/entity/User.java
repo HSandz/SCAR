@@ -19,7 +19,7 @@ public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private int id;
 
     @Column(name = "USERNAME")
     private String username;
@@ -36,8 +36,8 @@ public class User {
     @Column(name = "ROLE")
     private Role role;
 
-    @Column(name = "POINTS")
-    private Long points;
+    @Column(name = "USER_POINTS")
+    private long points;
 
     @ManyToMany(fetch = FetchType.LAZY,
             cascade = { CascadeType.PERSIST, CascadeType.MERGE },

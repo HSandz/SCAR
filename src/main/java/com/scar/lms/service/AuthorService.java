@@ -10,9 +10,9 @@ public interface AuthorService {
 
     List<Author> findAuthorsByCountry(String country);
 
-    List<Author> findAuthorsByAge(Integer age);
+    List<Author> findAuthorsByAge(int age);
 
-    Author findAuthorById(Integer id);
+    Author findAuthorById(int id);
 
     Author findAuthorByEmail(String email);
 }

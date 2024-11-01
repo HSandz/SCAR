@@ -8,17 +8,13 @@ public interface BookService {
 
     List<Book> findAllBooks();
 
-    List<Book> findBooksByAuthor(Integer authorId);
-
     List<Book> findBooksByTitle(String title);
 
-    List<Book> findBooksByGenre(Integer genreId);
-
-    List<Book> findBooksByPublicationYear(Integer year);
+    List<Book> findBooksByPublicationYear(int year);
 
     List<Book> searchBook(String keyword);
 
-    Book findBookById(Integer id);
+    Book findBookById(int id);
 
     Book findBookByIsbn(String isbn);
 }
