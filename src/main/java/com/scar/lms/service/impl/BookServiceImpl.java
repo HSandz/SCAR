@@ -50,6 +50,18 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
+    public Book findBookById(Integer id) {
+
+        Optional<Book> bookOptional = bookRepository.findById(id);
+
+        if (bookOptional.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
+
+        return bookOptional.get();
+    }
+
+    @Override
     public Book findBookByIsbn(String isbn) {
         Optional<Book> bookOptional = bookRepository.findByIsbn(isbn);
 

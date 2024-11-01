@@ -6,6 +6,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.HashSet;
+import java.util.Set;
+
 @Entity
 @Getter
 @Setter
@@ -15,21 +18,27 @@ import lombok.Setter;
 public class Author {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(name = "NAME")
+    @Column(name = "NAME", length = 50, nullable = false)
     private String name;
 
-    @Column(name = "EMAIL")
+    @Column(name = "EMAIL", length = 50, unique = true)
     private String email;
 
-    @Column(name = "AGE")
+    @Column(name = "AGE", length = 10)
     private int age;
 
-    @Column(name = "COUNTRY")
+    @Column(name = "COUNTRY", length = 50)
     private String country;
 
-    @Column(name = "DESCRIPTION")
+    @Column(name = "DESCRIPTION", length = 500)
     private String description;
+
+    @ManyToMany(fetch = FetchType.LAZY,
+            cascade = { CascadeType.PERSIST, CascadeType.MERGE },
+            mappedBy = "AUTHORS")
+    private Set<Book> books = new HashSet<Book>();
+
 }

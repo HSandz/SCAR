@@ -44,4 +44,16 @@ public class AuthorServiceImpl implements AuthorService {
 
         return authorOptional.get();
     }
+
+    @Override
+    public Author findAuthorById(Integer id) {
+
+        Optional<Author> authorOptional = authorRepository.findById(id);
+
+        if (authorOptional.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
+
+        return authorOptional.get();
+    }
 }

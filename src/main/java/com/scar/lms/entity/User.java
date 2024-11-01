@@ -6,6 +6,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.HashSet;
+import java.util.Set;
+
 @Entity
 @Getter
 @Setter
@@ -15,7 +18,7 @@ import lombok.Setter;
 public class User {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     @Column(name = "USERNAME")
@@ -30,6 +33,15 @@ public class User {
     @Column(name = "EMAIL")
     private String email;
 
+    @Column(name = "ROLE")
+    private Role role;
+
     @Column(name = "POINTS")
     private Long points;
+
+    @ManyToMany(fetch = FetchType.LAZY,
+            cascade = { CascadeType.PERSIST, CascadeType.MERGE },
+            mappedBy = "USERS")
+    private Set<Book> books = new HashSet<Book>();
+
 }
