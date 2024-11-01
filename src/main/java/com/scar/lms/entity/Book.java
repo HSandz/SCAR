@@ -19,7 +19,7 @@ public class Book {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private int id;
 
     @Column(name = "ISBN", length = 20, nullable = false, unique = true)
     private String isbn;
@@ -27,8 +27,14 @@ public class Book {
     @Column(name = "TITLE", length = 100, nullable = false)
     private String title;
 
+    @Column(name = "LANGUAGE", length = 50)
+    private String language;
+
+    @Column(name = "RATING", length = 10, nullable = false)
+    private double rating;
+
     @Column(name = "PUBLICATION_YEAR", length = 10, nullable = false)
-    private Integer publicationYear;
+    private int publicationYear;
 
     @Column(name = "DESCRIPTION", length = 500)
     private String description;

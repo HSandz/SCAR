@@ -19,7 +19,7 @@ public class Publisher {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private int id;
 
     @Column(name = "NAME", length = 50, nullable = false)
     private String name;

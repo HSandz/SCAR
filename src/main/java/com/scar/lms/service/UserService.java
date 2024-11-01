@@ -10,7 +10,7 @@ public interface UserService {
 
     List<User> searchUsers(String keyword);
 
-    User findUserById(Integer id);
+    User findUserById(int id);
 
     User findUsersByUsername(String username);
 

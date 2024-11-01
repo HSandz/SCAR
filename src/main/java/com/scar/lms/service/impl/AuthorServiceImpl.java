@@ -30,7 +30,7 @@ public class AuthorServiceImpl implements AuthorService {
     }
 
     @Override
-    public List<Author> findAuthorsByAge(Integer age) {
+    public List<Author> findAuthorsByAge(int age) {
         return authorRepository.findByAge(age);
     }
 
@@ -46,7 +46,7 @@ public class AuthorServiceImpl implements AuthorService {
     }
 
     @Override
-    public Author findAuthorById(Integer id) {
+    public Author findAuthorById(int id) {
 
         Optional<Author> authorOptional = authorRepository.findById(id);
 

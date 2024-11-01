@@ -25,22 +25,12 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public List<Book> findBooksByAuthor(Integer authorId) {
-        return bookRepository.findByAuthorId(authorId);
-    }
-
-    @Override
     public List<Book> findBooksByTitle(String title) {
         return bookRepository.findByTitle(title);
     }
 
     @Override
-    public List<Book> findBooksByGenre(Integer genreId) {
-        return bookRepository.findByGenreId(genreId);
-    }
-
-    @Override
-    public List<Book> findBooksByPublicationYear(Integer year) {
+    public List<Book> findBooksByPublicationYear(int year) {
         return bookRepository.findByPublicationYear(year);
     }
 
@@ -50,7 +40,7 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public Book findBookById(Integer id) {
+    public Book findBookById(int id) {
 
         Optional<Book> bookOptional = bookRepository.findById(id);
 
