@@ -15,7 +15,7 @@ import lombok.Setter;
 public class User {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     @Column(name = "USERNAME")
@@ -29,6 +29,9 @@ public class User {
 
     @Column(name = "EMAIL")
     private String email;
+
+    @Column(name = "ROLE")
+    private Role role;
 
     @Column(name = "POINTS")
     private Long points;
