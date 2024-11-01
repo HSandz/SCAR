@@ -38,7 +38,7 @@ public class Author {
 
     @ManyToMany(fetch = FetchType.LAZY,
             cascade = { CascadeType.PERSIST, CascadeType.MERGE },
-            mappedBy = "AUTHORS")
+            mappedBy = "authors")
     private Set<Book> books = new HashSet<Book>();
 
 }
