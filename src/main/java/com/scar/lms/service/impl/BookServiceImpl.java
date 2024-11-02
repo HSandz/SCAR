@@ -40,6 +40,21 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
+    public List<Book> findBooksByAuthor(int authorId) {
+        return bookRepository.findByAuthor(authorId);
+    }
+
+    @Override
+    public List<Book> findBooksByGenre(int genreId) {
+        return bookRepository.findByGenre(genreId);
+    }
+
+    @Override
+    public List<Book> findBooksByPublisher(int publisherId) {
+        return bookRepository.findByPublisher(publisherId);
+    }
+
+    @Override
     public Book findBookById(int id) {
 
         Optional<Book> bookOptional = bookRepository.findById(id);
