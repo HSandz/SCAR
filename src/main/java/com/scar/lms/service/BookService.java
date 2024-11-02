@@ -12,6 +12,12 @@ public interface BookService {
 
     List<Book> findBooksByPublicationYear(int year);
 
+    List<Book> findBooksByAuthor(int authorId);
+
+    List<Book> findBooksByGenre(int genreId);
+
+    List<Book> findBooksByPublisher(int publisherId);
+
     List<Book> searchBook(String keyword);
 
     Book findBookById(int id);

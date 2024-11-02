@@ -15,8 +15,18 @@ public interface BookRepository extends JpaRepository<Book, Integer> {
 
     List<Book> findByPublicationYear(int publicationYear);
 
+    Optional<Book> findByIsbn(String isbn);
+
     @Query("SELECT b FROM Book b WHERE b.title LIKE %?1%")
     List<Book> searchBooks(String keyword);
 
-    Optional<Book> findByIsbn(String isbn);
+    @Query("SELECT b FROM Book b JOIN Author a WHERE a.id = ?1")
+    List<Book> findByAuthor(int authorId);
+
+    @Query("SELECT b FROM Book b JOIN Genre g WHERE g.id = ?1")
+    List<Book> findByGenre(int genreId);
+
+    @Query("SELECT b FROM Book b JOIN Publisher p WHERE p.id = ?1")
+    List<Book> findByPublisher(int publisherId);
+
 }
