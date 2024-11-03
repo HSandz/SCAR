@@ -2,6 +2,9 @@ package com.scar.lms.service;
 
 import com.scar.lms.entity.Book;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 import java.util.List;
 
 public interface BookService {
@@ -23,5 +26,7 @@ public interface BookService {
     void updateBook(Book book);
 
     void deleteBook(int id);
+
+    public Page<Book> findPaginated(Pageable pageable);
 
 }

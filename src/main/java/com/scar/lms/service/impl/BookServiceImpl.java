@@ -5,10 +5,15 @@ import com.scar.lms.exception.NotFoundException;
 import com.scar.lms.repository.BookRepository;
 import com.scar.lms.service.BookService;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -90,4 +95,25 @@ public class BookServiceImpl implements BookService {
         bookRepository.delete(book);
     }
 
+    @Override
+    public Page<Book> findPaginated(Pageable pageable) {
+        long startTime = System.currentTimeMillis();
+        List<Book> allBooks = findAllBooks();
+        int pageSize = pageable.getPageSize();
+        int currentPage = pageable.getPageNumber();
+        int startItem = currentPage * pageSize;
+        List<Book> list;
+
+        if (allBooks.size() < startItem) {
+            list = Collections.emptyList();
+        } else {
+            int toIndex = Math.min(startItem + pageSize, allBooks.size());
+            list = allBooks.subList(startItem, toIndex);
+        }
+
+        var bookPage = new PageImpl<>(list, PageRequest.of(currentPage, pageSize), allBooks.size());
+        long endTime = System.currentTimeMillis();
+        System.out.printf("Method execution time: %d ms\n", endTime - startTime);
+        return bookPage;
+    }
 }
