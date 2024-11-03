@@ -14,7 +14,7 @@ import java.util.Set;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "PUBLISHER")
+@Table(name = "PUBLISHERS")
 public class Publisher {
 
     @Id
