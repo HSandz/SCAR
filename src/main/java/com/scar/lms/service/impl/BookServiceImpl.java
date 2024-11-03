@@ -1,14 +1,15 @@
 package com.scar.lms.service.impl;
 
 import com.scar.lms.entity.Book;
+import com.scar.lms.exception.NotFoundException;
 import com.scar.lms.repository.BookRepository;
 import com.scar.lms.service.BookService;
-import org.springframework.http.HttpStatus;
+
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class BookServiceImpl implements BookService {
@@ -19,46 +20,52 @@ public class BookServiceImpl implements BookService {
         this.bookRepository = bookRepository;
     }
 
+    @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     @Override
     public List<Book> findAllBooks() {
         return bookRepository.findAll();
     }
 
+    @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     @Override
     public List<Book> findBooksByTitle(String title) {
         return bookRepository.findByTitle(title);
     }
 
+    @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     @Override
     public List<Book> findBooksByPublicationYear(int year) {
         return bookRepository.findByPublicationYear(year);
     }
 
+    @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     @Override
     public List<Book> searchBook(String keyword) {
         return bookRepository.searchBooks(keyword);
     }
 
+    @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     @Override
     public Book findBookById(int id) {
-
-        Optional<Book> bookOptional = bookRepository.findById(id);
-
-        if (bookOptional.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-        }
-
-        return bookOptional.get();
+        return bookRepository
+                .findById(id)
+                .orElseThrow(
+                        () -> new NotFoundException(
+                                String.format("Book with id %d not found", id)
+                        )
+                );
     }
 
+    @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     @Override
     public Book findBookByIsbn(String isbn) {
-        Optional<Book> bookOptional = bookRepository.findByIsbn(isbn);
-
-        if (bookOptional.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-        }
-
-        return bookOptional.get();
+        return bookRepository
+                .findByIsbn(isbn)
+                .orElseThrow(
+                        () -> new NotFoundException(
+                                String.format("Book with isbn %s not found", isbn)
+                        )
+                );
     }
+
 }

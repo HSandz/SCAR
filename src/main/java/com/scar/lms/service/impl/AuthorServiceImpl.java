@@ -1,14 +1,15 @@
 package com.scar.lms.service.impl;
 
 import com.scar.lms.entity.Author;
+import com.scar.lms.exception.NotFoundException;
 import com.scar.lms.repository.AuthorRepository;
 import com.scar.lms.service.AuthorService;
-import org.springframework.http.HttpStatus;
+
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class AuthorServiceImpl implements AuthorService {
@@ -19,41 +20,45 @@ public class AuthorServiceImpl implements AuthorService {
         this.authorRepository = authorRepository;
     }
 
+    @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     @Override
     public List<Author> findAllAuthors() {
         return authorRepository.findAll();
     }
 
+    @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     @Override
     public List<Author> findAuthorsByCountry(String country) {
         return authorRepository.findByCountry(country);
     }
 
+    @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     @Override
     public List<Author> findAuthorsByAge(int age) {
         return authorRepository.findByAge(age);
     }
 
+    @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     @Override
     public Author findAuthorByEmail(String email) {
-        Optional<Author> authorOptional = authorRepository.findByEmail(email);
-
-        if (authorOptional.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-        }
-
-        return authorOptional.get();
+        return authorRepository
+                .findByEmail(email)
+                .orElseThrow(
+                        () -> new NotFoundException(
+                                String.format("Author with email %s not found", email)
+                        )
+                );
     }
 
+    @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     @Override
     public Author findAuthorById(int id) {
-
-        Optional<Author> authorOptional = authorRepository.findById(id);
-
-        if (authorOptional.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-        }
-
-        return authorOptional.get();
+        return authorRepository
+                .findById(id)
+                .orElseThrow(
+                        () -> new NotFoundException(
+                                String.format("Author with id %d not found", id)
+                        )
+                );
     }
 }
