@@ -67,4 +67,27 @@ public class UserServiceImpl implements UserService {
                         )
                 );
     }
+
+    @Override
+    public void createUser(User user) {
+        userRepository.save(user);
+    }
+
+    @Override
+    public void updateUser(User user) {
+        userRepository.save(user);
+    }
+
+    @Override
+    public void deleteUser(int id) {
+        var user = userRepository
+                .findById(id)
+                .orElseThrow(
+                        () -> new NotFoundException(
+                                String.format("User with id %d not found", id)
+                        )
+                );
+        userRepository.delete(user);
+    }
+
 }

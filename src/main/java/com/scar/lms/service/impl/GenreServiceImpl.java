@@ -57,6 +57,6 @@ public class GenreServiceImpl implements GenreService {
                                 String.format("Genre with ID %d not found", id)
                         )
                 );
-        genreRepository.deleteById(genre.getId());
+        genreRepository.delete(genre);
     }
 }

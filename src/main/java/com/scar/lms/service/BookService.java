@@ -17,4 +17,11 @@ public interface BookService {
     Book findBookById(int id);
 
     Book findBookByIsbn(String isbn);
+
+    void createBook(Book book);
+
+    void updateBook(Book book);
+
+    void deleteBook(int id);
+
 }

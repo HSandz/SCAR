@@ -6,14 +6,14 @@ import java.util.List;
 
 public interface GenreService {
 
-    public List<Genre> findAllGenres();
+    List<Genre> findAllGenres();
 
-    public Genre findGenreById(int id);
+    Genre findGenreById(int id);
 
-    public void createGenre(Genre genre);
+    void createGenre(Genre genre);
 
-    public void updateGenre(Genre genre);
+    void updateGenre(Genre genre);
 
-    public void deleteGenre(int id);
+    void deleteGenre(int id);
 
 }

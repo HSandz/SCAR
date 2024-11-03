@@ -15,4 +15,11 @@ public interface AuthorService {
     Author findAuthorById(int id);
 
     Author findAuthorByEmail(String email);
+
+    void createAuthor(Author author);
+
+    void updateAuthor(Author author);
+
+    void deleteAuthor(int id);
+
 }

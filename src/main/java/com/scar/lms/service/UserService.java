@@ -15,4 +15,11 @@ public interface UserService {
     User findUsersByUsername(String username);
 
     User findUserByEmail(String email);
+
+    void createUser(User user);
+
+    void updateUser(User user);
+
+    void deleteUser(int id);
+
 }

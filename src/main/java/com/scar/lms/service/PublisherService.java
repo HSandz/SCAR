@@ -6,13 +6,13 @@ import java.util.List;
 
 public interface PublisherService {
 
-    public List<Publisher> findAllPublishers();
+    List<Publisher> findAllPublishers();
 
-    public Publisher findPublisherById(int id);
+    Publisher findPublisherById(int id);
 
-    public void createPublisher(Publisher publisher);
+    void createPublisher(Publisher publisher);
 
-    public void updatePublisher(Publisher publisher);
+    void updatePublisher(Publisher publisher);
 
-    public void deletePublisher(int id);
+    void deletePublisher(int id);
 }

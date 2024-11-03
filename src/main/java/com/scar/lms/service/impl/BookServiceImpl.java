@@ -68,4 +68,26 @@ public class BookServiceImpl implements BookService {
                 );
     }
 
+    @Override
+    public void createBook(Book book) {
+        bookRepository.save(book);
+    }
+
+    @Override
+    public void updateBook(Book book) {
+        bookRepository.save(book);
+    }
+
+    @Override
+    public void deleteBook(int id) {
+        var book = bookRepository
+                .findById(id)
+                .orElseThrow(
+                        () -> new NotFoundException(
+                                String.format("Book with id %d not found", id)
+                        )
+                );
+        bookRepository.delete(book);
+    }
+
 }

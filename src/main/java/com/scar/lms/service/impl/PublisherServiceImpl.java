@@ -57,6 +57,6 @@ public class PublisherServiceImpl implements PublisherService {
                                 String.format("Publisher with ID %d not found", id)
                         )
                 );
-        publisherRepository.deleteById(publisher.getId());
+        publisherRepository.delete(publisher);
     }
 }
