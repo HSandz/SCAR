@@ -36,6 +36,6 @@ public interface BookService {
 
     void updateBook(Book book);
 
-    void deleteBook(Book book);
+    void deleteBook(int id);
   
 }

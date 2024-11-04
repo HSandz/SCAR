@@ -62,7 +62,14 @@ public class AuthorServiceImpl implements AuthorService {
     }
 
     @Override
-    public void deleteAuthor(Author author) {
+    public void deleteAuthor(int id) {
+        var author = authorRepository
+                .findById(id)
+                .orElseThrow(
+                        () -> new NotFoundException(
+                                String.format("Author with id %d not found", id)
+                        )
+                );
         authorRepository.delete(author);
     }
 
@@ -75,27 +82,5 @@ public class AuthorServiceImpl implements AuthorService {
                                 String.format("Author with id %d not found", id)
                         )
                 );
-    }
-
-    @Override
-    public void createAuthor(Author author) {
-        authorRepository.save(author);
-    }
-
-    @Override
-    public void updateAuthor(Author author) {
-        authorRepository.save(author);
-    }
-
-    @Override
-    public void deleteAuthor(int id) {
-        var author = authorRepository
-                .findById(id)
-                .orElseThrow(
-                        () -> new NotFoundException(
-                                String.format("Author with id %d not found", id)
-                        )
-                );
-        authorRepository.delete(author);
     }
 }

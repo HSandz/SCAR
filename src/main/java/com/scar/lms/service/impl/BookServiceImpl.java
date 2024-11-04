@@ -117,7 +117,7 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public void createBook(Book book) {
+    public void addBook(Book book) {
         bookRepository.save(book);
     }
 
@@ -160,18 +160,4 @@ public class BookServiceImpl implements BookService {
         return bookPage;
     }
 
-    @Override
-    public void addBook(Book book) {
-        bookRepository.save(book);
-    }
-
-    @Override
-    public void updateBook(Book book) {
-        bookRepository.save(book);
-    }
-
-    @Override
-    public void deleteBook(Book book) {
-        bookRepository.delete(book);
-    }
 }

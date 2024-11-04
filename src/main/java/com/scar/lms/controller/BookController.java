@@ -91,7 +91,7 @@ public class BookController {
             model.addAttribute("publishers", publisherService.findAllPublishers());
             return "add-book";
         }
-        bookService.createBook(book);
+        bookService.addBook(book);
         return "redirect:/books";
     }
 
