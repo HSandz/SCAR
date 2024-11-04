@@ -58,7 +58,7 @@ public class BookController {
 
     @GetMapping("/search")
     public String searchBooks(@RequestParam("keyword") String keyword, Model model) {
-        model.addAttribute("book", bookService.searchBook(keyword));
+        model.addAttribute("book", bookService.searchBooks(keyword));
         model.addAttribute("keyword", keyword);
         return "view-books";
     }
