@@ -16,10 +16,10 @@ public interface AuthorService {
 
     Author findAuthorByEmail(String email);
 
-    void createAuthor(Author author);
+    void addAuthor(Author author);
 
     void updateAuthor(Author author);
 
-    void deleteAuthor(int id);
-
+    void deleteAuthor(Author author);
+  
 }

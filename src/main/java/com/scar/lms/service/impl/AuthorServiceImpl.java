@@ -52,6 +52,21 @@ public class AuthorServiceImpl implements AuthorService {
 
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     @Override
+    public void addAuthor(Author author) {
+        authorRepository.save(author);
+    }
+
+    @Override
+    public void updateAuthor(Author author) {
+        authorRepository.save(author);
+    }
+
+    @Override
+    public void deleteAuthor(Author author) {
+        authorRepository.delete(author);
+    }
+
+    @Override
     public Author findAuthorById(int id) {
         return authorRepository
                 .findById(id)

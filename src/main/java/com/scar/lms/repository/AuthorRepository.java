@@ -15,4 +15,5 @@ public interface AuthorRepository extends JpaRepository<Author, Integer> {
     List<Author> findByAge(int age);
 
     Optional<Author> findByEmail(String email);
+
 }

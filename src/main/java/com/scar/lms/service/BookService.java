@@ -15,18 +15,27 @@ public interface BookService {
 
     List<Book> findBooksByPublicationYear(int year);
 
-    List<Book> searchBook(String keyword);
+    List<Book> findBooksByAuthor(int authorId);
+
+    List<Book> findBooksByGenre(int genreId);
+
+    List<Book> findBooksByPublisher(int publisherId);
+
+    List<Book> searchBooks(String keyword);
+
+    List<Book> filterBooks(String title, String authorName,
+                           String genreName, String publisherName, Integer year);
 
     Book findBookById(int id);
 
     Book findBookByIsbn(String isbn);
 
-    void createBook(Book book);
+    public Page<Book> findPaginated(Pageable pageable);
+
+    void addBook(Book book);
 
     void updateBook(Book book);
 
-    void deleteBook(int id);
-
-    public Page<Book> findPaginated(Pageable pageable);
-
+    void deleteBook(Book book);
+  
 }
