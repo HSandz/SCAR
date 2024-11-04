@@ -18,9 +18,18 @@ public interface BookService {
 
     List<Book> findBooksByPublisher(int publisherId);
 
-    List<Book> searchBook(String keyword);
+    List<Book> searchBooks(String keyword);
+
+    List<Book> filterBooks(String title, String authorName,
+                           String genreName, String publisherName, Integer year);
 
     Book findBookById(int id);
 
     Book findBookByIsbn(String isbn);
+
+    void addBook(Book book);
+
+    void updateBook(Book book);
+
+    void deleteBook(Book book);
 }
