@@ -4,6 +4,7 @@ import com.scar.lms.entity.Publisher;
 import com.scar.lms.exception.NotFoundException;
 import com.scar.lms.repository.PublisherRepository;
 import com.scar.lms.service.PublisherService;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,10 +23,10 @@ public class PublisherServiceImpl implements PublisherService {
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     @Override
     public List<Publisher> findAllPublishers() {
-        return List.of();
+        return publisherRepository.findAll();
     }
 
-
+    @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     @Override
     public Publisher findPublisherById(int id) {
         return publisherRepository
@@ -56,5 +57,6 @@ public class PublisherServiceImpl implements PublisherService {
                                 String.format("Publisher with ID %d not found", id)
                         )
                 );
+        publisherRepository.delete(publisher);
     }
 }

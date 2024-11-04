@@ -21,4 +21,5 @@ public interface AuthorService {
     void updateAuthor(Author author);
 
     void deleteAuthor(Author author);
+  
 }

@@ -1,14 +1,15 @@
 package com.scar.lms.service.impl;
 
 import com.scar.lms.entity.User;
+import com.scar.lms.exception.NotFoundException;
 import com.scar.lms.repository.UserRepository;
 import com.scar.lms.service.UserService;
-import org.springframework.http.HttpStatus;
+
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -19,47 +20,73 @@ public class UserServiceImpl implements UserService {
         this.userRepository = userRepository;
     }
 
+    @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     @Override
     public List<User> findAllUsers() {
         return userRepository.findAll();
     }
 
+    @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     @Override
     public User findUsersByUsername(String username) {
-        Optional<User> userOptional = userRepository.findByUsername(username);
-
-        if (userOptional.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-        }
-
-        return userOptional.get();
+        return userRepository
+                .findByUsername(username)
+                .orElseThrow(
+                        () -> new NotFoundException(
+                                String.format("User with username %s not found", username)
+                        )
+                );
     }
 
+    @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     @Override
     public User findUserByEmail(String email) {
-        Optional<User> userOptional = userRepository.findByEmail(email);
-
-        if (userOptional.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-        }
-
-        return userOptional.get();
+        return userRepository
+                .findByEmail(email)
+                .orElseThrow(
+                        () -> new NotFoundException(
+                                String.format("User with email %s not found", email)
+                        )
+                );
     }
 
+    @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     @Override
     public List<User> searchUsers(String keyword) {
         return userRepository.searchUsers(keyword);
     }
 
+    @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     @Override
     public User findUserById(int id) {
+        return userRepository
+                .findById(id)
+                .orElseThrow(
+                        () -> new NotFoundException(
+                                String.format("User with id %d not found", id)
+                        )
+                );
+    }
 
-        Optional<User> userOptional = userRepository.findById(id);
+    @Override
+    public void createUser(User user) {
+        userRepository.save(user);
+    }
 
-        if (userOptional.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-        }
+    @Override
+    public void updateUser(User user) {
+        userRepository.save(user);
+    }
 
-        return userOptional.get();
+    @Override
+    public void deleteUser(int id) {
+        var user = userRepository
+                .findById(id)
+                .orElseThrow(
+                        () -> new NotFoundException(
+                                String.format("User with id %d not found", id)
+                        )
+                );
+        userRepository.delete(user);
     }
 }
