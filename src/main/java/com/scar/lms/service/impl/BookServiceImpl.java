@@ -2,7 +2,9 @@ package com.scar.lms.service.impl;
 
 import com.scar.lms.entity.Book;
 import com.scar.lms.repository.BookRepository;
+import com.scar.lms.repository.specification.BookSpecification;
 import com.scar.lms.service.BookService;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -35,8 +37,32 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public List<Book> searchBook(String keyword) {
+    public List<Book> searchBooks(String keyword) {
         return bookRepository.searchBooks(keyword);
+    }
+
+    @Override
+    public List<Book> filterBooks(String title, String authorName, String genreName, String publisherName, Integer year) {
+
+        Specification<Book> spec = Specification.where(null);
+
+        if (title != null) {
+            spec = spec.and(BookSpecification.hasTitle(title));
+        }
+        if (authorName != null) {
+            spec = spec.and(BookSpecification.hasAuthor(authorName));
+        }
+        if (genreName != null) {
+            spec = spec.and(BookSpecification.hasGenre(genreName));
+        }
+        if (publisherName != null) {
+            spec = spec.and(BookSpecification.hasPublisher(publisherName));
+        }
+        if (year != null) {
+            spec = spec.and(BookSpecification.hasYear(year));
+        }
+        
+        return bookRepository.findAll(spec);
     }
 
     @Override
@@ -75,5 +101,20 @@ public class BookServiceImpl implements BookService {
         }
 
         return bookOptional.get();
+    }
+
+    @Override
+    public void addBook(Book book) {
+        bookRepository.save(book);
+    }
+
+    @Override
+    public void updateBook(Book book) {
+        bookRepository.save(book);
+    }
+
+    @Override
+    public void deleteBook(Book book) {
+        bookRepository.delete(book);
     }
 }
