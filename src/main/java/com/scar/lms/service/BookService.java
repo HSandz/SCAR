@@ -23,14 +23,16 @@ public interface BookService {
 
     List<Book> searchBooks(String keyword);
 
-    List<Book> filterBooks(String title, String authorName,
-                           String genreName, String publisherName, Integer year);
+    Page<Book> findFilteredAndPaginated(String title,
+                                        String authorName,
+                                        String genreName,
+                                        String publisherName,
+                                        Integer year,
+                                        Pageable pageable);
 
     Book findBookById(int id);
 
     Book findBookByIsbn(String isbn);
-
-    public Page<Book> findPaginated(Pageable pageable);
 
     void addBook(Book book);
 

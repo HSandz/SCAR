@@ -50,7 +50,6 @@ public class AuthorServiceImpl implements AuthorService {
                 );
     }
 
-    @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     @Override
     public void addAuthor(Author author) {
         authorRepository.save(author);

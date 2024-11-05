@@ -9,6 +9,7 @@ import com.scar.lms.service.PublisherService;
 import jakarta.validation.Valid;
 
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -38,13 +39,18 @@ public class BookController {
 
     @GetMapping({ "", "/" })
     public String findAllBooks(Model model,
-            @RequestParam("page") Optional<Integer> page,
-            @RequestParam("size") Optional<Integer> size
-    ) {
-        var currentPage = page.orElse(1);
-        var pageSize = size.orElse(10);
+                               @RequestParam(required = false) String title,
+                               @RequestParam(required = false) String authorName,
+                               @RequestParam(required = false) String genreName,
+                               @RequestParam(required = false) String publisherName,
+                               @RequestParam(required = false) Integer year,
+                               @RequestParam(required = false) Optional<Integer> page,
+                               @RequestParam(required = false) Optional<Integer> size) {
 
-        var bookPage = bookService.findPaginated(PageRequest.of(currentPage - 1, pageSize));
+        Pageable pageable = PageRequest.of(page.orElse(1), size.orElse(10));
+
+        var bookPage = bookService.findFilteredAndPaginated
+                (title, authorName, genreName, publisherName, year, pageable);
 
         model.addAttribute("books", bookPage);
 
@@ -53,6 +59,7 @@ public class BookController {
             var pageNumbers = IntStream.rangeClosed(1, totalPages).boxed().collect(Collectors.toList());
             model.addAttribute("pageNumbers", pageNumbers);
         }
+
         return "view-books";
     }
 
@@ -123,7 +130,6 @@ public class BookController {
     @GetMapping("/remove/{id}")
     public String deleteBook(@PathVariable("id") int id, Model model) {
         bookService.deleteBook(id);
-        model.addAttribute("book", bookService.findAllBooks());
         return "redirect:/books";
     }
 }
