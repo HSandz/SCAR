@@ -44,10 +44,10 @@ public class BookController {
                                @RequestParam(required = false) String genreName,
                                @RequestParam(required = false) String publisherName,
                                @RequestParam(required = false) Integer year,
-                               @RequestParam(required = false) Optional<Integer> page,
-                               @RequestParam(required = false) Optional<Integer> size) {
+                               @RequestParam(defaultValue = "1") int page,
+                               @RequestParam(defaultValue = "10") int size) {
 
-        Pageable pageable = PageRequest.of(page.orElse(1), size.orElse(10));
+        Pageable pageable = PageRequest.of(page, size);
 
         var bookPage = bookService.findFilteredAndPaginated
                 (title, authorName, genreName, publisherName, year, pageable);
