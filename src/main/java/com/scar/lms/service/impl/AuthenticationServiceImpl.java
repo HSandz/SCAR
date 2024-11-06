@@ -88,8 +88,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         User user = userRepository.findByUsername(username).orElse(null);
         if (user == null) {
             throw new NotFoundException("User not found");
-        } else if (user.getRole() == null) {
-            throw new NotFoundException("Role not found");
         }
         Set<Role> roles = new HashSet<>();
         roles.add(user.getRole());

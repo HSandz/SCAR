@@ -27,12 +27,14 @@ public class UserController {
         this.authenticationService = authenticationService;
     }
 
+    @PostMapping("/register")
     public String registerUser(@RequestParam("username") final String username,
                                @RequestParam("password") final String password,
                                @RequestParam("displayName") final String displayName,
                                @RequestParam("email") final String email) {
         if (authenticationService.validateRegistration(username, password, displayName, email)) {
             userService.createUser(new User(username, password, displayName, email, USER, 0L));
+            System.out.println("Created user");
         } else {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid username or password");
         }
