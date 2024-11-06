@@ -8,6 +8,8 @@ public interface AuthenticationService {
 
     boolean validateAuthentication(String username, String password);
 
+    boolean validateRegistration(String username, String password, String displayName, String email);
+
     boolean updatePassword(String username, String oldPassword, String newPassword);
 
     Collection<? extends GrantedAuthority> getAuthorities(String username);
