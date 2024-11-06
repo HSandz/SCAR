@@ -1,10 +1,7 @@
 package com.scar.lms.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -13,6 +10,7 @@ import java.util.Set;
 @Getter
 @Setter
 @NoArgsConstructor
+@RequiredArgsConstructor
 @AllArgsConstructor
 @Table(name = "USERS")
 public class User {
@@ -22,22 +20,28 @@ public class User {
     private int id;
 
     @Column(name = "USERNAME")
+    @NonNull
     private String username;
 
     @Column(name = "PASSWORD")
+    @NonNull
     private String password;
 
     @Column(name = "DISPLAY_NAME")
+    @NonNull
     private String displayName;
 
     @Column(name = "EMAIL")
+    @NonNull
     private String email;
 
     @Column(name = "ROLE")
+    @NonNull
     private Role role;
 
     @Column(name = "USER_POINTS")
-    private long points;
+    @NonNull
+    private Long points;
 
     @ManyToMany(fetch = FetchType.LAZY,
             cascade = { CascadeType.PERSIST, CascadeType.MERGE },
