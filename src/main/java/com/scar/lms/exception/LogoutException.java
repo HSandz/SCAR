@@ -2,12 +2,12 @@ package com.scar.lms.exception;
 
 import java.io.Serial;
 
-public class NotFoundException extends RuntimeException {
+public class LogoutException extends RuntimeException {
 
     @Serial
     private static final long serialVersionUID = 1L;
 
-    public NotFoundException(String message) {
+    public LogoutException(String message) {
         super(message);
     }
 
