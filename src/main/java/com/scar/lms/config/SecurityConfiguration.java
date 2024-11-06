@@ -1,10 +1,8 @@
 package com.scar.lms.config;
 
-import com.scar.lms.exception.LogoutException;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 
@@ -15,8 +13,8 @@ public class SecurityConfiguration {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(authorizeRequests -> authorizeRequests
-                        .requestMatchers("/").permitAll()
-                        .requestMatchers("/home", "/books/**").hasAnyAuthority("USER", "ADMIN")
+                        .requestMatchers("/", "/register").permitAll()
+                        .requestMatchers("/books/**", "/home").hasAnyAuthority("USER", "ADMIN")
                         .requestMatchers("/admin/**").hasAuthority("ADMIN")
                         .anyRequest().authenticated()
                 )
@@ -30,19 +28,13 @@ public class SecurityConfiguration {
         return http.build();
     }
 
-    @Bean
-    public BCryptPasswordEncoder bCryptPasswordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
-
     private LogoutSuccessHandler userLogoutSuccessHandler() {
-        return (request, response, authentication) -> {
-            request.getSession().invalidate();
-            response.sendRedirect("/index");
+        return (_, response, authentication) -> {
+            response.sendRedirect("/login?logout=true");
             if (authentication != null) {
                 System.out.printf("User %s logged out%n", authentication.getName());
             } else {
-                throw new LogoutException("Unable to log out");
+                System.out.println("Unable to logout due to null authentication");
             }
         };
     }
