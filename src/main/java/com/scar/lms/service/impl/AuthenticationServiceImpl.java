@@ -2,12 +2,12 @@ package com.scar.lms.service.impl;
 
 import com.scar.lms.entity.Role;
 import com.scar.lms.entity.User;
+import com.scar.lms.exception.NotFoundException;
 import com.scar.lms.repository.UserRepository;
 import com.scar.lms.service.AuthenticationService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -52,7 +52,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 return roles;
             }
         } else {
-            throw new UsernameNotFoundException("User not found");
+            throw new NotFoundException("User not found");
         }
         return List.of();
     }
