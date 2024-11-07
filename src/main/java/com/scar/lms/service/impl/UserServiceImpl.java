@@ -68,9 +68,12 @@ public class UserServiceImpl implements UserService {
                 );
     }
 
+    @Transactional
     @Override
     public void createUser(User user) {
-        userRepository.save(user);
+        System.out.println("Saving user: " + user);
+        userRepository.saveAndFlush(user);
+        System.out.println("User saved.");
     }
 
     @Override

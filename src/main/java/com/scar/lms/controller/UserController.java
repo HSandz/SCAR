@@ -1,23 +1,24 @@
 package com.scar.lms.controller;
 
-import com.scar.lms.entity.Book;
 import com.scar.lms.entity.User;
 import com.scar.lms.service.AuthenticationService;
 import com.scar.lms.service.UserService;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.Optional;
 
+import static com.scar.lms.entity.Role.ADMIN;
 import static com.scar.lms.entity.Role.USER;
 
 @Controller
 @RequestMapping
 public class UserController {
+
+    private static final Long DEFAULT_USER_POINT = 0L;
 
     private final UserService userService;
     private final AuthenticationService authenticationService;
@@ -27,23 +28,34 @@ public class UserController {
         this.authenticationService = authenticationService;
     }
 
-    @PostMapping("/register")
-    public String registerUser(@RequestParam("username") final String username,
-                               @RequestParam("password") final String password,
-                               @RequestParam("displayName") final String displayName,
-                               @RequestParam("email") final String email) {
-        if (authenticationService.validateRegistration(username, password, displayName, email)) {
-            userService.createUser(new User(username, password, displayName, email, USER, 0L));
-            System.out.println("Created user");
-        } else {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid username or password");
-        }
-        return "redirect:/home";
+    @GetMapping("/register")
+    public String showRegisterForm(Model model) {
+        model.addAttribute("user", new User());
+        System.out.println("Please sign up");
+        return "register";
     }
 
-    @GetMapping("/register")
-    public String showRegistrationForm() {
-        return "register";
+    @PostMapping("/register")
+    public String registerUser(@ModelAttribute User user, Model model) {
+        if (!authenticationService.validateRegistration(user.getUsername(), user.getPassword(),
+                user.getDisplayName(), user.getEmail())) {
+            model.addAttribute("error", "Invalid registration details.");
+            return "register";
+        }
+        user.setPassword(authenticationService.encryptPassword(user.getPassword()));
+        user.setPoints(DEFAULT_USER_POINT);
+        user.setRole(ADMIN);
+        userService.createUser(user);
+        return "redirect:/login";
+    }
+
+    @PostMapping("/login")
+    public String loginUser(@RequestParam String username, @RequestParam String password, Model model) {
+        if (!authenticationService.validateAuthentication(username, password)) {
+            model.addAttribute("error", "Invalid username or password.");
+            return "login";
+        }
+        return "redirect:/home";
     }
 
     @GetMapping("/login")
