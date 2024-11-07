@@ -83,6 +83,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         return false;
     }
 
+    public String encryptPassword(String password) {
+        return bCryptPasswordEncoder.encode(password);
+    }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities(String username) {
         User user = userRepository.findByUsername(username).orElse(null);

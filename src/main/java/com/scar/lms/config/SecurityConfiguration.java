@@ -15,6 +15,7 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests(authorizeRequests -> authorizeRequests
                         .requestMatchers("/",
                                 "/register",
+                                "/home",
                                 "/css/**",
                                 "/image/**",
                                 "/static/**").permitAll()

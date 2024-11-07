@@ -12,5 +12,7 @@ public interface AuthenticationService {
 
     boolean updatePassword(String username, String oldPassword, String newPassword);
 
+    String encryptPassword(String password);
+
     Collection<? extends GrantedAuthority> getAuthorities(String username);
 }
