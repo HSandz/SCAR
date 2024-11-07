@@ -38,7 +38,7 @@ public class UserController {
         } else {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid username or password");
         }
-        return "redirect:/login";
+        return "redirect:/home";
     }
 
     @GetMapping("/register")
