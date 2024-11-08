@@ -35,6 +35,9 @@ public class Book {
     @Column(name = "DESCRIPTION", length = 500)
     private String description;
 
+    @Column(name = "IMAGE_URL")
+    private String imageUrl;
+
     @ManyToMany(fetch = FetchType.LAZY,
             cascade = { CascadeType.PERSIST, CascadeType.MERGE })
     @JoinTable(name = "BOOK_AUTHOR",

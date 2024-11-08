@@ -69,10 +69,16 @@ public class BookController {
     public String searchBooks(@RequestParam(required = false, defaultValue = "") String query,
                               @RequestParam(required = false, defaultValue = "0") int page,
                               Model model) {
-        int booksPerPage = 40;
-        int startIndex = page * booksPerPage;
-        List<Book> books = googleBooksService.searchBooks(query, startIndex, booksPerPage);
+        int maxResults = 40;
+        int pageSize = 10;
+        List<Book> books = googleBooksService.searchBooks(query, page, maxResults);
+        int totalPages = (int) Math.ceil((double) maxResults / pageSize);
+
         model.addAttribute("books", books);
+        model.addAttribute("query", query);
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", totalPages);
+
         return "book-list";
     }
 

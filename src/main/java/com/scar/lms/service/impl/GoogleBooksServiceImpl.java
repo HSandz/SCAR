@@ -6,8 +6,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.scar.lms.config.GoogleBooksApiProperties;
 import com.scar.lms.entity.Author;
 import com.scar.lms.entity.Book;
+import com.scar.lms.entity.Genre;
+import com.scar.lms.entity.Publisher;
 import com.scar.lms.service.GoogleBooksService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -21,7 +22,6 @@ public class GoogleBooksServiceImpl implements GoogleBooksService {
     private final RestTemplate restTemplate;
     private final GoogleBooksApiProperties googleBooksApiProperties;
 
-    @Autowired
     public GoogleBooksServiceImpl(RestTemplate restTemplate, GoogleBooksApiProperties googleBooksApiProperties) {
         this.restTemplate = restTemplate;
         this.googleBooksApiProperties = googleBooksApiProperties;
@@ -31,7 +31,6 @@ public class GoogleBooksServiceImpl implements GoogleBooksService {
         if (query == null || query.trim().isEmpty()) {
             return Collections.emptyList();
         }
-        // Construct the URL with pagination parameters
         String url = googleBooksApiProperties.getUrl() + "?q=" + query
                 + "&startIndex=" + startIndex
                 + "&maxResults=" + maxResults
@@ -49,8 +48,10 @@ public class GoogleBooksServiceImpl implements GoogleBooksService {
             for (JsonNode item : itemsNode) {
                 Book book = new Book();
 
+                // Title
                 book.setTitle(item.path("volumeInfo").path("title").asText());
 
+                // ISBN
                 JsonNode isbnNode = item.path("volumeInfo").path("industryIdentifiers");
                 if (isbnNode.isArray()) {
                     for (JsonNode identifier : isbnNode) {
@@ -61,19 +62,24 @@ public class GoogleBooksServiceImpl implements GoogleBooksService {
                     }
                 }
 
+                // Language
                 book.setLanguage(item.path("volumeInfo").path("language").asText());
 
+                // Rating
                 if (item.path("volumeInfo").has("averageRating")) {
                     book.setRating(item.path("volumeInfo").path("averageRating").asDouble());
                 }
 
+                // Publication Year
                 String publishedDate = item.path("volumeInfo").path("publishedDate").asText();
                 if (publishedDate.length() >= 4) {
                     book.setPublicationYear(Integer.parseInt(publishedDate.substring(0, 4)));
                 }
 
+                // Description
                 book.setDescription(item.path("volumeInfo").path("description").asText());
 
+                // Authors
                 Set<Author> authors = new HashSet<>();
                 JsonNode authorsNode = item.path("volumeInfo").path("authors");
                 if (authorsNode.isArray()) {
@@ -84,6 +90,34 @@ public class GoogleBooksServiceImpl implements GoogleBooksService {
                     }
                 }
                 book.setAuthors(authors);
+
+                // Image URL
+                JsonNode imageLinksNode = item.path("volumeInfo").path("imageLinks");
+                if (imageLinksNode.has("thumbnail")) {
+                    book.setImageUrl(imageLinksNode.path("thumbnail").asText());
+                }
+
+                // Publisher
+                Set<Publisher> publishers = new HashSet<>();
+                String publisherName = item.path("volumeInfo").path("publisher").asText();
+                if (!publisherName.isEmpty()) {
+                    Publisher publisher = new Publisher();
+                    publisher.setName(publisherName);
+                    publishers.add(publisher);
+                }
+                book.setPublishers(publishers);
+
+                // Genres (Categories)
+                Set<Genre> genres = new HashSet<>();
+                JsonNode categoriesNode = item.path("volumeInfo").path("categories");
+                if (categoriesNode.isArray()) {
+                    for (JsonNode category : categoriesNode) {
+                        Genre genre = new Genre();
+                        genre.setName(category.asText());
+                        genres.add(genre);
+                    }
+                }
+                book.setGenres(genres);
 
                 books.add(book);
             }
