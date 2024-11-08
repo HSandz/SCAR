@@ -66,10 +66,14 @@ public class BookController {
     }
 
     @GetMapping("/search")
-    public String searchBooks(@RequestParam("query") String query, Model model) {
-        List<Book> books = googleBooksService.searchBooks(query);
+    public String searchBooks(@RequestParam(required = false, defaultValue = "") String query,
+                              @RequestParam(required = false, defaultValue = "0") int page,
+                              Model model) {
+        int booksPerPage = 40;
+        int startIndex = page * booksPerPage;
+        List<Book> books = googleBooksService.searchBooks(query, startIndex, booksPerPage);
         model.addAttribute("books", books);
-        return "bookList";
+        return "book-list";
     }
 
     @GetMapping("/{id}")

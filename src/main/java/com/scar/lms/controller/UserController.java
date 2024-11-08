@@ -23,6 +23,11 @@ public class UserController {
         this.authenticationService = authenticationService;
     }
 
+    @GetMapping({"/", ""})
+    public String defaultHome() {
+        return "redirect:/home";
+    }
+
     @GetMapping("/register")
     public String showRegisterForm(Model model) {
         model.addAttribute("user", new User());

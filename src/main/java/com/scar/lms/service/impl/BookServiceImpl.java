@@ -65,6 +65,11 @@ public class BookServiceImpl implements BookService {
         return bookRepository.findByPublisher(publisherId);
     }
 
+    @Override
+    public Page<Book> findPaginated(Pageable pageable) {
+        return bookRepository.findAll(pageable);
+    }
+
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     @Override
     public Page<Book> findFilteredAndPaginated(String title,

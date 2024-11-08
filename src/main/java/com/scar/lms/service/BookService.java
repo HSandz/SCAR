@@ -23,6 +23,8 @@ public interface BookService {
 
     List<Book> searchBooks(String keyword);
 
+    Page<Book> findPaginated(Pageable pageable);
+
     Page<Book> findFilteredAndPaginated(String title,
                                         String authorName,
                                         String genreName,

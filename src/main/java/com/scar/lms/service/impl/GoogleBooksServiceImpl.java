@@ -8,7 +8,6 @@ import com.scar.lms.entity.Author;
 import com.scar.lms.entity.Book;
 import com.scar.lms.service.GoogleBooksService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -28,8 +27,15 @@ public class GoogleBooksServiceImpl implements GoogleBooksService {
         this.googleBooksApiProperties = googleBooksApiProperties;
     }
 
-    public List<Book> searchBooks(String query) {
-        String url = googleBooksApiProperties.getUrl() + "?q=" + query + "&key=" + googleBooksApiProperties.getKey();
+    public List<Book> searchBooks(String query, int startIndex, int maxResults) {
+        if (query == null || query.trim().isEmpty()) {
+            return Collections.emptyList();
+        }
+        // Construct the URL with pagination parameters
+        String url = googleBooksApiProperties.getUrl() + "?q=" + query
+                + "&startIndex=" + startIndex
+                + "&maxResults=" + maxResults
+                + "&key=" + googleBooksApiProperties.getKey();
 
         ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, null, String.class);
         String jsonResponse = response.getBody();

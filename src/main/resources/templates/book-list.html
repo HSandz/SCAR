@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Book Search Results</title>
-    <link rel="stylesheet" type="text/css" href="/css/bookList.css">
+    <link rel="stylesheet" type="text/css" href="/css/book-list.css">
 </head>
 <body>
 <h1>Book Search Results</h1>
@@ -43,6 +43,13 @@
             <hr />
         </li>
     </ul>
+</div>
+
+<!-- Pagination -->
+<div class="pagination" th:if="${totalPages > 1}">
+    <a th:href="@{/books/search(query=${query}, page=${currentPage - 1})}" th:if="${currentPage > 0}">Previous</a>
+    <span>Page <span th:text="${currentPage + 1}">1</span> of <span th:text="${totalPages}">1</span></span>
+    <a th:href="@{/books/search(query=${query}, page=${currentPage + 1})}" th:if="${currentPage + 1 < totalPages}">Next</a>
 </div>
 
 <!-- Message for no books found -->
