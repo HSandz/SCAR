@@ -3,15 +3,10 @@ package com.scar.lms.controller;
 import com.scar.lms.entity.User;
 import com.scar.lms.service.AuthenticationService;
 import com.scar.lms.service.UserService;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
-import java.util.Optional;
-
-import static com.scar.lms.entity.Role.ADMIN;
 import static com.scar.lms.entity.Role.USER;
 
 @Controller
@@ -31,7 +26,6 @@ public class UserController {
     @GetMapping("/register")
     public String showRegisterForm(Model model) {
         model.addAttribute("user", new User());
-        System.out.println("Please sign up");
         return "register";
     }
 
@@ -44,27 +38,23 @@ public class UserController {
         }
         user.setPassword(authenticationService.encryptPassword(user.getPassword()));
         user.setPoints(DEFAULT_USER_POINT);
-        user.setRole(ADMIN);
+        user.setRole(USER);
         userService.createUser(user);
-        return "redirect:/login";
-    }
-
-    @PostMapping("/login")
-    public String loginUser(@RequestParam String username, @RequestParam String password, Model model) {
-        if (!authenticationService.validateAuthentication(username, password)) {
-            model.addAttribute("error", "Invalid username or password.");
-            return "login";
-        }
-        return "redirect:/home";
+        return "redirect:/dologin";
     }
 
     @GetMapping("/login")
-    public String showLoginForm() {
+    public String showLoginPage() {
         return "login";
     }
 
     @GetMapping("/home")
     public String showHomePage() {
         return "home";
+    }
+
+    @GetMapping("/admin")
+    public String showAdminPage() {
+        return "admin";
     }
 }
