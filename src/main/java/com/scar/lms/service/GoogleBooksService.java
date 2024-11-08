@@ -6,5 +6,5 @@ import java.util.List;
 
 public interface GoogleBooksService {
 
-    List<Book> searchBooks(String query);
+    List<Book> searchBooks(String query, int startIndex, int maxResults);
 }

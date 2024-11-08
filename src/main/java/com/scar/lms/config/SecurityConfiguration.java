@@ -37,13 +37,14 @@ public class SecurityConfiguration {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorizeRequests -> authorizeRequests
                         .requestMatchers("/",
+                                "/home",
                                 "/register",
                                 "/login",
                                 "/css/**",
                                 "/media/**",
                                 "/static/**").permitAll()
-                        .requestMatchers("/books/**", "/home").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
-                        .requestMatchers("/admin/**", "/home").hasAuthority("ROLE_ADMIN")
+                        .requestMatchers("/books/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
+                        .requestMatchers("/admin/**").hasAuthority("ROLE_ADMIN")
                         .anyRequest().authenticated()
                 )
                 .formLogin(formLogin -> formLogin
@@ -91,7 +92,7 @@ public class SecurityConfiguration {
             if (roles.contains("ROLE_ADMIN")) {
                 response.sendRedirect("/admin");
             } else if (roles.contains("ROLE_USER")) {
-                response.sendRedirect("/home");
+                response.sendRedirect("/books/search");
             } else {
                 response.sendRedirect("/");
             }
