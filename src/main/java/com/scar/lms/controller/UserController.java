@@ -40,7 +40,7 @@ public class UserController {
         user.setPoints(DEFAULT_USER_POINT);
         user.setRole(USER);
         userService.createUser(user);
-        return "redirect:/dologin";
+        return "redirect:/login";
     }
 
     @GetMapping("/login")

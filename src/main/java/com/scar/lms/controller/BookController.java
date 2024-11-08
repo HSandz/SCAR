@@ -1,24 +1,23 @@
 package com.scar.lms.controller;
 
 import com.scar.lms.entity.Book;
-import com.scar.lms.service.AuthorService;
-import com.scar.lms.service.BookService;
-import com.scar.lms.service.GenreService;
-import com.scar.lms.service.PublisherService;
+import com.scar.lms.service.*;
 
 import jakarta.validation.Valid;
 
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-@RestController
+@Controller
 @RequestMapping("/books")
 public class BookController {
 
@@ -26,15 +25,18 @@ public class BookController {
     private final AuthorService authorService;
     private final GenreService genreService;
     private final PublisherService publisherService;
+    private final GoogleBooksService googleBooksService;
 
     public BookController(final BookService bookService,
                           final AuthorService authorService,
                           final GenreService genreService,
-                          final PublisherService publisherService) {
+                          final PublisherService publisherService,
+                          final GoogleBooksService googleBooksService) {
         this.bookService = bookService;
         this.authorService = authorService;
         this.genreService = genreService;
         this.publisherService = publisherService;
+        this.googleBooksService = googleBooksService;
     }
 
     @GetMapping({ "", "/" })
@@ -64,10 +66,10 @@ public class BookController {
     }
 
     @GetMapping("/search")
-    public String searchBooks(@RequestParam("keyword") String keyword, Model model) {
-        model.addAttribute("book", bookService.searchBooks(keyword));
-        model.addAttribute("keyword", keyword);
-        return "view-books";
+    public String searchBooks(@RequestParam("query") String query, Model model) {
+        List<Book> books = googleBooksService.searchBooks(query);
+        model.addAttribute("books", books);
+        return "bookList";
     }
 
     @GetMapping("/{id}")
