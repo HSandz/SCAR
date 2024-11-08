@@ -20,9 +20,7 @@ public class SecurityConfiguration {
                                 "/css/**",
                                 "/media/**",
                                 "/static/**").permitAll()
-                        .requestMatchers("/books/**", "/home").hasAnyAuthority("USER", "ADMIN")
-                        .requestMatchers("/admin/**").hasAuthority("ADMIN")
-                        .anyRequest().authenticated()
+                        .anyRequest().permitAll()
                 )
                 .formLogin(formLogin -> formLogin
                         .loginPage("/login").permitAll()
