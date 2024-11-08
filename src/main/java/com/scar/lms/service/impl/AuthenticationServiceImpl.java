@@ -1,6 +1,5 @@
 package com.scar.lms.service.impl;
 
-import com.scar.lms.entity.Role;
 import com.scar.lms.entity.User;
 import com.scar.lms.exception.NotFoundException;
 import com.scar.lms.repository.UserRepository;
@@ -8,13 +7,17 @@ import com.scar.lms.service.AuthenticationService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
 
 @Service
-public class AuthenticationServiceImpl implements AuthenticationService {
+public class AuthenticationServiceImpl implements AuthenticationService, UserDetailsService {
 
     private static final int MIN_USERNAME_LENGTH = 6;
     private static final int MAX_USERNAME_LENGTH = 20;
@@ -31,9 +34,14 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     @Override
-    public boolean validateAuthentication(String username, String password) {
-        Optional<User> userOptional = userRepository.findByUsername(username);
-        return userOptional.filter(value -> bCryptPasswordEncoder.matches(password, value.getPassword())).isPresent();
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new NotFoundException("User not found"));
+        return new org.springframework.security.core.userdetails.User(
+                user.getUsername(),
+                user.getPassword(),
+                getAuthorities(user.getUsername())
+        );
     }
 
     @Override
@@ -83,18 +91,20 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         return false;
     }
 
+    @Override
     public String encryptPassword(String password) {
         return bCryptPasswordEncoder.encode(password);
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities(String username) {
-        User user = userRepository.findByUsername(username).orElse(null);
-        if (user == null) {
-            throw new NotFoundException("User not found");
-        }
-        Set<Role> roles = new HashSet<>();
-        roles.add(user.getRole());
-        return roles;
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new NotFoundException("User not found"));
+
+        Set<GrantedAuthority> authorities = new HashSet<>();
+        authorities.add(new SimpleGrantedAuthority("ROLE_" + user.getRole().name()));
+        System.out.println("Assigned authority: ROLE_" + user.getRole().name());
+        return authorities;
     }
+
 }

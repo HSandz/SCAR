@@ -1,12 +1,11 @@
 package com.scar.lms.service;
 
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetailsService;
 
 import java.util.Collection;
 
-public interface AuthenticationService {
-
-    boolean validateAuthentication(String username, String password);
+public interface AuthenticationService extends UserDetailsService {
 
     boolean validateRegistration(String username, String password, String displayName, String email);
 
@@ -15,4 +14,5 @@ public interface AuthenticationService {
     String encryptPassword(String password);
 
     Collection<? extends GrantedAuthority> getAuthorities(String username);
+
 }
