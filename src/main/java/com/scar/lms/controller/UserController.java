@@ -3,6 +3,8 @@ package com.scar.lms.controller;
 import com.scar.lms.entity.User;
 import com.scar.lms.service.AuthenticationService;
 import com.scar.lms.service.UserService;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -62,4 +64,28 @@ public class UserController {
     public String showAdminPage() {
         return "admin";
     }
+
+    @GetMapping("/updatePassword")
+    public String showUpdatePasswordForm(Model model) {
+        model.addAttribute("user", new User());
+        return "updatePassword";
+    }
+
+    @PostMapping("/updatePassword")
+    public String updatePassword(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @RequestParam("oldPassword") String oldPassword,
+            @RequestParam("newPassword") String newPassword,
+            Model model) {
+
+        String username = userDetails.getUsername();
+
+        if (!authenticationService.updatePassword(username, oldPassword, newPassword)) {
+            model.addAttribute("error", "Password update failed. Please check your old password and try again.");
+            return "updatePassword";
+        }
+        model.addAttribute("success", "Password updated successfully.");
+        return "login";
+    }
+
 }
