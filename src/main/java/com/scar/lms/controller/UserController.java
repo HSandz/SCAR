@@ -65,6 +65,40 @@ public class UserController {
         return "admin";
     }
 
+    @GetMapping("/admin/users")
+    public String listAllUsers(Model model) {
+        model.addAttribute("users", userService.findAllUsers());
+        return "userList";
+    }
+
+
+    @GetMapping("/profile")
+    public String showProfilePage(@AuthenticationPrincipal UserDetails userDetails, Model model) {
+        User user = userService.findUsersByUsername(userDetails.getUsername());
+        model.addAttribute("user", userDetails);
+        return "profile";
+    }
+
+    @GetMapping("/profile/edit")
+    public String showEditProfileForm(@AuthenticationPrincipal UserDetails userDetails, Model model) {
+        User user = userService.findUsersByUsername(userDetails.getUsername());
+        model.addAttribute("user", user);
+        return "editProfile";
+    }
+
+    @PostMapping("/profile/edit")
+    public String updateProfile(@AuthenticationPrincipal UserDetails userDetails,
+                                @ModelAttribute("user") User updatedUser,
+                                Model model) {
+        User user = userService.findUsersByUsername(userDetails.getUsername());
+        user.setDisplayName(updatedUser.getDisplayName());
+        user.setEmail(updatedUser.getEmail());
+        userService.updateUser(user);
+        model.addAttribute("success", "Profile updated successfully.");
+        return "redirect:/profile";
+    }
+
+
     @GetMapping("/updatePassword")
     public String showUpdatePasswordForm(Model model) {
         model.addAttribute("user", new User());
@@ -86,6 +120,19 @@ public class UserController {
         }
         model.addAttribute("success", "Password updated successfully.");
         return "login";
+    }
+
+    @GetMapping("/profile/delete")
+    public String showDeleteAccountForm() {
+        return "deleteAccount";
+    }
+
+    @PostMapping("/profile/delete")
+    public String deleteAccount(@AuthenticationPrincipal UserDetails userDetails, Model model) {
+        User user = userService.findUsersByUsername(userDetails.getUsername());
+        userService.deleteUser(user.getId());
+        model.addAttribute("success", "Account deleted successfully.");
+        return "redirect:/logout"; // Log out the user after account deletion
     }
 
 }
