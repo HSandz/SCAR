@@ -3,6 +3,7 @@ package com.scar.lms.controller;
 import com.scar.lms.entity.User;
 import com.scar.lms.service.AuthenticationService;
 import com.scar.lms.service.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
@@ -20,6 +21,7 @@ public class UserController {
     private final UserService userService;
     private final AuthenticationService authenticationService;
 
+    @Autowired
     public UserController(final UserService userService, AuthenticationService authenticationService) {
         this.userService = userService;
         this.authenticationService = authenticationService;
