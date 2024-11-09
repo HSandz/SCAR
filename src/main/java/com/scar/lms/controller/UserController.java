@@ -1,30 +1,38 @@
 package com.scar.lms.controller;
 
+import com.scar.lms.entity.Book;
 import com.scar.lms.entity.User;
 import com.scar.lms.service.AuthenticationService;
+import com.scar.lms.service.BookService;
 import com.scar.lms.service.UserService;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Set;
+
 import static com.scar.lms.entity.Role.USER;
 
 @Controller
-@RequestMapping
+@RequestMapping("/user")
 public class UserController {
 
     private static final Long DEFAULT_USER_POINT = 0L;
 
     private final UserService userService;
     private final AuthenticationService authenticationService;
+    private final BookService bookService;
 
     @Autowired
-    public UserController(final UserService userService, AuthenticationService authenticationService) {
+    public UserController(final UserService userService, AuthenticationService authenticationService, BookService bookService) {
         this.userService = userService;
         this.authenticationService = authenticationService;
+        this.bookService = bookService;
     }
 
     @GetMapping({"/", ""})
@@ -61,18 +69,6 @@ public class UserController {
     public String showHomePage() {
         return "home";
     }
-
-    @GetMapping("/admin")
-    public String showAdminPage() {
-        return "admin";
-    }
-
-    @GetMapping("/admin/users")
-    public String listAllUsers(Model model) {
-        model.addAttribute("users", userService.findAllUsers());
-        return "userList";
-    }
-
 
     @GetMapping("/profile")
     public String showProfilePage(@AuthenticationPrincipal UserDetails userDetails, Model model) {
@@ -135,6 +131,39 @@ public class UserController {
         userService.deleteUser(user.getId());
         model.addAttribute("success", "Account deleted successfully.");
         return "redirect:/logout";
+    }
+
+    @PostMapping("/borrow/{bookId}")
+    public ResponseEntity<String> borrowBook(@PathVariable int bookId,
+                                             @AuthenticationPrincipal UserDetails userDetails) {
+        User user = userService.findUsersByUsername(userDetails.getUsername());
+        Book book = bookService.findBookById(bookId);
+        user.getBooks().add(book);
+        user.setPoints(user.getPoints() + 1);
+        userService.updateUser(user);
+        return ResponseEntity.ok("Book borrowed successfully.");
+    }
+
+    @PostMapping("/return/{bookId}")
+    public ResponseEntity<String> returnBook(@PathVariable int bookId,
+                             @AuthenticationPrincipal UserDetails userDetails) {
+        User user = userService.findUsersByUsername(userDetails.getUsername());
+        Book book = bookService.findBookById(bookId);
+        if (user.getBooks().contains(book)) {
+            user.getBooks().remove(book);
+            userService.updateUser(user);
+            return ResponseEntity.ok("Book returned successfully.");
+        } else {
+            throw new RuntimeException("This book is not in your borrowed list.");
+        }
+    }
+
+    @GetMapping("/borrowed-books")
+    public String showBorrowedBooks(@AuthenticationPrincipal UserDetails userDetails, Model model) {
+        User user = userService.findUsersByUsername(userDetails.getUsername());
+        Set<Book> borrowedBooks = user.getBooks();
+        model.addAttribute("borrowedBooks", borrowedBooks);
+        return "borrowed-books";
     }
 
 }
