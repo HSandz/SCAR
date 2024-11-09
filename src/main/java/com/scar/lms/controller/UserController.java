@@ -132,7 +132,7 @@ public class UserController {
         User user = userService.findUsersByUsername(userDetails.getUsername());
         userService.deleteUser(user.getId());
         model.addAttribute("success", "Account deleted successfully.");
-        return "redirect:/logout"; // Log out the user after account deletion
+        return "redirect:/logout";
     }
 
 }
