@@ -27,10 +27,10 @@ public class Book {
     private String language;
 
     @Column(name = "RATING", length = 10, nullable = false)
-    private double rating;
+    private Double rating;
 
     @Column(name = "PUBLICATION_YEAR", length = 10, nullable = false)
-    private int publicationYear;
+    private Integer publicationYear;
 
     @Column(name = "DESCRIPTION", length = 500)
     private String description;
