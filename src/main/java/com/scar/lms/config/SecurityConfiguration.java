@@ -43,7 +43,7 @@ public class SecurityConfiguration {
                                 "/css/**",
                                 "/media/**",
                                 "/static/**").permitAll()
-                        .requestMatchers("/books/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
+                        .requestMatchers("/books/**, /user/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
                         .requestMatchers("/admin/**").hasAuthority("ROLE_ADMIN")
                         .anyRequest().authenticated()
                 )

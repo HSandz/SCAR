@@ -16,13 +16,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Set;
 
-import static com.scar.lms.entity.Role.USER;
-
 @Controller
 @RequestMapping("/user")
 public class UserController {
-
-    private static final Long DEFAULT_USER_POINT = 0L;
 
     private final UserService userService;
     private final AuthenticationService authenticationService;
@@ -36,38 +32,8 @@ public class UserController {
     }
 
     @GetMapping({"/", ""})
-    public String defaultHome() {
-        return "redirect:/home";
-    }
-
-    @GetMapping("/register")
-    public String showRegisterForm(Model model) {
-        model.addAttribute("user", new User());
-        return "register";
-    }
-
-    @PostMapping("/register")
-    public String registerUser(@ModelAttribute User user, Model model) {
-        if (!authenticationService.validateRegistration(user.getUsername(), user.getPassword(),
-                user.getDisplayName(), user.getEmail())) {
-            model.addAttribute("error", "Invalid registration details.");
-            return "register";
-        }
-        user.setPassword(authenticationService.encryptPassword(user.getPassword()));
-        user.setPoints(DEFAULT_USER_POINT);
-        user.setRole(USER);
-        userService.createUser(user);
-        return "redirect:/login";
-    }
-
-    @GetMapping("/login")
-    public String showLoginPage() {
-        return "login";
-    }
-
-    @GetMapping("/home")
-    public String showHomePage() {
-        return "home";
+    public String defaultUserPage(Model model) {
+        return "redirect:/user/profile";
     }
 
     @GetMapping("/profile")

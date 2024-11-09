@@ -1,6 +1,7 @@
 package com.scar.lms.controller;
 
 import com.scar.lms.service.UserService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -20,7 +21,7 @@ public class AdminController {
         this.userService = userService;
     }
 
-    @GetMapping("/")
+    @GetMapping({"/", ""})
     public String showAdminPage() {
         return "admin";
     }
