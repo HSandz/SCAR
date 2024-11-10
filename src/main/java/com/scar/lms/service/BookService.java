@@ -13,7 +13,7 @@ public interface BookService {
 
     List<Book> findBooksByTitle(String title);
 
-    List<Book> findBooksByPublicationYear(int year);
+    List<Book> findBooksByPublicationYear(Integer year);
 
     List<Book> findBooksByAuthor(int authorId);
 

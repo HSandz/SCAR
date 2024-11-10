@@ -37,7 +37,7 @@ public class BookServiceImpl implements BookService {
 
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     @Override
-    public List<Book> findBooksByPublicationYear(int year) {
+    public List<Book> findBooksByPublicationYear(Integer year) {
         return bookRepository.findByPublicationYear(year);
     }
 

@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class GoogleBooksServiceImpl implements GoogleBooksService {
@@ -31,6 +32,7 @@ public class GoogleBooksServiceImpl implements GoogleBooksService {
         if (query == null || query.trim().isEmpty()) {
             return Collections.emptyList();
         }
+
         String url = googleBooksApiProperties.getUrl() + "?q=" + query
                 + "&startIndex=" + startIndex
                 + "&maxResults=" + maxResults
