@@ -1,18 +1,42 @@
-/* Reset some default styling */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    scroll-behavior: smooth;
+    font-family: 'Jost', sans-serif;
+    list-style: none;
+    text-decoration: none;
 }
 
-body {
-    font-family: Arial, sans-serif;
-    background-color: #f0f2f5;
+header {
+    height: 55px;
+    background: linear-gradient(90deg, rgba(163, 171, 226, 1) 41%, rgba(255, 254, 254, 1) 100%);
+    top: 0;
+    right: 0;
+    z-index: 1000;
     display: flex;
-    justify-content: center;
     align-items: center;
-    height: 100vh;
-    color: #333;
+    justify-content: space-between;
+    padding: 20px 10%;
+}
+
+.navmenu {
+    display: flex;
+}
+
+.navmenu a {
+    color: white;
+    font-size: 18px;
+    padding: 10px 20px;
+    transition: all .42s ease;
+}
+
+.navmenu a:hover {
+    color: #3f0f76;
+}
+
+.text-register {
+    color: #3f0f76 !important;
 }
 
 .container {
@@ -23,12 +47,7 @@ body {
     max-width: 400px;
     width: 100%;
     text-align: center;
-}
-
-h2 {
-    margin-bottom: 1.5rem;
-    color: #333;
-    font-size: 1.5rem;
+    margin: 70px auto;
 }
 
 .form-group {
@@ -63,7 +82,7 @@ input[type="email"]:focus {
 .btn {
     width: 100%;
     padding: 0.8rem;
-    background-color: #5b9bd5;
+    background-color: #a08df4;
     border: none;
     border-radius: 4px;
     color: #ffffff;
@@ -75,7 +94,7 @@ input[type="email"]:focus {
 }
 
 .btn:hover {
-    background-color: #4a8ac1;
+    background-color: #6200ea;
 }
 
 .link {
@@ -83,7 +102,7 @@ input[type="email"]:focus {
 }
 
 .link a {
-    color: #5b9bd5;
+    color: #6200ea;
     text-decoration: none;
     font-size: 0.9rem;
 }

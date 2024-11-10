@@ -1,32 +1,54 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Register</title>
-    <!-- Link to external CSS file -->
-    <link rel="stylesheet" th:href="@{/css/register.css}">
+    <title>Library Management System</title>
+
+    <link rel="stylesheet" href="/css/register.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Jost:ital,wght@0,100..900;1,100..900&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap"
+          rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
+          integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg=="
+          crossorigin="anonymous" referrerpolicy="no-referrer"/>
+    <link rel="stylesheet" href="https://unpkg.com/boxicons@latest/css/boxicons.min.css">
+
 </head>
 <body>
+<header>
+    <ul class="navmenu">
+        <li><a href="/home">HOME</a></li>
+        <li><a href="#">ABOUT</a></li>
+        <li><a href="#">CONTACT</a></li>
+    </ul>
+    <ul class="navmenu">
+        <li><a href="/login" class="text-register">LOG IN</a></li>
+        <li><a href="/register" class="text-register">REGISTER</a></li>
+    </ul>
+</header>
 <div class="container">
     <h2>User Registration</h2>
-    <form th:action="@{/register}" method="post">
-        <div class="form-group">
-            <label for="username">Username:</label>
-            <input type="text" id="username" name="username" required>
-        </div>
-        <div class="form-group">
-            <label for="password">Password:</label>
-            <input type="password" id="password" name="password" required>
-        </div>
-        <div class="form-group">
-            <label for="displayName">Display Name:</label>
-            <input type="text" id="displayName" name="displayName" required>
-        </div>
-        <div class="form-group">
-            <label for="email">Email:</label>
-            <input type="email" id="email" name="email" required>
-        </div>
+    <br>
+    <form th:action="@{/login}" method="post" class="form-group">
+        <label>Username*
+            <input type="text" name="username" placeholder="tngoxinggai" required>
+        </label>
+
+        <label>Password*
+            <input type="password" name="password" placeholder="with8char" required>
+        </label>
+
+        <label>Display Name*
+        <input type="text" name="displayName" placeholder="tngoxinggai" required>
+        </label>
+
+        <label>Email*
+        <input type="email" name="email" placeholder="tngo@gmail.com" required>
+        </label>
+
         <button type="submit" class="btn">Register</button>
     </form>
     <div class="link">
