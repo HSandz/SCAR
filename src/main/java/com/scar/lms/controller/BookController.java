@@ -69,9 +69,9 @@ public class BookController {
     public String searchBooks(@RequestParam(required = false, defaultValue = "") String query,
                               @RequestParam(required = false, defaultValue = "0") int page,
                               Model model) {
-        int maxResults = 40;
+        int maxResults = 100;
         int pageSize = 10;
-        List<Book> books = googleBooksService.searchBooks(query, page, maxResults);
+        List<Book> books = googleBooksService.searchBooks(query, page * pageSize, pageSize);
         int totalPages = (int) Math.ceil((double) maxResults / pageSize);
 
         model.addAttribute("books", books);
