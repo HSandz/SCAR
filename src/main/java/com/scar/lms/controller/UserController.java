@@ -39,7 +39,7 @@ public class UserController {
     @GetMapping("/profile")
     public String showProfilePage(@AuthenticationPrincipal UserDetails userDetails, Model model) {
         User user = userService.findUsersByUsername(userDetails.getUsername());
-        model.addAttribute("user", userDetails);
+        model.addAttribute("user", user);
         return "profile";
     }
 
@@ -112,7 +112,7 @@ public class UserController {
 
     @PostMapping("/return/{bookId}")
     public ResponseEntity<String> returnBook(@PathVariable int bookId,
-                             @AuthenticationPrincipal UserDetails userDetails) {
+                                             @AuthenticationPrincipal UserDetails userDetails) {
         User user = userService.findUsersByUsername(userDetails.getUsername());
         Book book = bookService.findBookById(bookId);
         if (user.getBooks().contains(book)) {
