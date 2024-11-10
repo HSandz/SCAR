@@ -1,6 +1,7 @@
 package com.scar.lms.config;
 
 import com.scar.lms.service.AuthenticationService;
+import com.scar.lms.service.impl.oauth2.CustomOAuth2UserServiceImpl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -23,12 +24,13 @@ public class SecurityConfiguration {
 
     private final AuthenticationService authenticationService;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final CustomOAuth2UserServiceImpl customOAuth2UserService;
 
     @Autowired
-    public SecurityConfiguration(AuthenticationService authenticationService,
-                                 BCryptPasswordEncoder bCryptPasswordEncoder) {
+    public SecurityConfiguration(AuthenticationService authenticationService, BCryptPasswordEncoder bCryptPasswordEncoder, CustomOAuth2UserServiceImpl customOAuth2UserService) {
         this.authenticationService = authenticationService;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
+        this.customOAuth2UserService = customOAuth2UserService;
     }
 
     @Bean
@@ -43,7 +45,7 @@ public class SecurityConfiguration {
                                 "/css/**",
                                 "/media/**",
                                 "/static/**").permitAll()
-                        .requestMatchers("/books/**, /user/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
+                        .requestMatchers("/books/**", "/user/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
                         .requestMatchers("/admin/**").hasAuthority("ROLE_ADMIN")
                         .anyRequest().authenticated()
                 )
@@ -53,6 +55,13 @@ public class SecurityConfiguration {
                         .passwordParameter("password")
                         .successHandler(roleBasedAuthenticationSuccessHandler())
                         .permitAll())
+                .oauth2Login(oauth2Login -> oauth2Login
+                        .loginPage("/login")
+                        .successHandler(oauth2AuthenticationSuccessHandler())
+                        .userInfoEndpoint(userInfoEndpointConfig -> userInfoEndpointConfig
+                                .userService(customOAuth2UserService)
+                        )
+                )
                 .logout(logout -> logout
                         .logoutUrl("/logout")
                         .logoutSuccessHandler(userLogoutSuccessHandler())
@@ -87,6 +96,15 @@ public class SecurityConfiguration {
 
     @Bean
     public AuthenticationSuccessHandler roleBasedAuthenticationSuccessHandler() {
+        return getAuthenticationSuccessHandler();
+    }
+
+    @Bean
+    public AuthenticationSuccessHandler oauth2AuthenticationSuccessHandler() {
+        return getAuthenticationSuccessHandler();
+    }
+
+    private AuthenticationSuccessHandler getAuthenticationSuccessHandler() {
         return (_, response, authentication) -> {
             Set<String> roles = AuthorityUtils.authorityListToSet(authentication.getAuthorities());
             if (roles.contains("ROLE_ADMIN")) {
