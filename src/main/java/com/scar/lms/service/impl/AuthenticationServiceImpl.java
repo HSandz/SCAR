@@ -85,7 +85,7 @@ public class AuthenticationServiceImpl implements AuthenticationService, UserDet
     public boolean updatePassword(String username, String oldPassword, String newPassword) {
         Optional<User> userOptional = userRepository.findByUsername(username);
         if (userOptional.isPresent()) {
-            userOptional.get().setPassword(bCryptPasswordEncoder.encode(oldPassword));
+            userOptional.get().setPassword(bCryptPasswordEncoder.encode(newPassword));
             return true;
         }
         return false;
