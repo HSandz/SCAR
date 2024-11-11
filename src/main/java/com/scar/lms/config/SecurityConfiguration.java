@@ -1,7 +1,7 @@
 package com.scar.lms.config;
 
 import com.scar.lms.service.AuthenticationService;
-import com.scar.lms.service.impl.oauth2.CustomOAuth2UserServiceImpl;
+import com.scar.lms.service.impl.oauth2.CustomOAuth2UserService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -24,10 +24,12 @@ public class SecurityConfiguration {
 
     private final AuthenticationService authenticationService;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
-    private final CustomOAuth2UserServiceImpl customOAuth2UserService;
+    private final CustomOAuth2UserService customOAuth2UserService;
 
     @Autowired
-    public SecurityConfiguration(AuthenticationService authenticationService, BCryptPasswordEncoder bCryptPasswordEncoder, CustomOAuth2UserServiceImpl customOAuth2UserService) {
+    public SecurityConfiguration(AuthenticationService authenticationService,
+                                 BCryptPasswordEncoder bCryptPasswordEncoder,
+                                 CustomOAuth2UserService customOAuth2UserService) {
         this.authenticationService = authenticationService;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.customOAuth2UserService = customOAuth2UserService;
