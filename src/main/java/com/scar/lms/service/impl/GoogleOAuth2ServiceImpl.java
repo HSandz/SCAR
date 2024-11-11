@@ -10,9 +10,7 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
-import java.util.Optional;
 
-import static com.scar.lms.entity.Role.USER;
 import static com.scar.lms.service.impl.UserServiceImpl.getUser;
 
 @Service
