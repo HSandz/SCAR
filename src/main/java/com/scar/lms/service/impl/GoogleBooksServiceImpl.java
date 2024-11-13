@@ -8,6 +8,7 @@ import com.scar.lms.entity.Author;
 import com.scar.lms.entity.Book;
 import com.scar.lms.entity.Genre;
 import com.scar.lms.entity.Publisher;
+import com.scar.lms.repository.BookRepository;
 import com.scar.lms.service.GoogleBooksService;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
@@ -15,19 +16,23 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 public class GoogleBooksServiceImpl implements GoogleBooksService {
 
     private final RestTemplate restTemplate;
     private final GoogleBooksApiProperties googleBooksApiProperties;
+    private final BookRepository bookRepository;
 
-    public GoogleBooksServiceImpl(RestTemplate restTemplate, GoogleBooksApiProperties googleBooksApiProperties) {
+    public GoogleBooksServiceImpl(final RestTemplate restTemplate,
+                                  final GoogleBooksApiProperties googleBooksApiProperties,
+                                  final BookRepository bookRepository) {
         this.restTemplate = restTemplate;
         this.googleBooksApiProperties = googleBooksApiProperties;
+        this.bookRepository = bookRepository;
     }
 
+    @Override
     public List<Book> searchBooks(String query, int startIndex, int maxResults) {
         if (query == null || query.trim().isEmpty()) {
             return Collections.emptyList();
@@ -127,6 +132,13 @@ public class GoogleBooksServiceImpl implements GoogleBooksService {
         } catch (JsonProcessingException e) {
             e.printStackTrace();
             return Collections.emptyList();
+        }
+    }
+
+    @Override
+    public void save(Book book) {
+        if (bookRepository.findByIsbn(book.getIsbn()).isEmpty()) {
+            bookRepository.save(book);
         }
     }
 }
