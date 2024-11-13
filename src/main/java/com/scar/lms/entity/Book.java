@@ -60,9 +60,13 @@ public class Book {
     private Set<Publisher> publishers = new HashSet<>();
 
     @ManyToMany(fetch = FetchType.LAZY,
-            cascade = { CascadeType.PERSIST, CascadeType.MERGE })
-    @JoinTable(name = "BOOK_USER",
-            joinColumns = { @JoinColumn(name = "BOOK_ID") },
-            inverseJoinColumns = { @JoinColumn(name = "USER_ID") })
-    private Set<User> users = new HashSet<>();
+            cascade = { CascadeType.PERSIST, CascadeType.MERGE },
+            mappedBy = "favouriteBooks")
+    private Set<User> favouriteUsers = new HashSet<>();
+
+    @OneToMany(fetch = FetchType.LAZY,
+            cascade = { CascadeType.PERSIST, CascadeType.MERGE },
+            mappedBy = "book")
+    private Set<Borrow> borrows = new HashSet<>();
+
 }

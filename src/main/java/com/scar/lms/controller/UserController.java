@@ -1,9 +1,11 @@
 package com.scar.lms.controller;
 
 import com.scar.lms.entity.Book;
+import com.scar.lms.entity.Borrow;
 import com.scar.lms.entity.User;
 import com.scar.lms.service.AuthenticationService;
 import com.scar.lms.service.BookService;
+import com.scar.lms.service.BorrowService;
 import com.scar.lms.service.UserService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +16,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+import java.util.List;
 import java.util.Set;
 
 @Controller
@@ -23,12 +27,17 @@ public class UserController {
     private final UserService userService;
     private final AuthenticationService authenticationService;
     private final BookService bookService;
+    private final BorrowService borrowService;
 
     @Autowired
-    public UserController(final UserService userService, AuthenticationService authenticationService, BookService bookService) {
+    public UserController(final UserService userService,
+                          final AuthenticationService authenticationService,
+                          final BookService bookService,
+                          final BorrowService borrowService) {
         this.userService = userService;
         this.authenticationService = authenticationService;
         this.bookService = bookService;
+        this.borrowService = borrowService;
     }
 
     @GetMapping({"/", ""})
@@ -104,32 +113,50 @@ public class UserController {
                                              @AuthenticationPrincipal UserDetails userDetails) {
         User user = userService.findUsersByUsername(userDetails.getUsername());
         Book book = bookService.findBookById(bookId);
-        user.getBooks().add(book);
+
+        if (borrowService.isBookBorrowedBy(user.getId(), bookId)) {
+            return ResponseEntity.badRequest().body("You have already borrowed this book.");
+        }
+
+        Borrow borrow = new Borrow();
+        borrow.setUser(user);
+        borrow.setBook(book);
+        borrow.setBorrowDate(LocalDate.now());
+
+        borrowService.addBorrow(borrow);
+
         user.setPoints(user.getPoints() + 1);
         userService.updateUser(user);
+
         return ResponseEntity.ok("Book borrowed successfully.");
     }
 
+
     @PostMapping("/return/{bookId}")
     public ResponseEntity<String> returnBook(@PathVariable int bookId,
-                             @AuthenticationPrincipal UserDetails userDetails) {
+                                             @AuthenticationPrincipal UserDetails userDetails) {
         User user = userService.findUsersByUsername(userDetails.getUsername());
-        Book book = bookService.findBookById(bookId);
-        if (user.getBooks().contains(book)) {
-            user.getBooks().remove(book);
-            userService.updateUser(user);
-            return ResponseEntity.ok("Book returned successfully.");
-        } else {
-            throw new RuntimeException("This book is not in your borrowed list.");
-        }
+
+        Borrow borrow = borrowService.findBorrow(user.getId(), bookId)
+                .orElseThrow(() -> new RuntimeException("This book is not in your borrowed list."));
+
+        borrow.setReturnDate(LocalDate.now());
+
+        borrowService.updateBorrow(borrow);
+
+        return ResponseEntity.ok("Book returned successfully.");
     }
+
 
     @GetMapping("/borrowed-books")
     public String showBorrowedBooks(@AuthenticationPrincipal UserDetails userDetails, Model model) {
         User user = userService.findUsersByUsername(userDetails.getUsername());
-        Set<Book> borrowedBooks = user.getBooks();
+
+        // Retrieve all borrow records for the user
+        List<Borrow> borrowedBooks = borrowService.findAllBorrows(user.getId());
+
         model.addAttribute("borrowedBooks", borrowedBooks);
         return "borrowed-books";
     }
-
+    
 }

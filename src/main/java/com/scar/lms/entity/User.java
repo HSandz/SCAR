@@ -42,9 +42,16 @@ public class User {
     @NonNull
     private Long points;
 
-    @ManyToMany(fetch = FetchType.LAZY,
+    @OneToMany(fetch = FetchType.LAZY,
             cascade = { CascadeType.PERSIST, CascadeType.MERGE },
-            mappedBy = "users")
-    private Set<Book> books = new HashSet<>();
+            mappedBy = "user")
+    private Set<Borrow> borrows = new HashSet<>();
+
+    @ManyToMany(fetch = FetchType.LAZY,
+            cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+    @JoinTable(name = "FAVOURITES",
+            joinColumns = { @JoinColumn(name = "USER_ID") },
+            inverseJoinColumns = { @JoinColumn(name = "BOOK_ID") })
+    private Set<Book> favouriteBooks = new HashSet<>();
 
 }
