@@ -45,7 +45,7 @@ public class UserController {
     @GetMapping("/profile")
     public String showProfilePage(@AuthenticationPrincipal UserDetails userDetails, Model model) {
         User user = userService.findUsersByUsername(userDetails.getUsername());
-        model.addAttribute("user", userDetails);
+        model.addAttribute("user", user);
         return "profile";
     }
 

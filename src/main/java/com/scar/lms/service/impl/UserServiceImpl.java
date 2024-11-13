@@ -5,11 +5,15 @@ import com.scar.lms.exception.NotFoundException;
 import com.scar.lms.repository.UserRepository;
 import com.scar.lms.service.UserService;
 
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
+
+import static com.scar.lms.entity.Role.USER;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -91,5 +95,20 @@ public class UserServiceImpl implements UserService {
                         )
                 );
         userRepository.delete(user);
+    }
+
+    static User getUser(String email, String username, String displayName, UserRepository userRepository, BCryptPasswordEncoder bCryptPasswordEncoder) {
+        Optional<User> existingUser = userRepository.findByEmail(email);
+        if (existingUser.isPresent()) {
+            return existingUser.get();
+        }
+
+        User newUser = new User();
+        newUser.setUsername(username);
+        newUser.setDisplayName(displayName);
+        newUser.setEmail(email);
+        newUser.setRole(USER);
+        newUser.setPassword(bCryptPasswordEncoder.encode(email)); // a default password pattern
+        return userRepository.save(newUser);
     }
 }
