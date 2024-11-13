@@ -8,7 +8,6 @@ import com.scar.lms.service.BookService;
 import com.scar.lms.service.BorrowService;
 import com.scar.lms.service.UserService;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -18,10 +17,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Set;
 
 @Controller
-@RequestMapping("/user")
+@RequestMapping("/users")
 public class UserController {
 
     private final UserService userService;
@@ -29,7 +27,6 @@ public class UserController {
     private final BookService bookService;
     private final BorrowService borrowService;
 
-    @Autowired
     public UserController(final UserService userService,
                           final AuthenticationService authenticationService,
                           final BookService bookService,
@@ -152,11 +149,10 @@ public class UserController {
     public String showBorrowedBooks(@AuthenticationPrincipal UserDetails userDetails, Model model) {
         User user = userService.findUsersByUsername(userDetails.getUsername());
 
-        // Retrieve all borrow records for the user
         List<Borrow> borrowedBooks = borrowService.findAllBorrows(user.getId());
 
         model.addAttribute("borrowedBooks", borrowedBooks);
         return "borrowed-books";
     }
-    
+
 }
