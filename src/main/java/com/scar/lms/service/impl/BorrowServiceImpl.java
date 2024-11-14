@@ -4,6 +4,8 @@ import com.scar.lms.entity.Borrow;
 import com.scar.lms.repository.BorrowRepository;
 import com.scar.lms.service.BorrowService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -17,6 +19,7 @@ public class BorrowServiceImpl implements BorrowService {
         this.borrowRepository = borrowRepository;
     }
 
+    @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     @Override
     public boolean isBookBorrowedBy(int userId, int bookId) {
         return borrowRepository.existsByUserIdAndBookId(userId, bookId);
@@ -37,11 +40,13 @@ public class BorrowServiceImpl implements BorrowService {
         borrowRepository.delete(borrow);
     }
 
+    @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     @Override
     public Optional<Borrow> findBorrow(int bookId, int userId) {
         return borrowRepository.findByUserIdAndBookId(userId, bookId);
     }
 
+    @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     @Override
     public List<Borrow> findAllBorrows(int userId) {
         return borrowRepository.findAllByUserId(userId);
