@@ -23,7 +23,6 @@ public class User {
     private String username;
 
     @Column(name = "PASSWORD")
-    @NonNull
     private String password;
 
     @Column(name = "DISPLAY_NAME")
@@ -31,7 +30,6 @@ public class User {
     private String displayName;
 
     @Column(name = "EMAIL")
-    @NonNull
     private String email;
 
     @Column(name = "ROLE")
