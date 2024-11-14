@@ -62,7 +62,6 @@ public class UserController {
         return "redirect:/profile";
     }
 
-
     @GetMapping("/updatePassword")
     public String showUpdatePasswordForm(Model model) {
         model.addAttribute("user", new User());
@@ -131,5 +130,4 @@ public class UserController {
         model.addAttribute("borrowedBooks", borrowedBooks);
         return "borrowed-books";
     }
-
 }

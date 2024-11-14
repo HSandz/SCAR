@@ -1,6 +1,7 @@
 package com.scar.lms.entity;
 
 import jakarta.persistence.*;
+
 import lombok.*;
 
 import java.util.HashSet;
@@ -46,5 +47,4 @@ public class User {
             cascade = { CascadeType.PERSIST, CascadeType.MERGE },
             mappedBy = "users")
     private Set<Book> books = new HashSet<>();
-
 }

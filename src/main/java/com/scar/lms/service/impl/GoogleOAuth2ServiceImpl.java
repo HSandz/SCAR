@@ -25,7 +25,6 @@ public class GoogleOAuth2ServiceImpl implements GoogleOAuth2Service {
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
     }
 
-
     public User registerNewUser(OAuth2User oAuth2User) {
         Map<String, Object> attributes = oAuth2User.getAttributes();
         String email = (String) attributes.get("email");
@@ -38,5 +37,4 @@ public class GoogleOAuth2ServiceImpl implements GoogleOAuth2Service {
 
         return getUser(email, username, displayName, userRepository, bCryptPasswordEncoder);
     }
-
 }

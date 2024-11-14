@@ -2,6 +2,7 @@ package com.scar.lms.service.impl.oauth2;
 
 import com.scar.lms.service.GithubOAuth2Service;
 import com.scar.lms.service.GoogleOAuth2Service;
+
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;

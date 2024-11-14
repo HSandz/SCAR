@@ -145,5 +145,4 @@ public class BookServiceImpl implements BookService {
                 );
         bookRepository.delete(book);
     }
-
 }

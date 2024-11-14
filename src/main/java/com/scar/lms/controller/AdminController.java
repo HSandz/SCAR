@@ -1,6 +1,5 @@
 package com.scar.lms.controller;
 
-import com.scar.lms.entity.Role;
 import com.scar.lms.entity.User;
 import com.scar.lms.service.UserService;
 
@@ -11,6 +10,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+
+import static com.scar.lms.entity.Role.ADMIN;
 
 @Controller
 @RequestMapping("/admin")
@@ -51,7 +52,7 @@ public class AdminController {
     public String grantAuthority(@PathVariable int userId, Model model) {
         User user = userService.findUserById(userId);
         model.addAttribute("user", user);
-        user.setRole(Role.ADMIN);
+        user.setRole(ADMIN);
         userService.updateUser(user);
         return "redirect:/admin/user";
     }
