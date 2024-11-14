@@ -23,8 +23,8 @@ public class IndexController {
     private final UserService userService;
     private final AuthenticationService authenticationService;
 
-    @Autowired
-    public IndexController(UserService userService, AuthenticationService authenticationService) {
+    public IndexController(final UserService userService,
+                           final AuthenticationService authenticationService) {
         this.userService = userService;
         this.authenticationService = authenticationService;
     }

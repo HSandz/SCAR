@@ -2,8 +2,7 @@ package com.scar.lms.service.impl;
 
 import com.scar.lms.entity.User;
 import com.scar.lms.repository.UserRepository;
-import com.scar.lms.service.GithubOAuth2Service;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.scar.lms.service.GitHubOAuth2Service;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
@@ -13,13 +12,13 @@ import java.util.Map;
 import static com.scar.lms.service.impl.UserServiceImpl.getUser;
 
 @Service
-public class GithubOAuth2ServiceImpl implements GithubOAuth2Service {
+public class GitHubOAuth2ServiceImpl implements GitHubOAuth2Service {
 
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
-    @Autowired
-    public GithubOAuth2ServiceImpl(UserRepository userRepository, BCryptPasswordEncoder bCryptPasswordEncoder) {
+    public GitHubOAuth2ServiceImpl(final UserRepository userRepository,
+                                   final BCryptPasswordEncoder bCryptPasswordEncoder) {
         this.userRepository = userRepository;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
     }

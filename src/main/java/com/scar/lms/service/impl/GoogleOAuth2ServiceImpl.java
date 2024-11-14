@@ -19,8 +19,8 @@ public class GoogleOAuth2ServiceImpl implements GoogleOAuth2Service {
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
-    @Autowired
-    public GoogleOAuth2ServiceImpl(UserRepository userRepository, BCryptPasswordEncoder bCryptPasswordEncoder) {
+    public GoogleOAuth2ServiceImpl(final UserRepository userRepository,
+                                   final BCryptPasswordEncoder bCryptPasswordEncoder) {
         this.userRepository = userRepository;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
     }

@@ -3,7 +3,6 @@ package com.scar.lms.config;
 import com.scar.lms.service.AuthenticationService;
 import com.scar.lms.service.impl.oauth2.CustomOAuth2UserService;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -26,10 +25,9 @@ public class SecurityConfiguration {
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final CustomOAuth2UserService customOAuth2UserService;
 
-    @Autowired
-    public SecurityConfiguration(AuthenticationService authenticationService,
-                                 BCryptPasswordEncoder bCryptPasswordEncoder,
-                                 CustomOAuth2UserService customOAuth2UserService) {
+    public SecurityConfiguration(final AuthenticationService authenticationService,
+                                 final BCryptPasswordEncoder bCryptPasswordEncoder,
+                                 final CustomOAuth2UserService customOAuth2UserService) {
         this.authenticationService = authenticationService;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.customOAuth2UserService = customOAuth2UserService;
@@ -45,6 +43,7 @@ public class SecurityConfiguration {
                                 "/register",
                                 "/login",
                                 "/css/**",
+                                "/js/**",
                                 "/media/**",
                                 "/static/**").permitAll()
                         .requestMatchers("/books/**", "/user/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")

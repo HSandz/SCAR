@@ -9,12 +9,11 @@
     <link rel="stylesheet" href="/css/login.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Jost:ital,wght@0,100..900;1,100..900&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap"
+    <link href="https://fonts.googleapis.com/css2?family=Jost:wght@100..900&family=Roboto:wght@100..900&display=swap"
           rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
           integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg=="
           crossorigin="anonymous" referrerpolicy="no-referrer"/>
-    <link rel="stylesheet" href="https://unpkg.com/boxicons@latest/css/boxicons.min.css">
 </head>
 <body>
 <header>
@@ -90,17 +89,19 @@
                 </label>
                 <button type="submit" class="login-button">Log in</button>
                 <div class="register-link">
-                    <p>Don't have an account? <a href="#">Register here</a></p>
-                </div>
-                <div class="error-message">
-                    <p th:text="${error}"></p>
+                    <p>Don't have an account? <a href="/register">Register here</a></p>
                 </div>
             </form>
-            <div class="social-icons">
-                <img src="google-icon.png" alt="Google">
-                <img src="facebook-icon.png" alt="Facebook">
-                <img src="github-icon.png" alt="GitHub">
-                <img src="apple-icon.png" alt="Apple">
+            <div class="oauth-container">
+                <p>Or log in with:</p>
+                <div class="social-icons">
+                    <a href="/oauth2/authorization/google" class="oauth-icon">
+                        <img src="https://icon2.cleanpng.com/20190731/vyx/kisspng-google-icon-1713874903975.webp" alt="Login with Google">
+                    </a>
+                    <a href="/oauth2/authorization/github" class="oauth-icon">
+                        <img src="https://banner2.cleanpng.com/20180418/siw/kisspng-github-pages-random-icons-5ad6e9863397c7.5716118315240339262113.jpg" alt="Login with GitHub">
+                    </a>
+                </div>
             </div>
         </div>
     </div>
