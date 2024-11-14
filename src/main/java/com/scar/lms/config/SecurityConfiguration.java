@@ -43,6 +43,7 @@ public class SecurityConfiguration {
                                 "/register",
                                 "/login",
                                 "/css/**",
+                                "/js/**",
                                 "/media/**",
                                 "/static/**").permitAll()
                         .requestMatchers("/books/**", "/user/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
