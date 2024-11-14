@@ -8,8 +8,9 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
+import java.util.Optional;
 
-import static com.scar.lms.service.impl.UserServiceImpl.getUser;
+import static com.scar.lms.entity.Role.USER;
 
 @Service
 public class GitHubOAuth2ServiceImpl implements GitHubOAuth2Service {
@@ -26,14 +27,31 @@ public class GitHubOAuth2ServiceImpl implements GitHubOAuth2Service {
     @Override
     public User registerNewUser(OAuth2User oAuth2User) {
         Map<String, Object> attributes = oAuth2User.getAttributes();
-        String username = (String) attributes.get("login");
-        String email = (String) attributes.get("email");
+        String username = (String) attributes.get("login"); // GitHub's username
+        String userId = String.valueOf(attributes.get("id")); // GitHub's unique ID
         String displayName = (String) attributes.get("name");
 
         if (displayName == null) {
             displayName = username;
         }
 
-        return getUser(email, username, displayName, userRepository, bCryptPasswordEncoder);
+        return getUser(userId, username, displayName, userRepository, bCryptPasswordEncoder);
+    }
+
+    private User getUser(String userId, String username, String displayName, UserRepository userRepository, BCryptPasswordEncoder bCryptPasswordEncoder) {
+        Optional<User> existingUser = userRepository.findByUsername(username);
+        if (existingUser.isPresent()) {
+            return existingUser.get();
+        }
+
+        User newUser = new User();
+        newUser.setUsername(username);
+        newUser.setDisplayName(displayName);
+        // Default email to bypass non-null constraint
+        newUser.setEmail("github" + username + "@gmail.com");
+        newUser.setRole(USER);
+        // Default password to bypass non-null constraint
+        newUser.setPassword(bCryptPasswordEncoder.encode(username + displayName));
+        return userRepository.save(newUser);
     }
 }

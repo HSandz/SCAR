@@ -96,19 +96,4 @@ public class UserServiceImpl implements UserService {
                 );
         userRepository.delete(user);
     }
-
-    static User getUser(String email, String username, String displayName, UserRepository userRepository, BCryptPasswordEncoder bCryptPasswordEncoder) {
-        Optional<User> existingUser = userRepository.findByEmail(email);
-        if (existingUser.isPresent()) {
-            return existingUser.get();
-        }
-
-        User newUser = new User();
-        newUser.setUsername(username);
-        newUser.setDisplayName(displayName);
-        newUser.setEmail(email);
-        newUser.setRole(USER);
-        newUser.setPassword(bCryptPasswordEncoder.encode(email)); // a default password pattern
-        return userRepository.save(newUser);
-    }
 }

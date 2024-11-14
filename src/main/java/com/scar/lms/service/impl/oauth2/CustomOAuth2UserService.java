@@ -33,12 +33,15 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
         List<SimpleGrantedAuthority> authorities = Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER"));
 
+        String defaultSubAttribute = "sub";
+
         if ("google".equalsIgnoreCase(registrationId)) {
             googleOAuth2Service.registerNewUser(oAuth2User);
         } else if ("github".equalsIgnoreCase(registrationId)) {
             githubOAuth2Service.registerNewUser(oAuth2User);
+            defaultSubAttribute = "id";
         }
 
-        return new DefaultOAuth2User(authorities, oAuth2User.getAttributes(), "sub");
+        return new DefaultOAuth2User(authorities, oAuth2User.getAttributes(), defaultSubAttribute);
     }
 }
