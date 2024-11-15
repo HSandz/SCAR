@@ -105,14 +105,10 @@ public class UserController {
     }
 
     @PostMapping("/borrow/{bookId}")
-    public ResponseEntity<String> borrowBook(@PathVariable int bookId,
+    public String borrowBook(@PathVariable int bookId,
                                              @AuthenticationPrincipal UserDetails userDetails) {
         User user = userService.findUsersByUsername(userDetails.getUsername());
         Book book = bookService.findBookById(bookId);
-
-        if (borrowService.isBookBorrowedBy(user.getId(), bookId)) {
-            return ResponseEntity.badRequest().body("You have already borrowed this book.");
-        }
 
         Borrow borrow = new Borrow();
         borrow.setUser(user);
@@ -124,12 +120,12 @@ public class UserController {
         user.setPoints(user.getPoints() + 1);
         userService.updateUser(user);
 
-        return ResponseEntity.ok("Book borrowed successfully.");
+        return "redirect:/book-list";
     }
 
 
     @PostMapping("/return/{bookId}")
-    public ResponseEntity<String> returnBook(@PathVariable int bookId,
+    public String returnBook(@PathVariable int bookId,
                                              @AuthenticationPrincipal UserDetails userDetails) {
         User user = userService.findUsersByUsername(userDetails.getUsername());
 
@@ -140,7 +136,7 @@ public class UserController {
 
         borrowService.updateBorrow(borrow);
 
-        return ResponseEntity.ok("Book returned successfully.");
+        return "redirect:/profile";
     }
 
 
@@ -152,5 +148,13 @@ public class UserController {
 
         model.addAttribute("borrowedBooks", borrowedBooks);
         return "borrowed-books";
+    }
+
+    @PostMapping("/add-favourite/{bookId}")
+    public String addFavourite (@PathVariable int bookId,
+                   @AuthenticationPrincipal UserDetails userDetails) {
+        User user = userService.findUsersByUsername(userDetails.getUsername());
+        userService.addFavouriteFor(user, bookId);
+        return "redirect:/book-list" + bookId;
     }
 }

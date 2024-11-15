@@ -1,8 +1,11 @@
 package com.scar.lms.service.impl;
 
+import com.scar.lms.entity.Book;
 import com.scar.lms.entity.User;
 import com.scar.lms.exception.DuplicateResourceException;
+import com.scar.lms.exception.OperationNotAllowedException;
 import com.scar.lms.exception.ResourceNotFoundException;
+import com.scar.lms.repository.BookRepository;
 import com.scar.lms.repository.UserRepository;
 import com.scar.lms.service.UserService;
 
@@ -11,14 +14,17 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
+    private final BookRepository bookRepository;
 
-    public UserServiceImpl(final UserRepository userRepository) {
+    public UserServiceImpl(final UserRepository userRepository, BookRepository bookRepository) {
         this.userRepository = userRepository;
+        this.bookRepository = bookRepository;
     }
 
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
@@ -81,5 +87,18 @@ public class UserServiceImpl implements UserService {
                 .findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User with id not found: " + id));
         userRepository.delete(user);
+    }
+
+    @Override
+    public void addFavouriteFor(User user, int bookId) {
+        if (!userRepository.existsById(user.getId())) {
+            throw new OperationNotAllowedException("Unable to add favourite book for user " + user.getUsername());
+        } else if (userRepository.findByUsername(user.getUsername()).isEmpty()) {
+            throw new OperationNotAllowedException("Unable to add favourite book for user " + user.getUsername());
+        } else if (bookRepository.findById(bookId).isEmpty()) {
+            throw new OperationNotAllowedException("Unable to add favourite book for user " + user.getUsername());
+        }
+        Set<Book> favouriteBooks = user.getFavouriteBooks();
+        favouriteBooks.add(bookRepository.findById(bookId).get());
     }
 }
