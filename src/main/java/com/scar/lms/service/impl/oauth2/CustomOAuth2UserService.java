@@ -1,5 +1,6 @@
 package com.scar.lms.service.impl.oauth2;
 
+import com.scar.lms.exception.OperationNotAllowedException;
 import com.scar.lms.service.GitHubOAuth2Service;
 import com.scar.lms.service.GoogleOAuth2Service;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -40,6 +41,8 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         } else if ("github".equalsIgnoreCase(registrationId)) {
             githubOAuth2Service.registerNewUser(oAuth2User);
             defaultSubAttribute = "id";
+        } else {
+            throw new OperationNotAllowedException("Unable to log in");
         }
 
         return new DefaultOAuth2User(authorities, oAuth2User.getAttributes(), defaultSubAttribute);
