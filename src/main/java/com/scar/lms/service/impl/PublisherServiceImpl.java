@@ -1,6 +1,7 @@
 package com.scar.lms.service.impl;
 
 import com.scar.lms.entity.Publisher;
+import com.scar.lms.exception.DuplicateResourceException;
 import com.scar.lms.exception.ResourceNotFoundException;
 import com.scar.lms.repository.PublisherRepository;
 import com.scar.lms.service.PublisherService;
@@ -37,6 +38,11 @@ public class PublisherServiceImpl implements PublisherService {
 
     @Override
     public void createPublisher(Publisher publisher) {
+        if (publisherRepository.existsById(publisher.getId())) {
+            throw new DuplicateResourceException("Publisher with ID " + publisher.getId() + " already exists");
+        } else if (publisherRepository.existsByName(publisher.getName())) {
+            throw new DuplicateResourceException("Publisher with name " + publisher.getName() + " already exists");
+        }
         publisherRepository.save(publisher);
     }
 

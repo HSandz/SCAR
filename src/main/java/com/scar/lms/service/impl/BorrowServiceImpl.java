@@ -1,6 +1,7 @@
 package com.scar.lms.service.impl;
 
 import com.scar.lms.entity.Borrow;
+import com.scar.lms.exception.OperationNotAllowedException;
 import com.scar.lms.repository.BorrowRepository;
 import com.scar.lms.service.BorrowService;
 
@@ -28,6 +29,9 @@ public class BorrowServiceImpl implements BorrowService {
 
     @Override
     public void addBorrow(Borrow borrow) {
+        if (borrowRepository.existsById(borrow.getId())) {
+            throw new OperationNotAllowedException("Unable to borrow book");
+        }
         borrowRepository.save(borrow);
     }
 
@@ -38,6 +42,9 @@ public class BorrowServiceImpl implements BorrowService {
 
     @Override
     public void removeBorrow(Borrow borrow) {
+        if (!borrowRepository.existsById(borrow.getId())) {
+            throw new OperationNotAllowedException("Unable to remove book");
+        }
         borrowRepository.delete(borrow);
     }
 

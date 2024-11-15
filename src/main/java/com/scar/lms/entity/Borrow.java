@@ -36,5 +36,4 @@ public class Borrow {
             cascade = { CascadeType.PERSIST, CascadeType.MERGE })
     @JoinColumn(name = "book_id")
     private Book book;
-
 }

@@ -61,7 +61,9 @@ public class UserServiceImpl implements UserService {
     @Override
     public void createUser(User user) {
         if (userRepository.findByUsername(user.getUsername()).isPresent()) {
-            throw new DuplicateResourceException("User already existed");
+            throw new DuplicateResourceException("User with username " + user.getUsername() + " already exists");
+        } else if (userRepository.existsById(user.getId())) {
+            throw new DuplicateResourceException("User with ID " + user.getId() + " already exists");
         }
         System.out.println("Saving user: " + user);
         userRepository.saveAndFlush(user);

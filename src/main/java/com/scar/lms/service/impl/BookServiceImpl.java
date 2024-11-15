@@ -122,15 +122,14 @@ public class BookServiceImpl implements BookService {
     public void addBook(Book book) {
         if (bookRepository.findByIsbn(book.getIsbn()).isPresent()) {
             throw new DuplicateResourceException("Book with ISBN " + book.getIsbn() + " already exists");
+        } else if (bookRepository.findById(book.getId()).isPresent()) {
+            throw new DuplicateResourceException("Book with id " + book.getId() + " already exists");
         }
         bookRepository.save(book);
     }
 
     @Override
     public void updateBook(Book book) {
-        if (!bookRepository.existsById(book.getId())) {
-            throw new ResourceNotFoundException("Book with id not found: " + book.getId());
-        }
         bookRepository.save(book);
     }
 

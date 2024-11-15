@@ -1,6 +1,7 @@
 package com.scar.lms.service.impl;
 
 import com.scar.lms.entity.Author;
+import com.scar.lms.exception.DuplicateResourceException;
 import com.scar.lms.exception.ResourceNotFoundException;
 import com.scar.lms.repository.AuthorRepository;
 import com.scar.lms.service.AuthorService;
@@ -48,6 +49,9 @@ public class AuthorServiceImpl implements AuthorService {
 
     @Override
     public void addAuthor(Author author) {
+        if (authorRepository.findById(author.getId()).isPresent()) {
+            throw new DuplicateResourceException("Author with id " + author.getId() + " already exists");
+        }
         authorRepository.save(author);
     }
 

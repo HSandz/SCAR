@@ -9,6 +9,7 @@ import com.scar.lms.entity.Author;
 import com.scar.lms.entity.Book;
 import com.scar.lms.entity.Genre;
 import com.scar.lms.entity.Publisher;
+import com.scar.lms.exception.DuplicateResourceException;
 import com.scar.lms.repository.BookRepository;
 import com.scar.lms.service.GoogleBooksService;
 
@@ -141,6 +142,8 @@ public class GoogleBooksServiceImpl implements GoogleBooksService {
     public void save(Book book) {
         if (bookRepository.findByIsbn(book.getIsbn()).isEmpty()) {
             bookRepository.save(book);
+        } else {
+            throw new DuplicateResourceException("Book with ISBN " + book.getIsbn() + " already exists");
         }
     }
 }
