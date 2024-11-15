@@ -1,16 +1,14 @@
 package com.scar.lms.service.impl;
 
 import com.scar.lms.entity.User;
-import com.scar.lms.exception.NotFoundException;
+import com.scar.lms.exception.ResourceNotFoundException;
 import com.scar.lms.repository.UserRepository;
 import com.scar.lms.service.AuthenticationService;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -34,9 +32,10 @@ public class AuthenticationServiceImpl implements AuthenticationService, UserDet
     }
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new NotFoundException("User not found"));
+    public UserDetails loadUserByUsername(String username) throws ResourceNotFoundException {
+        User user = userRepository
+                .findByUsername(username)
+                .orElseThrow(() -> new ResourceNotFoundException("User with username not found: " + username));
         return new org.springframework.security.core.userdetails.User(
                 user.getUsername(),
                 user.getPassword(),
@@ -47,48 +46,77 @@ public class AuthenticationServiceImpl implements AuthenticationService, UserDet
     @Override
     public boolean validateRegistration(String username, String password,
                                         String displayName, String email) {
-        return validateUsername(username)
-                && validatePassword(password)
-                && validateDisplayName(displayName)
-                && validateEmail(email);
+        return validateUsername(username) &&
+                validatePassword(password) &&
+                validateEmail(email) &&
+                validateDisplayName(displayName);
     }
 
     private boolean validateUsername(String username) {
-        String usernameRegex = "^[A-Za-z][A-Za-z0-9_@#]{"
-                + (MIN_USERNAME_LENGTH - 1) + ","
-                + (MAX_USERNAME_LENGTH - 1) + "}$";
+        String usernameRegex = "^[A-Za-z][A-Za-z0-9_@#]{" + (MIN_USERNAME_LENGTH - 1) + "," + (MAX_USERNAME_LENGTH - 1) + "}$";
         if (!username.matches(usernameRegex)) {
+            System.err.println("Invalid username format: " + username);
             return false;
         }
-        return userRepository.findByUsername(username).isEmpty();
+
+        if (userRepository.findByUsername(username).isPresent()) {
+            System.err.println("Username already exists: " + username);
+            return false;
+        }
+
+        return true;
     }
 
     private boolean validatePassword(String password) {
-        return password.length() >= MIN_PASSWORD_LENGTH
-                && password.length() <= MAX_PASSWORD_LENGTH;
+        if (password.length() < MIN_PASSWORD_LENGTH || password.length() > MAX_PASSWORD_LENGTH) {
+            System.err.println("Password length is invalid.");
+            return false;
+        }
+
+        return true;
     }
 
     private boolean validateEmail(String email) {
         String emailRegex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,6}$";
         if (!email.matches(emailRegex)) {
+            System.err.println("Invalid email format: " + email);
             return false;
         }
-        return userRepository.findByEmail(email).isEmpty();
+
+        if (userRepository.findByEmail(email).isPresent()) {
+            System.err.println("Email already exists: " + email);
+            return false;
+        }
+
+        return true;
     }
 
     private boolean validateDisplayName(String displayName) {
-        return displayName.length() >= MIN_USERNAME_LENGTH - 2
-                && displayName.length() <= MAX_USERNAME_LENGTH;
+        if (displayName.length() < (MIN_USERNAME_LENGTH - 2) || displayName.length() > MAX_USERNAME_LENGTH) {
+            System.err.println("Display name length is invalid.");
+            return false;
+        }
+        return true;
     }
 
     @Override
     public boolean updatePassword(String username, String oldPassword, String newPassword) {
-        Optional<User> userOptional = userRepository.findByUsername(username);
-        if (userOptional.isPresent()) {
-            userOptional.get().setPassword(bCryptPasswordEncoder.encode(newPassword));
-            return true;
+        if (!validatePassword(newPassword)) {
+            System.err.println("Invalid new password.");
+            return false;
         }
-        return false;
+
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new ResourceNotFoundException("User with username not found: " + username));
+
+        if (!bCryptPasswordEncoder.matches(oldPassword, user.getPassword())) {
+            System.err.println("Old password does not match.");
+            return false;
+        }
+
+        user.setPassword(bCryptPasswordEncoder.encode(newPassword));
+        userRepository.save(user);
+        return true;
     }
 
     @Override
@@ -99,12 +127,11 @@ public class AuthenticationServiceImpl implements AuthenticationService, UserDet
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities(String username) {
         User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new NotFoundException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User with username not found: " + username));
 
         Set<GrantedAuthority> authorities = new HashSet<>();
         authorities.add(new SimpleGrantedAuthority("ROLE_" + user.getRole().name()));
         System.out.println("Assigned authority: ROLE_" + user.getRole().name());
         return authorities;
     }
-
 }

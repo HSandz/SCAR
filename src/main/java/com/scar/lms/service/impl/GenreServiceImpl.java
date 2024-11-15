@@ -1,7 +1,7 @@
 package com.scar.lms.service.impl;
 
 import com.scar.lms.entity.Genre;
-import com.scar.lms.exception.NotFoundException;
+import com.scar.lms.exception.ResourceNotFoundException;
 import com.scar.lms.repository.GenreRepository;
 import com.scar.lms.service.GenreService;
 
@@ -31,11 +31,7 @@ public class GenreServiceImpl implements GenreService {
     public Genre findGenreById(int id) {
         return genreRepository
                 .findById(id)
-                .orElseThrow(
-                        () -> new NotFoundException(
-                                String.format("Genre with ID %d not found", id)
-                        )
-                );
+                .orElseThrow(() -> new ResourceNotFoundException("Genre with ID not found: " + id));
     }
 
     @Override
@@ -52,11 +48,7 @@ public class GenreServiceImpl implements GenreService {
     public void deleteGenre(int id) {
         var genre = genreRepository
                 .findById(id)
-                .orElseThrow(
-                        () -> new NotFoundException(
-                                String.format("Genre with ID %d not found", id)
-                        )
-                );
+                .orElseThrow(() -> new ResourceNotFoundException("Genre with ID not found:"  + id));
         genreRepository.delete(genre);
     }
 }

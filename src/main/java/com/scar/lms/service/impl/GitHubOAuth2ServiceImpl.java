@@ -3,6 +3,7 @@ package com.scar.lms.service.impl;
 import com.scar.lms.entity.User;
 import com.scar.lms.repository.UserRepository;
 import com.scar.lms.service.GitHubOAuth2Service;
+
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;

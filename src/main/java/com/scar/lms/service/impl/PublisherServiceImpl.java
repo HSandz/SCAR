@@ -1,7 +1,7 @@
 package com.scar.lms.service.impl;
 
 import com.scar.lms.entity.Publisher;
-import com.scar.lms.exception.NotFoundException;
+import com.scar.lms.exception.ResourceNotFoundException;
 import com.scar.lms.repository.PublisherRepository;
 import com.scar.lms.service.PublisherService;
 
@@ -32,10 +32,7 @@ public class PublisherServiceImpl implements PublisherService {
         return publisherRepository
                 .findById(id)
                 .orElseThrow(
-                        () -> new NotFoundException(
-                                String.format("Publisher with ID %d not found", id)
-                        )
-                );
+                        () -> new ResourceNotFoundException("Publisher with ID not found: " + id));
     }
 
     @Override
@@ -53,10 +50,7 @@ public class PublisherServiceImpl implements PublisherService {
         var publisher = publisherRepository
                 .findById(id)
                 .orElseThrow(
-                        () -> new NotFoundException(
-                                String.format("Publisher with ID %d not found", id)
-                        )
-                );
+                        () -> new ResourceNotFoundException("Publisher with ID not found: " + id));
         publisherRepository.delete(publisher);
     }
 }

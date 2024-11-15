@@ -1,19 +1,16 @@
 package com.scar.lms.service.impl;
 
 import com.scar.lms.entity.User;
-import com.scar.lms.exception.NotFoundException;
+import com.scar.lms.exception.DuplicateResourceException;
+import com.scar.lms.exception.ResourceNotFoundException;
 import com.scar.lms.repository.UserRepository;
 import com.scar.lms.service.UserService;
 
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
-
-import static com.scar.lms.entity.Role.USER;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -35,11 +32,7 @@ public class UserServiceImpl implements UserService {
     public User findUsersByUsername(String username) {
         return userRepository
                 .findByUsername(username)
-                .orElseThrow(
-                        () -> new NotFoundException(
-                                String.format("User with username %s not found", username)
-                        )
-                );
+                .orElseThrow(() -> new ResourceNotFoundException("User with username not found: " + username));
     }
 
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
@@ -47,11 +40,7 @@ public class UserServiceImpl implements UserService {
     public User findUserByEmail(String email) {
         return userRepository
                 .findByEmail(email)
-                .orElseThrow(
-                        () -> new NotFoundException(
-                                String.format("User with email %s not found", email)
-                        )
-                );
+                .orElseThrow(() -> new ResourceNotFoundException("User with email not found: " + email));
     }
 
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
@@ -65,16 +54,15 @@ public class UserServiceImpl implements UserService {
     public User findUserById(int id) {
         return userRepository
                 .findById(id)
-                .orElseThrow(
-                        () -> new NotFoundException(
-                                String.format("User with id %d not found", id)
-                        )
-                );
+                .orElseThrow(() -> new ResourceNotFoundException("User with id not found: " + id));
     }
 
     @Transactional
     @Override
     public void createUser(User user) {
+        if (userRepository.findByUsername(user.getUsername()).isPresent()) {
+            throw new DuplicateResourceException("User already existed");
+        }
         System.out.println("Saving user: " + user);
         userRepository.saveAndFlush(user);
         System.out.println("User saved.");
@@ -89,11 +77,7 @@ public class UserServiceImpl implements UserService {
     public void deleteUser(int id) {
         var user = userRepository
                 .findById(id)
-                .orElseThrow(
-                        () -> new NotFoundException(
-                                String.format("User with id %d not found", id)
-                        )
-                );
+                .orElseThrow(() -> new ResourceNotFoundException("User with id not found: " + id));
         userRepository.delete(user);
     }
 }
