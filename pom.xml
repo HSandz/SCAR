@@ -95,7 +95,6 @@
 			<artifactId>google-http-client-gson</artifactId>
 			<version>1.40.1</version>
 		</dependency>
-
 	</dependencies>
 	<build>
 		<plugins>
