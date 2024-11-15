@@ -62,7 +62,6 @@ public class UserController {
                                 Model model) {
         User user = userService.findUsersByUsername(userDetails.getUsername());
         user.setDisplayName(updatedUser.getDisplayName());
-        user.setEmail(updatedUser.getEmail());
         userService.updateUser(user);
         model.addAttribute("success", "Profile updated successfully.");
         return "redirect:/profile";
@@ -88,7 +87,7 @@ public class UserController {
             return "updatePassword";
         }
         model.addAttribute("success", "Password updated successfully.");
-        return "login";
+        return "redirect:/login";
     }
 
     @GetMapping("/profile/delete")
