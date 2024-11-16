@@ -88,7 +88,7 @@ public class BookController {
         if (bookOptional.isPresent()) {
             model.addAttribute("book", bookOptional.get());
         } else {
-            model.addAttribute("error", "Book not found");
+            return "redirect:/error?message=Book+not+found";
         }
         return "view-book";
     }
@@ -96,18 +96,14 @@ public class BookController {
     @GetMapping("/add")
     public String showCreateForm(Model model) {
         model.addAttribute("book", new Book());
-        model.addAttribute("genre", genreService.findAllGenres());
-        model.addAttribute("authors", authorService.findAllAuthors());
-        model.addAttribute("publishers", publisherService.findAllPublishers());
+        addCommonAttributes(model);
         return "add-book";
     }
 
     @PostMapping("/add")
     public String createBook(@Valid @ModelAttribute Book book, BindingResult result, Model model) {
         if (result.hasErrors()) {
-            model.addAttribute("genre", genreService.findAllGenres());
-            model.addAttribute("authors", authorService.findAllAuthors());
-            model.addAttribute("publishers", publisherService.findAllPublishers());
+            addCommonAttributes(model);
             return "add-book";
         }
         bookService.addBook(book);
@@ -121,17 +117,14 @@ public class BookController {
             model.addAttribute("book", bookOptional.get());
             return "update-book";
         } else {
-            model.addAttribute("error", "Book not found");
-            return "redirect:/books";
+            return "redirect:/error?message=Book+not+found";
         }
     }
 
     @PostMapping("/update/{id}")
     public String updateBook(@PathVariable("id") int id, @Valid @ModelAttribute Book book, BindingResult result, Model model) {
         if (result.hasErrors()) {
-            model.addAttribute("genre", genreService.findAllGenres());
-            model.addAttribute("authors", authorService.findAllAuthors());
-            model.addAttribute("publishers", publisherService.findAllPublishers());
+            addCommonAttributes(model);
             return "update-book";
         }
         book.setId(id);
@@ -140,8 +133,14 @@ public class BookController {
     }
 
     @GetMapping("/remove/{id}")
-    public String deleteBook(@PathVariable("id") int id, Model model) {
+    public String deleteBook(@PathVariable("id") int id) {
         bookService.deleteBook(id);
         return "redirect:/books";
+    }
+
+    private void addCommonAttributes(Model model) {
+        model.addAttribute("genre", genreService.findAllGenres());
+        model.addAttribute("authors", authorService.findAllAuthors());
+        model.addAttribute("publishers", publisherService.findAllPublishers());
     }
 }
