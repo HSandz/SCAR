@@ -1,6 +1,7 @@
 package com.scar.lms.repository.specification;
 
 import com.scar.lms.entity.Book;
+
 import org.springframework.data.jpa.domain.Specification;
 
 public class BookSpecification {

@@ -1,7 +1,8 @@
 package com.scar.lms.service.impl;
 
 import com.scar.lms.entity.Genre;
-import com.scar.lms.exception.NotFoundException;
+import com.scar.lms.exception.DuplicateResourceException;
+import com.scar.lms.exception.ResourceNotFoundException;
 import com.scar.lms.repository.GenreRepository;
 import com.scar.lms.service.GenreService;
 
@@ -31,15 +32,16 @@ public class GenreServiceImpl implements GenreService {
     public Genre findGenreById(int id) {
         return genreRepository
                 .findById(id)
-                .orElseThrow(
-                        () -> new NotFoundException(
-                                String.format("Genre with ID %d not found", id)
-                        )
-                );
+                .orElseThrow(() -> new ResourceNotFoundException("Genre with ID not found: " + id));
     }
 
     @Override
     public void createGenre(Genre genre) {
+        if (genreRepository.existsById(genre.getId())) {
+            throw new DuplicateResourceException("Genre with ID " + genre.getId() + " already exists");
+        } else if (genreRepository.existsByName(genre.getName())) {
+            throw new DuplicateResourceException("Genre with name " + genre.getName() + " already exists");
+        }
         genreRepository.save(genre);
     }
 
@@ -52,11 +54,7 @@ public class GenreServiceImpl implements GenreService {
     public void deleteGenre(int id) {
         var genre = genreRepository
                 .findById(id)
-                .orElseThrow(
-                        () -> new NotFoundException(
-                                String.format("Genre with ID %d not found", id)
-                        )
-                );
+                .orElseThrow(() -> new ResourceNotFoundException("Genre with ID not found:"  + id));
         genreRepository.delete(genre);
     }
 }

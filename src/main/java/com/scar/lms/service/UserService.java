@@ -1,8 +1,10 @@
 package com.scar.lms.service;
 
+import com.scar.lms.entity.Book;
 import com.scar.lms.entity.User;
 
 import java.util.List;
+import java.util.Set;
 
 public interface UserService {
 
@@ -22,4 +24,9 @@ public interface UserService {
 
     void deleteUser(int id);
 
+    void addFavouriteFor(User user, int bookId);
+
+    Set<Book> findFavouriteBooks(int id);
+
+    void removeFavouriteFor(User user, int bookId);
 }

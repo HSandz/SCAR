@@ -1,16 +1,16 @@
 package com.scar.lms.controller;
 
-import com.scar.lms.entity.Role;
 import com.scar.lms.entity.User;
 import com.scar.lms.service.UserService;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+
+import static com.scar.lms.entity.Role.ADMIN;
 
 @Controller
 @RequestMapping("/admin")
@@ -40,9 +40,34 @@ public class AdminController {
         return "user-view";
     }
 
+    @GetMapping("/user/edit/{userId}")
+    public String showUpdateUserForm(@PathVariable int userId, Model model) {
+        User user = userService.findUserById(userId);
+        model.addAttribute("user", user);
+        return "user-edit";
+    }
+
+    @PostMapping("/user/update")
+    public String updateUser(User user) {
+        userService.updateUser(user);
+        return "redirect:/admin/users";
+    }
+
     @PostMapping("/delete/user/{userId}")
     public String deleteUser(@PathVariable int userId) {
         userService.deleteUser(userId);
+        return "redirect:/admin/users";
+    }
+
+    @GetMapping("/user/new")
+    public String showCreateUserForm(Model model) {
+        model.addAttribute("user", new User());
+        return "user-create";
+    }
+
+    @PostMapping("/user/create")
+    public String createUser(User user) {
+        userService.createUser(user);
         return "redirect:/admin/users";
     }
 
@@ -50,7 +75,7 @@ public class AdminController {
     public String grantAuthority(@PathVariable int userId, Model model) {
         User user = userService.findUserById(userId);
         model.addAttribute("user", user);
-        user.setRole(Role.ADMIN);
+        user.setRole(ADMIN);
         userService.updateUser(user);
         return "redirect:/admin/user";
     }
