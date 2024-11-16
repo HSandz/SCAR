@@ -11,8 +11,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 @Controller
 public class ChatController {
 
-    @Autowired
-    private OpenAIService openAIService;
+    private final OpenAIService openAIService;
+
+    public ChatController(OpenAIService openAIService) {
+        this.openAIService = openAIService;
+    }
 
     @GetMapping("/chat")
     public String showChatPage() {

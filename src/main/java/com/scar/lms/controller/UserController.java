@@ -8,7 +8,6 @@ import com.scar.lms.service.BookService;
 import com.scar.lms.service.BorrowService;
 import com.scar.lms.service.UserService;
 
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
