@@ -101,4 +101,19 @@ public class UserServiceImpl implements UserService {
         Set<Book> favouriteBooks = user.getFavouriteBooks();
         favouriteBooks.add(bookRepository.findById(bookId).get());
     }
+
+    @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
+    @Override
+    public Set<Book> findFavouriteBooks(int userId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
+        return user.getFavouriteBooks();
+    }
+
+    @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
+    @Override
+    public void removeFavouriteFor(User user, int bookId) {
+        Book book = bookRepository.findById(bookId).orElseThrow(() -> new RuntimeException("Book not found"));
+        user.getFavouriteBooks().remove(book);
+        userRepository.save(user);
+    }
 }
