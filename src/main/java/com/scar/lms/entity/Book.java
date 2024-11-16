@@ -1,6 +1,7 @@
 package com.scar.lms.entity;
 
 import jakarta.persistence.*;
+
 import lombok.*;
 
 import java.util.HashSet;

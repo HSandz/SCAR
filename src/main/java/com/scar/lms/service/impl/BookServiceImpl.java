@@ -1,10 +1,12 @@
 package com.scar.lms.service.impl;
 
 import com.scar.lms.entity.Book;
-import com.scar.lms.exception.NotFoundException;
+import com.scar.lms.exception.DuplicateResourceException;
+import com.scar.lms.exception.ResourceNotFoundException;
 import com.scar.lms.repository.BookRepository;
 import com.scar.lms.repository.specification.BookSpecification;
 import com.scar.lms.service.BookService;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -105,11 +107,7 @@ public class BookServiceImpl implements BookService {
     public Book findBookById(int id) {
         return bookRepository
                 .findById(id)
-                .orElseThrow(
-                        () -> new NotFoundException(
-                                String.format("Book with id %d not found", id)
-                        )
-                );
+                .orElseThrow(() -> new ResourceNotFoundException("Book with id not found: " + id));
     }
 
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
@@ -117,15 +115,16 @@ public class BookServiceImpl implements BookService {
     public Book findBookByIsbn(String isbn) {
         return bookRepository
                 .findByIsbn(isbn)
-                .orElseThrow(
-                        () -> new NotFoundException(
-                                String.format("Book with isbn %s not found", isbn)
-                        )
-                );
+                .orElseThrow(() -> new ResourceNotFoundException("Book with isbn not found: " + isbn));
     }
 
     @Override
     public void addBook(Book book) {
+        if (bookRepository.findByIsbn(book.getIsbn()).isPresent()) {
+            throw new DuplicateResourceException("Book with ISBN " + book.getIsbn() + " already exists");
+        } else if (bookRepository.findById(book.getId()).isPresent()) {
+            throw new DuplicateResourceException("Book with id " + book.getId() + " already exists");
+        }
         bookRepository.save(book);
     }
 
@@ -136,14 +135,9 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public void deleteBook(int id) {
-        var book = bookRepository
+        Book book = bookRepository
                 .findById(id)
-                .orElseThrow(
-                        () -> new NotFoundException(
-                                String.format("Book with id %d not found", id)
-                        )
-                );
+                .orElseThrow(() -> new ResourceNotFoundException("Book with id not found: " + id));
         bookRepository.delete(book);
     }
-
 }

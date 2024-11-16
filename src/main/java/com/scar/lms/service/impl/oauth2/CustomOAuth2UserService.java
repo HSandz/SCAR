@@ -1,5 +1,6 @@
 package com.scar.lms.service.impl.oauth2;
 
+import com.scar.lms.exception.OperationNotAllowedException;
 import com.scar.lms.service.GitHubOAuth2Service;
 import com.scar.lms.service.GoogleOAuth2Service;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -7,8 +8,6 @@ import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
-import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
@@ -33,12 +32,17 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
         List<SimpleGrantedAuthority> authorities = Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER"));
 
+        String defaultSubAttribute = "sub";
+
         if ("google".equalsIgnoreCase(registrationId)) {
             googleOAuth2Service.registerNewUser(oAuth2User);
         } else if ("github".equalsIgnoreCase(registrationId)) {
             githubOAuth2Service.registerNewUser(oAuth2User);
+            defaultSubAttribute = "id";
+        } else {
+            throw new OperationNotAllowedException("Unable to log in");
         }
 
-        return new DefaultOAuth2User(authorities, oAuth2User.getAttributes(), "sub");
+        return new DefaultOAuth2User(authorities, oAuth2User.getAttributes(), defaultSubAttribute);
     }
 }

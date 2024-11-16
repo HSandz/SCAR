@@ -1,6 +1,7 @@
 package com.scar.lms.entity;
 
 import jakarta.persistence.*;
+
 import lombok.*;
 
 import java.util.HashSet;
@@ -24,5 +25,4 @@ public class Genre {
             cascade = { CascadeType.PERSIST, CascadeType.MERGE },
             mappedBy = "genres")
     private Set<Book> books = new HashSet<>();
-
 }

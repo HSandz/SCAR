@@ -1,6 +1,7 @@
 package com.scar.lms.repository;
 
 import com.scar.lms.entity.Book;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
@@ -29,5 +30,4 @@ public interface BookRepository extends JpaRepository<Book, Integer>, JpaSpecifi
 
     @Query("SELECT b FROM Book b JOIN Publisher p WHERE p.id = ?1")
     List<Book> findByPublisher(int publisherId);
-
 }

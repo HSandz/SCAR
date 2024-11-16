@@ -14,5 +14,4 @@ public interface AuthenticationService extends UserDetailsService {
     String encryptPassword(String password);
 
     Collection<? extends GrantedAuthority> getAuthorities(String username);
-
 }

@@ -1,7 +1,8 @@
 package com.scar.lms.service.impl;
 
 import com.scar.lms.entity.Author;
-import com.scar.lms.exception.NotFoundException;
+import com.scar.lms.exception.DuplicateResourceException;
+import com.scar.lms.exception.ResourceNotFoundException;
 import com.scar.lms.repository.AuthorRepository;
 import com.scar.lms.service.AuthorService;
 
@@ -43,15 +44,14 @@ public class AuthorServiceImpl implements AuthorService {
     public Author findAuthorByEmail(String email) {
         return authorRepository
                 .findByEmail(email)
-                .orElseThrow(
-                        () -> new NotFoundException(
-                                String.format("Author with email %s not found", email)
-                        )
-                );
+                .orElseThrow(() -> new ResourceNotFoundException("Author with email not found" + email));
     }
 
     @Override
     public void addAuthor(Author author) {
+        if (authorRepository.findById(author.getId()).isPresent()) {
+            throw new DuplicateResourceException("Author with id " + author.getId() + " already exists");
+        }
         authorRepository.save(author);
     }
 
@@ -64,11 +64,7 @@ public class AuthorServiceImpl implements AuthorService {
     public void deleteAuthor(int id) {
         var author = authorRepository
                 .findById(id)
-                .orElseThrow(
-                        () -> new NotFoundException(
-                                String.format("Author with id %d not found", id)
-                        )
-                );
+                .orElseThrow(() -> new ResourceNotFoundException("Author with id not found: " + id));
         authorRepository.delete(author);
     }
 
@@ -76,10 +72,6 @@ public class AuthorServiceImpl implements AuthorService {
     public Author findAuthorById(int id) {
         return authorRepository
                 .findById(id)
-                .orElseThrow(
-                        () -> new NotFoundException(
-                                String.format("Author with id %d not found", id)
-                        )
-                );
+                .orElseThrow(() -> new ResourceNotFoundException("Author with id not found" + id));
     }
 }
