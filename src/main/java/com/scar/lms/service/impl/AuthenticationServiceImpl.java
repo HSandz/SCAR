@@ -1,15 +1,19 @@
 package com.scar.lms.service.impl;
 
 import com.scar.lms.entity.User;
+import com.scar.lms.exception.InvalidDataException;
 import com.scar.lms.exception.ResourceNotFoundException;
 import com.scar.lms.repository.UserRepository;
 import com.scar.lms.service.AuthenticationService;
 
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -29,6 +33,18 @@ public class AuthenticationServiceImpl implements AuthenticationService, UserDet
                                      final BCryptPasswordEncoder bCryptPasswordEncoder) {
         this.userRepository = userRepository;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
+    }
+
+    @Override
+    public String extractUsernameFromAuthentication(Authentication authentication) {
+        if (authentication instanceof OAuth2AuthenticationToken token) {
+            Map<String, Object> attributes = token.getPrincipal().getAttributes();
+            return (String) attributes.get("login");
+        } else if (authentication instanceof UsernamePasswordAuthenticationToken) {
+            return authentication.getName();
+        } else {
+            throw new InvalidDataException("Unsupported authentication type");
+        }
     }
 
     @Override
