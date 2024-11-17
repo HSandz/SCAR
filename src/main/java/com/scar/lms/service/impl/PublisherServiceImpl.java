@@ -6,6 +6,7 @@ import com.scar.lms.exception.ResourceNotFoundException;
 import com.scar.lms.repository.PublisherRepository;
 import com.scar.lms.service.PublisherService;
 
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,6 +37,7 @@ public class PublisherServiceImpl implements PublisherService {
                         () -> new ResourceNotFoundException("Publisher with ID not found: " + id));
     }
 
+    @Async
     @Override
     public void createPublisher(Publisher publisher) {
         if (publisherRepository.existsById(publisher.getId())) {
@@ -46,11 +48,13 @@ public class PublisherServiceImpl implements PublisherService {
         publisherRepository.save(publisher);
     }
 
+    @Async
     @Override
     public void updatePublisher(Publisher publisher) {
         publisherRepository.save(publisher);
     }
 
+    @Async
     @Override
     public void deletePublisher(int id) {
         var publisher = publisherRepository

@@ -10,6 +10,7 @@ import com.scar.lms.service.BookService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -118,6 +119,7 @@ public class BookServiceImpl implements BookService {
                 .orElseThrow(() -> new ResourceNotFoundException("Book with isbn not found: " + isbn));
     }
 
+    @Async
     @Override
     public void addBook(Book book) {
         if (bookRepository.findByIsbn(book.getIsbn()).isPresent()) {
@@ -128,11 +130,13 @@ public class BookServiceImpl implements BookService {
         bookRepository.save(book);
     }
 
+    @Async
     @Override
     public void updateBook(Book book) {
         bookRepository.save(book);
     }
 
+    @Async
     @Override
     public void deleteBook(int id) {
         Book book = bookRepository
