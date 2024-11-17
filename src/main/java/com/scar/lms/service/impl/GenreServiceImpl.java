@@ -6,6 +6,7 @@ import com.scar.lms.exception.ResourceNotFoundException;
 import com.scar.lms.repository.GenreRepository;
 import com.scar.lms.service.GenreService;
 
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,6 +36,7 @@ public class GenreServiceImpl implements GenreService {
                 .orElseThrow(() -> new ResourceNotFoundException("Genre with ID not found: " + id));
     }
 
+    @Async
     @Override
     public void createGenre(Genre genre) {
         if (genreRepository.existsById(genre.getId())) {
@@ -45,11 +47,13 @@ public class GenreServiceImpl implements GenreService {
         genreRepository.save(genre);
     }
 
+    @Async
     @Override
     public void updateGenre(Genre genre) {
         genreRepository.save(genre);
     }
 
+    @Async
     @Override
     public void deleteGenre(int id) {
         var genre = genreRepository

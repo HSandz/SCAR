@@ -15,6 +15,7 @@ import com.scar.lms.service.GoogleBooksService;
 
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -138,6 +139,7 @@ public class GoogleBooksServiceImpl implements GoogleBooksService {
         }
     }
 
+    @Async
     @Override
     public void save(Book book) {
         if (bookRepository.findByIsbn(book.getIsbn()).isEmpty()) {

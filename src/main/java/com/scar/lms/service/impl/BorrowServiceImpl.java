@@ -5,6 +5,7 @@ import com.scar.lms.exception.OperationNotAllowedException;
 import com.scar.lms.repository.BorrowRepository;
 import com.scar.lms.service.BorrowService;
 
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,6 +28,7 @@ public class BorrowServiceImpl implements BorrowService {
         return borrowRepository.existsByUserIdAndBookId(userId, bookId);
     }
 
+    @Async
     @Override
     public void addBorrow(Borrow borrow) {
         if (borrowRepository.existsById(borrow.getId())) {
@@ -35,11 +37,13 @@ public class BorrowServiceImpl implements BorrowService {
         borrowRepository.save(borrow);
     }
 
+    @Async
     @Override
     public void updateBorrow(Borrow borrow) {
         borrowRepository.save(borrow);
     }
 
+    @Async
     @Override
     public void removeBorrow(Borrow borrow) {
         if (!borrowRepository.existsById(borrow.getId())) {

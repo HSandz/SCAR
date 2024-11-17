@@ -6,6 +6,7 @@ import com.scar.lms.exception.ResourceNotFoundException;
 import com.scar.lms.repository.AuthorRepository;
 import com.scar.lms.service.AuthorService;
 
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -47,6 +48,7 @@ public class AuthorServiceImpl implements AuthorService {
                 .orElseThrow(() -> new ResourceNotFoundException("Author with email not found" + email));
     }
 
+    @Async
     @Override
     public void addAuthor(Author author) {
         if (authorRepository.findById(author.getId()).isPresent()) {
@@ -55,11 +57,13 @@ public class AuthorServiceImpl implements AuthorService {
         authorRepository.save(author);
     }
 
+    @Async
     @Override
     public void updateAuthor(Author author) {
         authorRepository.save(author);
     }
 
+    @Async
     @Override
     public void deleteAuthor(int id) {
         var author = authorRepository
@@ -68,6 +72,7 @@ public class AuthorServiceImpl implements AuthorService {
         authorRepository.delete(author);
     }
 
+    @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     @Override
     public Author findAuthorById(int id) {
         return authorRepository

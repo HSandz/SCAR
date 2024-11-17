@@ -9,6 +9,7 @@ import com.scar.lms.repository.BookRepository;
 import com.scar.lms.repository.UserRepository;
 import com.scar.lms.service.UserService;
 
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -63,7 +64,7 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new ResourceNotFoundException("User with id not found: " + id));
     }
 
-    @Transactional
+    @Async
     @Override
     public void createUser(User user) {
         if (userRepository.findByUsername(user.getUsername()).isPresent()) {
@@ -76,11 +77,13 @@ public class UserServiceImpl implements UserService {
         System.out.println("User saved.");
     }
 
+    @Async
     @Override
     public void updateUser(User user) {
         userRepository.save(user);
     }
 
+    @Async
     @Override
     public void deleteUser(int id) {
         var user = userRepository
@@ -89,6 +92,7 @@ public class UserServiceImpl implements UserService {
         userRepository.delete(user);
     }
 
+    @Async
     @Override
     public void addFavouriteFor(User user, int bookId) {
         if (!userRepository.existsById(user.getId())) {
@@ -109,6 +113,7 @@ public class UserServiceImpl implements UserService {
         return user.getFavouriteBooks();
     }
 
+    @Async
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     @Override
     public void removeFavouriteFor(User user, int bookId) {
