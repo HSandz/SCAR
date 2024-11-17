@@ -1,6 +1,7 @@
 package com.scar.lms.config;
 
 import com.scar.lms.exception.handler.CustomAsyncExceptionHandler;
+
 import org.springframework.aop.interceptor.AsyncUncaughtExceptionHandler;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.AsyncConfigurer;
