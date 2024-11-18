@@ -3,14 +3,55 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: Arial, sans-serif;
+    scroll-behavior: smooth;
+    font-family: 'Jost', sans-serif;
+    list-style: none;
+    text-decoration: none;
 }
 
+header {
+    height: 55px;
+    background: linear-gradient(90deg, rgba(163, 171, 226, 1) 41%, rgba(255, 254, 254, 1) 100%);
+    top: 0;
+    right: 0;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 10%;
+}
+.headpage {
+    position: sticky;
+}
+
+.navmenu {
+    display: flex;
+}
+
+.navmenu a {
+    color: white;
+    font-size: 18px;
+    padding: 10px 20px;
+    transition: all .42s ease;
+}
+
+.navmenu a:hover {
+    color: #3f0f76;
+}
+
+i {
+    color: #3f0f76;
+    transform: scale(1.5); /* Phóng to 1.5 lần */
+    transform-origin: center; /* Giữ icon cân bằng */
+}
+
+i:hover {
+    color: white;
+}
 /* Body styling */
 body {
     background-color: #f5f5f5;
     color: #333;
-    padding: 20px;
 }
 
 h1 {
@@ -24,6 +65,160 @@ form {
     justify-content: center;
     margin-bottom: 30px;
 }
+
+:root {
+    /*   color variables */
+    --clr-primary: #6aeeb5;
+    --clr-primary-hover: #29e6a7;
+    --clr-primary-dark: #039d69;
+    --clr-gray100: #f0f7f8;
+    --clr-gray200: #cfd8dc;
+    --clr-gray300: #a7b7be;
+    --clr-gray400: #6b7e86;
+    --clr-gray500: #425a65;
+
+    /*   border radius */
+    --radius: 0.2rem;
+}
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: Montserrat, sans-serif;
+    background: var(--clr-gray100);
+}
+
+.nav__list {
+    background: white;
+    box-shadow: 0px 0px 10px var(--clr-gray200);
+    padding: 1rem 0;
+    width: 5rem;
+    height: 100vh;
+    position: fixed;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2rem;
+
+    .nav__item {
+        list-style: none;
+        position: relative;
+
+        svg {
+            fill: var(--clr-gray400);
+            width: 2.2rem;
+            transition: all 200ms ease-in;
+        }
+
+        svg:hover {
+            fill: var(--clr-gray500);
+        }
+
+        &:first-child {
+            margin-bottom: 2rem;
+        }
+
+        &::before {
+            content: attr(data-tooltip);
+            position: absolute;
+            left: 4rem;
+            top: -0.25rem;
+            background: var(--clr-gray500);
+            color: white;
+            padding: 0.8rem;
+            border-radius: var(--radius);
+            transition: all 200ms ease-in;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        &:hover::before {
+            opacity: 1;
+            left: 4.5rem;
+        }
+    }
+}
+
+ul {
+    list-style-type: none;
+}
+li {
+    float: left;
+    display: inline;
+    padding: 20px;
+}
+
+li a {
+    color: black;
+    padding: 8px;
+    transition: all .42s ease;
+}
+
+a:hover {
+    color: red;
+}
+
+.container {
+    display: grid;
+    grid-template-rows: 50% 50%;
+    gap: 10px; /* Optional: Adds space between rows */
+}
+
+.display-main {
+    background-color: #5b9bd5;
+    display: flex;
+    align-items: flex-start;
+    margin: 20px 400px 20px 130px;
+}
+.container-book {
+    position: fixed;
+    right: 0;
+    top: 0;
+    height: 100%;
+    display: flex;
+    justify-content: flex-end;
+    background-color: #f5f5f5;
+    padding: 10px;
+    box-shadow: -2px 0 5px rgba(0,0,0,0.1);
+}
+.book-display {
+    display: flex;
+    flex-direction: column; /* Căn ảnh trên và thông tin dưới */
+    align-items: flex-start; /* Căn sang bên trái */
+    width: 300px; /* Độ rộng khung sách */
+    margin: 10px;
+    border: 1px solid #ddd;
+    padding: 10px;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+}
+
+.book-image {
+    width: 100%; /* Để ảnh vừa khung */
+    height: auto;
+    border-radius: 4px;
+}
+
+.book-info {
+    margin-top: 10px;
+}
+
+.book-title {
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.book-author, .book-description {
+    font-size: 14px;
+    color: #555;
+}
+
 
 input[type="text"] {
     width: 300px;
