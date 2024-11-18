@@ -39,7 +39,7 @@ public class UserServiceImpl implements UserService {
     public User findUsersByUsername(String username) {
         return userRepository
                 .findByUsername(username)
-                .orElseThrow(() -> new ResourceNotFoundException("User with username not found: " + username));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found: " + username));
     }
 
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
@@ -95,16 +95,21 @@ public class UserServiceImpl implements UserService {
     @Async
     @Override
     public void addFavouriteFor(User user, int bookId) {
-        if (!userRepository.existsById(user.getId())) {
-            throw new OperationNotAllowedException("Unable to add favourite book for user " + user.getUsername());
-        } else if (userRepository.findByUsername(user.getUsername()).isEmpty()) {
-            throw new OperationNotAllowedException("Unable to add favourite book for user " + user.getUsername());
-        } else if (bookRepository.findById(bookId).isEmpty()) {
-            throw new OperationNotAllowedException("Unable to add favourite book for user " + user.getUsername());
+        User persistedUser = userRepository.findByUsername(user.getUsername())
+                .orElseThrow(() -> new OperationNotAllowedException("User not found: " + user.getUsername()));
+
+        Book book = bookRepository.findById(bookId)
+                .orElseThrow(() -> new OperationNotAllowedException("Book not found with ID: " + bookId));
+
+        if (persistedUser.getFavouriteBooks().contains(book)) {
+            throw new OperationNotAllowedException("Book is already in the user's favorites");
         }
-        Set<Book> favouriteBooks = user.getFavouriteBooks();
-        favouriteBooks.add(bookRepository.findById(bookId).get());
+
+        persistedUser.getFavouriteBooks().add(book);
+
+        userRepository.save(persistedUser);
     }
+
 
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     @Override
@@ -114,11 +119,20 @@ public class UserServiceImpl implements UserService {
     }
 
     @Async
-    @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     @Override
     public void removeFavouriteFor(User user, int bookId) {
-        Book book = bookRepository.findById(bookId).orElseThrow(() -> new RuntimeException("Book not found"));
-        user.getFavouriteBooks().remove(book);
-        userRepository.save(user);
+        User persistedUser = userRepository.findByUsername(user.getUsername())
+                .orElseThrow(() -> new OperationNotAllowedException("User not found: " + user.getUsername()));
+
+        Book book = bookRepository.findById(bookId)
+                .orElseThrow(() -> new OperationNotAllowedException("Book not found with ID: " + bookId));
+
+        if (!persistedUser.getFavouriteBooks().contains(book)) {
+            throw new OperationNotAllowedException("Book not found in user's favorites");
+        }
+
+        persistedUser.getFavouriteBooks().remove(book);
+
+        userRepository.save(persistedUser);
     }
 }
