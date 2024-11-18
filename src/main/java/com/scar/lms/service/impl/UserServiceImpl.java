@@ -39,7 +39,7 @@ public class UserServiceImpl implements UserService {
     public User findUsersByUsername(String username) {
         return userRepository
                 .findByUsername(username)
-                .orElseThrow(() -> new ResourceNotFoundException("User with username not found: " + username));
+                .orElseThrow(() -> new ResourceNotFoundException("fuck you: " + username));
     }
 
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
