@@ -38,6 +38,9 @@ public class AuthenticationServiceImpl implements AuthenticationService, UserDet
     @Override
     public String extractUsernameFromAuthentication(Authentication authentication) {
         if (authentication instanceof OAuth2AuthenticationToken token) {
+            if (token.getPrincipal() == null || token.getPrincipal().getAttributes() == null) {
+                throw new InvalidDataException("OAuth2 token principal or attributes are null");
+            }
             Map<String, Object> attributes = token.getPrincipal().getAttributes();
             return (String) attributes.get("login");
         } else if (authentication instanceof UsernamePasswordAuthenticationToken) {
