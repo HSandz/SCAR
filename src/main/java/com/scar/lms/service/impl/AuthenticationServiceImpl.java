@@ -155,16 +155,7 @@ public class AuthenticationServiceImpl implements AuthenticationService, UserDet
     @Override
     public String getCurrentUsername() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication != null && authentication.isAuthenticated()) {
-            Object principal = authentication.getPrincipal();
-            System.out.println("Principal class: " + principal.getClass().getName());
-            if (principal instanceof UserDetails) {
-                return ((UserDetails) principal).getUsername();
-            } else if (principal instanceof String) {
-                return principal.toString();
-            }
-        }
-        return null;
+        return extractUsernameFromAuthentication(authentication);
     }
 
 }
