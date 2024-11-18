@@ -3,6 +3,7 @@ package com.scar.lms.config;
 import com.scar.lms.exception.handler.CustomAsyncExceptionHandler;
 
 import org.springframework.aop.interceptor.AsyncUncaughtExceptionHandler;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.AsyncConfigurer;
 import org.springframework.scheduling.annotation.EnableAsync;
@@ -20,8 +21,13 @@ public class AsyncConfiguration implements AsyncConfigurer {
         this.customAsyncExceptionHandler = customAsyncExceptionHandler;
     }
 
+    @Bean
+    public Executor asyncExecutor() {
+        return getAsyncExecutor();
+    }
+
     @Override
-    public Executor getAsyncExecutor() {
+    public ThreadPoolTaskExecutor getAsyncExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
         executor.setCorePoolSize(5);
         executor.setMaxPoolSize(10);

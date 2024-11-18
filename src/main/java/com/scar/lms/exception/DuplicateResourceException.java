@@ -1,7 +1,10 @@
 package com.scar.lms.exception;
 
+import org.springframework.stereotype.Component;
+
 import java.io.Serial;
 
+@Component
 public class DuplicateResourceException extends LibraryException {
 
     @Serial
