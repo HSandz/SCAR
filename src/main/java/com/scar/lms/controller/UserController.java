@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Set;
 
 @Controller
-@RequestMapping("/user")
+@RequestMapping("/users")
 public class UserController {
 
     private final UserService userService;
@@ -60,7 +60,7 @@ public class UserController {
             model.addAttribute("message", "Error uploading profile image: " + e.getMessage());
         }
 
-        return "redirect:/users/{userId}/upload";
+        return "upload";
     }
 
     @GetMapping({"/", ""})
@@ -74,7 +74,7 @@ public class UserController {
             return "redirect:/login";
         }
 
-        String username = authenticationService.extractUsernameFromAuthentication(authentication);
+        String username = authenticationService.getCurrentUsername();
         User user = userService.findUsersByUsername(username);
 
         if (user == null) {
@@ -105,7 +105,7 @@ public class UserController {
         }
         userService.updateUser(user);
         model.addAttribute("success", "Profile updated successfully.");
-        return "redirect:/user/profile";
+        return "redirect:/users/profile";
     }
 
     @GetMapping("/updatePassword")
@@ -172,7 +172,7 @@ public class UserController {
         borrow.setReturnDate(LocalDate.now());
         borrowService.updateBorrow(borrow);
 
-        return "redirect:/user/profile";
+        return "redirect:/users/profile";
     }
 
     @GetMapping("/borrowed-books")
@@ -189,7 +189,7 @@ public class UserController {
         String username = authenticationService.extractUsernameFromAuthentication(authentication);
         User user = userService.findUsersByUsername(username);
         userService.addFavouriteFor(user, bookId);
-        return "redirect:/book-list" + bookId;
+        return "redirect:/book-list/" + bookId;
     }
 
     @GetMapping("/favourites")

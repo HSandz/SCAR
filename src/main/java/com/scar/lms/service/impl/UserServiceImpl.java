@@ -110,7 +110,6 @@ public class UserServiceImpl implements UserService {
         userRepository.save(persistedUser);
     }
 
-
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     @Override
     public Set<Book> findFavouriteBooks(int userId) {
@@ -119,6 +118,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Async
+    @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     @Override
     public void removeFavouriteFor(User user, int bookId) {
         User persistedUser = userRepository.findByUsername(user.getUsername())
