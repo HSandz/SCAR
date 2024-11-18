@@ -46,6 +46,13 @@ public class GitHubOAuth2ServiceImpl implements GitHubOAuth2Service {
         }
 
         User newUser = new User();
+        if (userRepository.findByUsername(username).isPresent()) {
+            String time = String.valueOf(System.nanoTime());
+            while (userRepository.findByUsername(username + time).isPresent()) {
+                time = String.valueOf(System.nanoTime());
+            }
+            username = username + time;
+        }
         newUser.setUsername(username);
         newUser.setDisplayName(displayName);
         // Default email to bypass non-null constraint

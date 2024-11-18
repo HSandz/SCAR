@@ -5,9 +5,6 @@ import com.scar.lms.entity.Borrow;
 import com.scar.lms.entity.User;
 import com.scar.lms.service.*;
 
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -103,7 +100,9 @@ public class UserController {
                                 Model model) {
         String username = authenticationService.extractUsernameFromAuthentication(authentication);
         User user = userService.findUsersByUsername(username);
-        user.setDisplayName(updatedUser.getDisplayName());
+        if (authenticationService.validateEditProfile(user, updatedUser)) {
+            model.addAttribute("failure", "Profile not updated.");
+        }
         userService.updateUser(user);
         model.addAttribute("success", "Profile updated successfully.");
         return "redirect:/user/profile";

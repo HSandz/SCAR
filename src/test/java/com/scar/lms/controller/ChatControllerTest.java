@@ -1,53 +1,125 @@
 package com.scar.lms.controller;
 
+import com.scar.lms.entity.User;
+import com.scar.lms.model.ChatMessage;
+import com.scar.lms.service.AuthenticationService;
 import com.scar.lms.service.OpenAIService;
-
+import com.scar.lms.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-
+import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.ui.Model;
-import org.springframework.validation.support.BindingAwareModelMap;
+import org.springframework.security.core.userdetails.UserDetails;
+
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.*;
 
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.when;
+class ChatControllerTest {
 
-public class ChatControllerTest {
+    @Mock
+    private AuthenticationService authenticationService;
 
     @Mock
     private OpenAIService openAIService;
+
+    @Mock
+    private UserService userService;
+
+    @Mock
+    private Model model;
+
+    @Mock
+    private UserDetails userDetails;
+
+    @Mock
+    private SimpMessageHeaderAccessor headerAccessor;
 
     @InjectMocks
     private ChatController chatController;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         MockitoAnnotations.openMocks(this);
     }
 
     @Test
-    public void testShowChatPage() {
-        String viewName = chatController.showChatPage();
-        assertEquals("chat", viewName);
+    void testShowChatPage_WithAuthenticatedUser() {
+        when(userDetails.getUsername()).thenReturn("testUser");
+        User user = new User();
+        user.setUsername("testUser");
+        user.setProfilePictureUrl("https://example.com/pic.jpg");
+        when(userService.findUsersByUsername("testUser")).thenReturn(user);
+
+        String view = chatController.showChatPage(userDetails, model);
+
+        verify(model).addAttribute("username", "testUser");
+        verify(model).addAttribute("profilePictureUrl", "https://example.com/pic.jpg");
+        assertEquals("chat", view);
     }
 
     @Test
-    public void testSendMessage() {
-        String userMessage = "Hello";
-        String botResponse = "Hi there!";
+    void testShowChatPage_AnonymousUser() {
+        String view = chatController.showChatPage(null, model);
 
-        when(openAIService.getResponse(anyString())).thenReturn(botResponse);
+        assertEquals("redirect:/login", view);
+        verify(model, never()).addAttribute(eq("username"), any());
+        verify(model, never()).addAttribute(eq("profilePictureUrl"), any());
+    }
 
-        Model model = new BindingAwareModelMap();
-        String viewName = chatController.sendMessage(userMessage, model);
+    @Test
+    void testSendMessage() {
+        String userMessage = "Hello!";
+        String view = chatController.sendMessage(userMessage, model);
 
-        assertEquals("chat", viewName);
-        assertEquals(userMessage, model.getAttribute("userMessage"));
-        assertEquals(botResponse, model.getAttribute("botResponse"));
+        verify(model).addAttribute("userMessage", userMessage);
+        assertEquals("chat", view);
+    }
+
+    @Test
+    void testAddUser() {
+        ChatMessage chatMessage = new ChatMessage();
+        when(headerAccessor.getSessionAttributes()).thenReturn(Map.of("username", "testUser", "profilePictureUrl", "https://example.com/pic.jpg"));
+
+        ChatMessage result = chatController.addUser(chatMessage, headerAccessor);
+
+        assertEquals("testUser", result.getSender());
+        assertEquals("JOIN", result.getType().toString());
+        assertEquals("testUser joined the chat", result.getContent());
+        assertEquals("https://example.com/pic.jpg", result.getProfilePictureUrl());
+    }
+
+    @Test
+    void testSendMessage_WebSocket() {
+        ChatMessage chatMessage = new ChatMessage();
+        when(headerAccessor.getSessionAttributes()).thenReturn(Map.of("username", "testUser", "profilePictureUrl", "https://example.com/pic.jpg"));
+
+        ChatMessage result = chatController.sendMessage(chatMessage, headerAccessor);
+
+        assertEquals("testUser", result.getSender());
+        assertEquals("https://example.com/pic.jpg", result.getProfilePictureUrl());
+    }
+
+    @Test
+    void testShowChatBotPage() {
+        String view = chatController.showChatBotPage();
+
+        assertEquals("chat-bot", view);
+    }
+
+    @Test
+    void testSendMessageBot() {
+        String userMessage = "Hello, bot!";
+        when(openAIService.getResponse(userMessage)).thenReturn("Hi, how can I help you?");
+
+        String view = chatController.sendMessageBot(userMessage, model);
+
+        verify(model).addAttribute("userMessage", userMessage);
+        verify(model).addAttribute("botResponse", "Hi, how can I help you?");
+        assertEquals("chat-bot", view);
     }
 }

@@ -170,4 +170,18 @@ public class AuthenticationServiceImpl implements AuthenticationService, UserDet
         return null;
     }
 
+    @Override
+    public boolean validateEditProfile(User user, User updatedUser) {
+        boolean validUsername = false;
+        boolean validDisplayName = false;
+        if (validateUsername(updatedUser.getUsername())) {
+            user.setUsername(updatedUser.getUsername());
+            validUsername = true;
+        }
+        if (validateDisplayName(updatedUser.getDisplayName())) {
+            user.setDisplayName(updatedUser.getDisplayName());
+            validDisplayName = true;
+        }
+        return validUsername || validDisplayName;
+    }
 }
