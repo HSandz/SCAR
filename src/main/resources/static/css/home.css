@@ -9,6 +9,7 @@
 }
 
 header {
+    position: sticky;
     height: 55px;
     background: linear-gradient(90deg, rgba(163, 171, 226, 1) 41%, rgba(255, 254, 254, 1) 100%);
     top: 0;
@@ -60,7 +61,7 @@ section {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 10px;
-    color: dark;
+    color: black;
 }
 
 .box1, .box2 {
@@ -106,7 +107,7 @@ section {
 .main-text {
     position: relative;
     z-index: 1;
-    color: dark;
+    color: black;
     font-family: Arial, sans-serif;
     padding: 20px;
 }
