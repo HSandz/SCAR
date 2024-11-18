@@ -10,6 +10,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
+import org.springframework.security.oauth2.core.OAuth2AccessToken;
 import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
@@ -47,12 +48,16 @@ public class CustomOAuth2UserServiceTest {
         ClientRegistration clientRegistration = mock(ClientRegistration.class);
         ClientRegistration.ProviderDetails providerDetails = mock(ClientRegistration.ProviderDetails.class);
         ClientRegistration.ProviderDetails.UserInfoEndpoint userInfoEndpoint = mock(ClientRegistration.ProviderDetails.UserInfoEndpoint.class);
+        OAuth2AccessToken accessToken = mock(OAuth2AccessToken.class);
 
         // Configure the mock ClientRegistration
         when(userRequest.getClientRegistration()).thenReturn(clientRegistration);
         when(clientRegistration.getRegistrationId()).thenReturn("google");
         when(clientRegistration.getProviderDetails()).thenReturn(providerDetails);
         when(providerDetails.getUserInfoEndpoint()).thenReturn(userInfoEndpoint);
+        when(userInfoEndpoint.getUri()).thenReturn("https://www.googleapis.com/oauth2/v3/userinfo");
+        when(userRequest.getAccessToken()).thenReturn(accessToken);
+        when(accessToken.getTokenValue()).thenReturn("dummy-token");
 
         // Mock the user returned by the DefaultOAuth2UserService
         OAuth2User oAuth2User = new DefaultOAuth2User(
@@ -69,7 +74,6 @@ public class CustomOAuth2UserServiceTest {
         assertEquals("12345", result.getName());
     }
 
-
     @Test
     void testLoadUser_GitHub() {
         // Mock UserRequest and ClientRegistration
@@ -77,31 +81,31 @@ public class CustomOAuth2UserServiceTest {
         ClientRegistration clientRegistration = mock(ClientRegistration.class);
         ClientRegistration.ProviderDetails providerDetails = mock(ClientRegistration.ProviderDetails.class);
         ClientRegistration.ProviderDetails.UserInfoEndpoint userInfoEndpoint = mock(ClientRegistration.ProviderDetails.UserInfoEndpoint.class);
+        OAuth2AccessToken accessToken = mock(OAuth2AccessToken.class);
 
         // Configure the mock ClientRegistration
         when(userRequest.getClientRegistration()).thenReturn(clientRegistration);
         when(clientRegistration.getRegistrationId()).thenReturn("github");
         when(clientRegistration.getProviderDetails()).thenReturn(providerDetails);
         when(providerDetails.getUserInfoEndpoint()).thenReturn(userInfoEndpoint);
-        when(userInfoEndpoint.getUri()).thenReturn("https://api.github.com/user"); // Mock a valid UserInfo URI
-        when(userInfoEndpoint.getUserNameAttributeName()).thenReturn("login"); // GitHub uses "login" as the username
+        when(userInfoEndpoint.getUri()).thenReturn("https://api.github.com/user");
+        when(userRequest.getAccessToken()).thenReturn(accessToken);
+        when(accessToken.getTokenValue()).thenReturn("dummy-token");
 
         // Mock the user returned by the DefaultOAuth2UserService
-        OAuth2User oAuth2User = new DefaultOAuth2User(
+        OAuth2User mockedOAuth2User = new DefaultOAuth2User(
                 Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER")),
                 Map.of("login", "testuser", "id", "67890"),
-                "login"  // Use the "login" attribute as the username
+                "login"
         );
-        when(defaultOAuth2UserService.loadUser(userRequest)).thenReturn(oAuth2User);
+        when(defaultOAuth2UserService.loadUser(userRequest)).thenReturn(mockedOAuth2User);
 
         // Call the method and verify behavior
         OAuth2User result = customOAuth2UserService.loadUser(userRequest);
 
-        verify(githubOAuth2Service).registerNewUser(oAuth2User);
-        assertEquals("testuser", result.getName());  // The name should be from the "login" attribute
+        verify(githubOAuth2Service).registerNewUser(mockedOAuth2User);
+        assertEquals("testuser", result.getName());
     }
-
-
 
 
     @Test
@@ -113,4 +117,5 @@ public class CustomOAuth2UserServiceTest {
 
         assertThrows(OperationNotAllowedException.class, () -> customOAuth2UserService.loadUser(userRequest));
     }
+
 }
