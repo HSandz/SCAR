@@ -1,6 +1,7 @@
 package com.scar.lms.service;
 
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
 import java.util.Collection;
@@ -14,4 +15,6 @@ public interface AuthenticationService extends UserDetailsService {
     String encryptPassword(String password);
 
     Collection<? extends GrantedAuthority> getAuthorities(String username);
+
+    String getCurrentUsername();
 }

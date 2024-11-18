@@ -5,8 +5,10 @@ import com.scar.lms.exception.ResourceNotFoundException;
 import com.scar.lms.repository.UserRepository;
 import com.scar.lms.service.AuthenticationService;
 
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -134,4 +136,20 @@ public class AuthenticationServiceImpl implements AuthenticationService, UserDet
         System.out.println("Assigned authority: ROLE_" + user.getRole().name());
         return authorities;
     }
+
+    @Override
+    public String getCurrentUsername() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.isAuthenticated()) {
+            Object principal = authentication.getPrincipal();
+            System.out.println("Principal class: " + principal.getClass().getName());
+            if (principal instanceof UserDetails) {
+                return ((UserDetails) principal).getUsername();
+            } else if (principal instanceof String) {
+                return principal.toString();
+            }
+        }
+        return null;
+    }
+
 }
