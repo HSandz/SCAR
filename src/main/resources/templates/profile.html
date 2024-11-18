@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>User Profile</title>
+</head>
+<body>
+    <h1>User Profile</h1>
+    <div>
+        <p><strong>Username:</strong> <span th:text="${user.username}">Username</span></p>
+        <p><strong>Display Name:</strong><span th:text="${user.displayName}">Display name</span></p>
+        <p><strong>Email:</strong><span th:text="${user.email}">Email</span></p>
+        <p><strong>Points:</strong><span th:text="${user.points}">Points</span></p>
+    </div>
+    <a href="/users/profile/edit">Edit Profile</a>
+    <a href="/users/updatePassword">Update Password</a>
+    <a href="/users/profile/delete">Delete Account</a>
+</body>
+</html>
