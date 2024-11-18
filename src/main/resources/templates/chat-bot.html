@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat with ChatGPT</title>
+    <link rel="stylesheet" href="/css/chat-bot.css">
+</head>
+<body>
+<div class="chat-container">
+    <h2>Chat with ChatGPT</h2>
+
+    <div class="chat-box">
+        <!-- Display the user's last message and the bot's response -->
+        <div class="message user-message">
+            <strong>You:</strong> <span th:text="${userMessage}"></span>
+        </div>
+        <div class="message bot-message">
+            <strong>Bot:</strong> <span th:text="${botResponse}"></span>
+        </div>
+    </div>
+
+    <form method="POST" action="/chat/bot" class="input-form">
+        <label>
+            <input type="text" name="userMessage" placeholder="Type a message..." required>
+        </label>
+        <button type="submit">Send</button>
+    </form>
+</div>
+</body>
+</html>

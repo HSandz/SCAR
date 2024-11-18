@@ -2,13 +2,13 @@ package com.scar.lms.config;
 
 import com.scar.lms.service.AuthenticationService;
 import com.scar.lms.service.impl.oauth2.CustomOAuth2UserService;
-
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -19,6 +19,7 @@ import org.springframework.security.web.authentication.logout.LogoutSuccessHandl
 import java.util.Set;
 
 @Configuration
+@EnableWebSecurity
 public class SecurityConfiguration {
 
     private final AuthenticationService authenticationService;
@@ -48,8 +49,9 @@ public class SecurityConfiguration {
                                 "/static/**",
                                 "/images/**",
                                 "/favicon.ico").permitAll()
-                        .requestMatchers("/books/**", "/user/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
+                        .requestMatchers("/books/**", "/user/**", "/chat").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
                         .requestMatchers("/admin/**").hasAuthority("ROLE_ADMIN")
+                        .requestMatchers("/ws/**", "/app/**").authenticated()
                         .anyRequest().authenticated()
                 )
                 .formLogin(formLogin -> formLogin

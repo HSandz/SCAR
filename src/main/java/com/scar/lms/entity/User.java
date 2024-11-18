@@ -40,6 +40,9 @@ public class User {
     @NonNull
     private Long points;
 
+    @Column(name = "PROFILE_PICTURE_URL")
+    private String profilePictureUrl;
+
     @OneToMany(fetch = FetchType.LAZY,
             cascade = { CascadeType.PERSIST, CascadeType.MERGE },
             mappedBy = "user")
