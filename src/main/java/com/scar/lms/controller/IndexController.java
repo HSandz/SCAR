@@ -17,7 +17,7 @@ import static com.scar.lms.entity.Role.USER;
 @RequestMapping
 public class IndexController {
 
-    private static final Long DEFAULT_USER_POINT = 0L;
+    static final Long DEFAULT_USER_POINT = 0L;
 
     private final UserService userService;
     private final AuthenticationService authenticationService;
