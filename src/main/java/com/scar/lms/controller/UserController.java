@@ -3,16 +3,15 @@ package com.scar.lms.controller;
 import com.scar.lms.entity.Book;
 import com.scar.lms.entity.Borrow;
 import com.scar.lms.entity.User;
-import com.scar.lms.service.AuthenticationService;
-import com.scar.lms.service.BookService;
-import com.scar.lms.service.BorrowService;
-import com.scar.lms.service.UserService;
+import com.scar.lms.service.*;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -23,18 +22,47 @@ import java.util.Set;
 public class UserController {
 
     private final UserService userService;
-    private final AuthenticationService authenticationService;
     private final BookService bookService;
     private final BorrowService borrowService;
+    private final AuthenticationService authenticationService;
+    private final CloudStorageService cloudStorageService;
 
     public UserController(final UserService userService,
-                          final AuthenticationService authenticationService,
                           final BookService bookService,
-                          final BorrowService borrowService) {
+                          final BorrowService borrowService,
+                          final AuthenticationService authenticationService,
+                          final CloudStorageService cloudStorageService) {
         this.userService = userService;
-        this.authenticationService = authenticationService;
         this.bookService = bookService;
         this.borrowService = borrowService;
+        this.authenticationService = authenticationService;
+        this.cloudStorageService = cloudStorageService;
+    }
+
+    @GetMapping("/{userId}/upload")
+    public String showUploadForm(@PathVariable int userId, Model model) {
+        model.addAttribute("user", userService.findUserById(userId));
+        return "upload";
+    }
+
+    @PostMapping("/{userId}/upload")
+    public String uploadProfileImage(
+            @PathVariable int userId,
+            @RequestParam("file") MultipartFile file,
+            Model model) {
+        try {
+            User user = userService.findUserById(userId);
+            user.setProfilePictureUrl(cloudStorageService.uploadImage(file));
+            userService.updateUser(user);
+
+            model.addAttribute("message", "Image uploaded successfully!");
+            model.addAttribute("user", user);
+
+        } catch (Exception e) {
+            model.addAttribute("message", "Error uploading profile image: " + e.getMessage());
+        }
+
+        return "redirect:/users/{userId}/upload";
     }
 
     @GetMapping({"/", ""})
