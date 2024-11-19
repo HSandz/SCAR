@@ -1,5 +1,6 @@
 package com.scar.lms.service.impl;
 
+import com.scar.lms.entity.Book;
 import com.scar.lms.entity.Borrow;
 import com.scar.lms.exception.OperationNotAllowedException;
 import com.scar.lms.repository.BorrowRepository;
@@ -35,6 +36,8 @@ public class BorrowServiceImpl implements BorrowService {
             throw new OperationNotAllowedException("Unable to borrow book");
         }
         borrowRepository.save(borrow);
+        Book book = borrow.getBook();
+        book.setBorrowCount(book.getBorrowCount() + 1);
     }
 
     @Async

@@ -30,7 +30,7 @@ public class AdminController {
     @GetMapping("/users")
     public String listAllUsers(Model model) {
         model.addAttribute("users", userService.findAllUsers());
-        return "userList";
+        return "list-users";
     }
 
     @GetMapping("/user/{userId}")
@@ -40,7 +40,7 @@ public class AdminController {
         return "user-view";
     }
 
-    @GetMapping("/user/edit/{userId}")
+    @GetMapping("/edit/user/{userId}")
     public String showUpdateUserForm(@PathVariable int userId, Model model) {
         User user = userService.findUserById(userId);
         model.addAttribute("user", user);

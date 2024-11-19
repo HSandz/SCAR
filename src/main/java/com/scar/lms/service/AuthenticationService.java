@@ -18,9 +18,7 @@ public interface AuthenticationService extends UserDetailsService {
 
     Collection<? extends GrantedAuthority> getAuthorities(String username);
 
-    String getCurrentUsername();
-
     String extractUsernameFromAuthentication(Authentication authentication);
 
-    boolean validateEditProfile(User user, User updatedUser);
+    boolean validateEditProfile(User currentUser, String newUsername, String newDisplayName, String newEmail);
 }

@@ -18,7 +18,7 @@ public class Genre {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @Column(name = "NAME", length = 50, nullable = false)
+    @Column(name = "NAME", length = 50, nullable = false, unique = true)
     private String name;
 
     @ManyToMany(fetch = FetchType.LAZY,

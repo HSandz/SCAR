@@ -42,7 +42,7 @@ public class CloudStorageServiceImpl implements CloudStorageService {
     }
 
     public String uploadImage(MultipartFile file) throws IOException {
-        String fileName = UUID.randomUUID().toString() + "-" + file.getOriginalFilename();
+        String fileName = UUID.randomUUID() + "-" + file.getOriginalFilename();
         Path tempFilePath = Files.createTempFile(fileName, null);
         Files.write(tempFilePath, file.getBytes());
 

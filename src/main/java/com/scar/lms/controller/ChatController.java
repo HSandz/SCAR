@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.Objects;
+
 @Controller
 @RequestMapping("/chat")
 public class ChatController {
@@ -51,7 +53,7 @@ public class ChatController {
     @MessageMapping("/chat.addUser")
     @SendTo("/topic/public")
     public ChatMessage addUser(@Payload ChatMessage chatMessage, SimpMessageHeaderAccessor headerAccessor) {
-        String username = (String) headerAccessor.getSessionAttributes().get("username");
+        String username = (String) Objects.requireNonNull(headerAccessor.getSessionAttributes()).get("username");
         String profilePictureUrl = (String) headerAccessor.getSessionAttributes().get("profilePictureUrl");
         chatMessage.setSender(username != null ? username : "Anonymous");
         chatMessage.setType(ChatMessage.MessageType.JOIN);
@@ -63,7 +65,7 @@ public class ChatController {
     @MessageMapping("/chat.sendMessage")
     @SendTo("/topic/public")
     public ChatMessage sendMessage(@Payload ChatMessage chatMessage, SimpMessageHeaderAccessor headerAccessor) {
-        String username = (String) headerAccessor.getSessionAttributes().get("username");
+        String username = (String) Objects.requireNonNull(headerAccessor.getSessionAttributes()).get("username");
         String profilePictureUrl = (String) headerAccessor.getSessionAttributes().get("profilePictureUrl");
         chatMessage.setSender(username != null ? username : "Anonymous");
         chatMessage.setProfilePictureUrl(profilePictureUrl);

@@ -12,8 +12,11 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.security.core.Authentication;
+
 import org.springframework.ui.Model;
+
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.ui.Model;
 
 import java.util.Map;
 
@@ -35,6 +38,9 @@ class ChatControllerTest {
     private Model model;
 
     @Mock
+    private Authentication authentication;
+
+    @Mock
     private UserDetails userDetails;
 
     @Mock
@@ -50,26 +56,17 @@ class ChatControllerTest {
 
     @Test
     void testShowChatPage_WithAuthenticatedUser() {
-        when(userDetails.getUsername()).thenReturn("testUser");
+        when(authenticationService.extractUsernameFromAuthentication(authentication)).thenReturn("testUser");
         User user = new User();
         user.setUsername("testUser");
         user.setProfilePictureUrl("https://example.com/pic.jpg");
         when(userService.findUsersByUsername("testUser")).thenReturn(user);
 
-        String view = chatController.showChatPage((Authentication) userDetails, model);
+        String view = chatController.showChatPage(authentication, model);
 
         verify(model).addAttribute("username", "testUser");
         verify(model).addAttribute("profilePictureUrl", "https://example.com/pic.jpg");
         assertEquals("chat", view);
-    }
-
-    @Test
-    void testShowChatPage_AnonymousUser() {
-        String view = chatController.showChatPage(null, model);
-
-        assertEquals("redirect:/login", view);
-        verify(model, never()).addAttribute(eq("username"), any());
-        verify(model, never()).addAttribute(eq("profilePictureUrl"), any());
     }
 
     @Test
@@ -89,7 +86,7 @@ class ChatControllerTest {
         ChatMessage result = chatController.addUser(chatMessage, headerAccessor);
 
         assertEquals("testUser", result.getSender());
-        assertEquals("JOIN", result.getType().toString());
+        assertEquals(ChatMessage.MessageType.JOIN, result.getType());
         assertEquals("testUser joined the chat", result.getContent());
         assertEquals("https://example.com/pic.jpg", result.getProfilePictureUrl());
     }

@@ -29,7 +29,7 @@ class OpenAIServiceImplTest {
     }
 
     @Test
-    void testGetResponse() throws Exception {
+    void testGetResponse() {
         String userMessage = "Hello, OpenAI!";
         String responseBody = "{\"choices\": [{\"message\": {\"content\": \"Hello, user!\"}}]}";
 
@@ -57,7 +57,7 @@ class OpenAIServiceImplTest {
     }
 
     @Test
-    void testGetResponseError() throws Exception {
+    void testGetResponseError() {
         String userMessage = "Hello, OpenAI!";
         String responseBody = "{\"error\": \"Invalid request\"}";
 
