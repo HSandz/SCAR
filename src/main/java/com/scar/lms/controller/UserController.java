@@ -208,6 +208,6 @@ public class UserController {
         String username = authenticationService.extractUsernameFromAuthentication(authentication);
         User user = userService.findUsersByUsername(username);
         userService.removeFavouriteFor(user, bookId);
-        return "redirect:/user/favourites";
+        return "redirect:/users/favourites";
     }
 }
