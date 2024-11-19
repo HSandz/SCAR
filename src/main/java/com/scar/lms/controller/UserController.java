@@ -132,7 +132,7 @@ public class UserController {
 
     @GetMapping("/profile/delete")
     public String showDeleteAccountForm() {
-        return "deleteAccount";
+        return "delete-account";
     }
 
     @PostMapping("/profile/delete")

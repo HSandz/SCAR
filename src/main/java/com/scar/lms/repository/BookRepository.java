@@ -30,4 +30,7 @@ public interface BookRepository extends JpaRepository<Book, Integer>, JpaSpecifi
 
     @Query("SELECT b FROM Book b JOIN Publisher p WHERE p.id = ?1")
     List<Book> findByPublisher(int publisherId);
+
+    @Query("SELECT b FROM Book b ORDER BY b.borrowCount DESC LIMIT 10")
+    List<Book> findTopBorrowedBooks();
 }

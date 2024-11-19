@@ -144,4 +144,8 @@ public class BookServiceImpl implements BookService {
                 .orElseThrow(() -> new ResourceNotFoundException("Book with id not found: " + id));
         bookRepository.delete(book);
     }
+
+    public List<Book> findTopBorrowedBooks() {
+        return bookRepository.findTopBorrowedBooks();
+    }
 }

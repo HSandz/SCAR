@@ -39,7 +39,7 @@ public class GoogleOAuth2ServiceImpl implements GoogleOAuth2Service {
     }
 
     private User getUser(String email, String username, String displayName, UserRepository userRepository, BCryptPasswordEncoder bCryptPasswordEncoder) {
-        Optional<User> existingUser = userRepository.findByEmail(email);
+        Optional<User> existingUser = userRepository.findByGoogleEmail(email);
         if (existingUser.isPresent()) {
             return existingUser.get();
         }

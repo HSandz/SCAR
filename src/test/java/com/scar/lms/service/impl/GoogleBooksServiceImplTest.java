@@ -39,7 +39,7 @@ class GoogleBooksServiceImplTest {
     }
 
     @Test
-    void testSearchBooks() throws Exception {
+    void testSearchBooks() {
         String query = "test";
         int startIndex = 0;
         int maxResults = 10;

@@ -25,7 +25,7 @@ class SecurityConfigurationTest {
     }
 
     @Test
-    @WithMockUser(username = "user", roles = {"USER"})
+    @WithMockUser(username = "user")
     void userEndpointShouldBeAccessibleForUser() throws Exception {
         mockMvc.perform(get("/books"))
                 .andExpect(status().isOk());

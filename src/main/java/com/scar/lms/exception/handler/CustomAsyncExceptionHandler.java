@@ -1,5 +1,6 @@
 package com.scar.lms.exception.handler;
 
+import lombok.NonNull;
 import org.springframework.aop.interceptor.AsyncUncaughtExceptionHandler;
 import org.springframework.stereotype.Component;
 
@@ -13,7 +14,7 @@ public class CustomAsyncExceptionHandler implements AsyncUncaughtExceptionHandle
     private static final Logger LOGGER = Logger.getLogger(CustomAsyncExceptionHandler.class.getName());
 
     @Override
-    public void handleUncaughtException(Throwable throwable, Method method, Object... obj) {
+    public void handleUncaughtException(@NonNull Throwable throwable, @NonNull Method method, Object @NonNull ... obj) {
         LOGGER.log(Level.SEVERE, "Exception message - " + throwable.getMessage());
         LOGGER.log(Level.SEVERE, "Method name - " + method.getName());
         for (Object param : obj) {

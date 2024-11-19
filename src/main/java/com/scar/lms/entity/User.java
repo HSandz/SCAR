@@ -18,7 +18,7 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @Column(name = "USERNAME")
+    @Column(name = "USERNAME", nullable = false, unique = true)
     @NonNull
     private String username;
 
@@ -29,16 +29,16 @@ public class User {
     @NonNull
     private String displayName;
 
-    @Column(name = "EMAIL")
+    @Column(name = "EMAIL", unique = true)
     private String email;
 
-    @Column(name = "ROLE")
+    @Column(name = "ROLE", nullable = false)
     @NonNull
     private Role role;
 
     @Column(name = "USER_POINTS")
     @NonNull
-    private Long points;
+    private Long points = 0L;
 
     @Column(name = "PROFILE_PICTURE_URL")
     private String profilePictureUrl;

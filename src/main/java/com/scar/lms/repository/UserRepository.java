@@ -17,4 +17,7 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     Optional<User> findByUsername(String username);
 
     Optional<User> findByEmail(String email);
+
+    @Query("SELECT u FROM User u WHERE u.email LIKE CONCAT('%', ?1, '@gmail.com')")
+    Optional<User> findByGoogleEmail(String gmail);
 }

@@ -1,18 +1,18 @@
 // Declare WebSocket variables
-var stompClient = null;
-var username = 'Anonymous';
-var profilePictureUrl = 'https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.flaticon.com%2Ffree-icon%2Fsmile_747402&psig=AOvVaw0RZ_wrHy1l1y7vKIEmuvyO&ust=1731946566539000&source=images&cd=vfe&opi=89978449&ved=0CBEQjRxqFwoTCKj7uPHh44kDFQAAAAAdAAAAABAE';
+let stompClient = null;
+let username = 'Anonymous';
+let profilePictureUrl = 'https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.flaticon.com%2Ffree-icon%2Fsmile_747402&psig=AOvVaw0RZ_wrHy1l1y7vKIEmuvyO&ust=1731946566539000&source=images&cd=vfe&opi=89978449&ved=0CBEQjRxqFwoTCKj7uPHh44kDFQAAAAAdAAAAABAE';
 
 // Connect to the WebSocket server
 function connect() {
-    var socket = new SockJS('/ws');
+    const socket = new SockJS('/ws');
     stompClient = Stomp.over(socket);
 
     stompClient.connect({}, function (frame) {
         console.log('Connected: ' + frame);
 
         // Retrieve username and profilePictureUrl from handshake attributes
-        var headers = frame.headers;
+        const headers = frame.headers;
         if (headers['username']) {
             username = headers['username'];
         }
@@ -32,10 +32,10 @@ function connect() {
 
 // Send a chat message
 function sendMessage() {
-    var messageContent = document.getElementById('userMessage').value;
+    const messageContent = document.getElementById('userMessage').value;
 
     if (messageContent && stompClient) {
-        var chatMessage = {
+        const chatMessage = {
             sender: username,
             content: messageContent,
             type: 'CHAT',
@@ -49,8 +49,8 @@ function sendMessage() {
 
 // Display a received message in the chat box
 function showMessage(message) {
-    var chatBox = document.getElementById('chat-box');
-    var messageElement = document.createElement('div');
+    const chatBox = document.getElementById('chat-box');
+    const messageElement = document.createElement('div');
 
     messageElement.classList.add('message');
     messageElement.classList.add(message.sender === username ? 'user-message' : 'bot-message');
