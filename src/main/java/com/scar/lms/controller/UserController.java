@@ -124,7 +124,7 @@ public class UserController {
         String username = authenticationService.extractUsernameFromAuthentication(authentication);
         if (!authenticationService.updatePassword(username, oldPassword, newPassword)) {
             model.addAttribute("error", "Password update failed. Please check your old password and try again.");
-            return "updatePassword";
+            return "update-password";
         }
         model.addAttribute("success", "Password updated successfully.");
         return "redirect:/login";
