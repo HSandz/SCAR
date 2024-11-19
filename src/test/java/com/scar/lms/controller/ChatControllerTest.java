@@ -12,6 +12,9 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.security.core.Authentication;
+
+import org.springframework.ui.Model;
+
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.ui.Model;
 

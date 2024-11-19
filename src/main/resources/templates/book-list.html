@@ -18,8 +18,18 @@
     <header class="headpage">
         <ul class="navmenu">
             <li><a href="/home">HOME</a></li>
-            <li><a href="#">ABOUT</a></li>
-            <li><a href="#">CONTACT</a></li>
+            <li><a href="#">GENRES<i class='bx bxs-down-arrow'></i></a>
+                <ul class="drop-down">
+                    <li><a href="#">Computers</a></li>
+                    <li><a href="#">Sciences</a></li>
+                    <li><a href="#">Comics</a></li>
+                    <li><a href="#">History</a></li>
+                    <li><a href="#">Literature</a></li>
+                    <li><a href="#">Technology</a></li>
+                    <li><a href="#">Romantic</a></li>
+                </ul>
+            </li>
+            <li><a href="#">FAVORITE</a></li>
         </ul>
         <ul class="navmenu">
             <li><a href="#"><i class='bx bx-search' >
@@ -63,59 +73,102 @@
             </li>
         </ul>
     </navbar>
-        <div class="top-books">
-            <div class="book1">
-                <img src="book1.jpg" alt="Sách 1">
-                <p>Sách 1</p>
+    <div class="container">
+        <section class="display-main">
+                <div class="top-books">
+                    <div class="book1">
+                        <img src="book1.jpg" alt="Sách 1">
+                        <p>Sách 1</p>
+                    </div>
+                    <div class="book2">
+                        <img src="book2.jpg" alt="Sách 2">
+                        <p>Sách 2</p>
+                    </div>
+                    <div class="book3">
+                        <img src="book3.jpg" alt="Sách 3">
+                        <p>Sách 3</p>
+                    </div>
+                </div>
+                <div class="categories">
+                    <button class="category" onclick="filterBooks('all')">All</button>
+                    <button class="category" onclick="filterBooks('comic')">Comic</button>
+                    <button class="category" onclick="filterBooks('history')">History</button>
+                    <button class="category" onclick="filterBooks('science')">Science</button>
+                    <button class="category" onclick="filterBooks('drama')">Drama</button>
+                    <button class="category" onclick="filterBooks('geography')">Geography</button>
+                </div>
+        </section>
+        <section class="display-main">
+            <h2>Computers</h2>
+            <div class="book-list">
+                <div class="book-item" th:each="book : ${books}" th:if="${book.mainGenre == 'Computers'}">
+                    <img th:src="${book.imageUrl}" th:alt="${book.title}">
+                    <p th:text="${book.title}">Book Title</p>
+                </div>
             </div>
-            <div class="book2">
-                <img src="book2.jpg" alt="Sách 2">
-                <p>Sách 2</p>
+        </section>
+
+        <section class="display-main">
+            <h2>Sciences</h2>
+            <div class="book-list">
+                <div class="book-item" th:each="book : ${books}" th:if="${book.mainGenre == 'Computers'}">
+                    <img th:src="${book.imageUrl}" th:alt="${book.title}">
+                    <p th:text="${book.title}">Book Title</p>
+                </div>
             </div>
-            <div class="book3">
-                <img src="book3.jpg" alt="Sách 3">
-                <p>Sách 3</p>
+        </section>
+
+        <section class="display-main">
+            <h2>Comics</h2>
+            <div class="book-list">
+                <div class="book-item" th:each="book : ${books}" th:if="${book.mainGenre == 'Computers'}">
+                    <img th:src="${book.imageUrl}" th:alt="${book.title}">
+                    <p th:text="${book.title}">Book Title</p>
+                </div>
             </div>
-            <div class="categories">
-                <h>categories</h>
-                <button class="category" onclick="filterBooks('all')">All</button>
-                <button class="category" onclick="filterBooks('comic')">Comic</button>
-                <button class="category" onclick="filterBooks('history')">History</button>
-                <button class="category" onclick="filterBooks('science')">Science</button>
-                <button class="category" onclick="filterBooks('drama')">Drama</button>
-                <button class="category" onclick="filterBooks('geography')">Geography</button>
+        </section>
+
+        <section class="display-main">
+            <h2>History</h2>
+            <div class="book-list">
+                <div class="book-item" th:each="book : ${books}" th:if="${book.mainGenre == 'Computers'}">
+                    <img th:src="${book.imageUrl}" th:alt="${book.title}">
+                    <p th:text="${book.title}">Book Title</p>
+                </div>
             </div>
-        </div>
-        <div class="book-list">
-            <div class="book-item" data-category="comic">
-                <img src="path/to/comic1.jpg" alt="Comic Book 1">
-                Comic Book 1
+        </section>
+
+        <section class="display-main">
+            <h2>Literature</h2>
+            <div class="book-list">
+                <div class="book-item" th:each="book : ${books}" th:if="${book.mainGenre == 'Computers'}">
+                    <img th:src="${book.imageUrl}" th:alt="${book.title}">
+                    <p th:text="${book.title}">Book Title</p>
+                </div>
             </div>
-            <div class="book-item" data-category="history">
-                <img src="path/to/history2.jpg" alt="History Book 2">
-                History Book 2
+        </section>
+
+        <section class="display-main">
+            <h2>Technology</h2>
+            <div class="book-list">
+                <div class="book-item" th:each="book : ${books}" th:if="${book.mainGenre == 'Computers'}">
+                    <img th:src="${book.imageUrl}" th:alt="${book.title}">
+                    <p th:text="${book.title}">Book Title</p>
+                </div>
             </div>
-            <div class="book-item" data-category="history">
-                <img src="path/to/history1.jpg" alt="History Book 1">
-                History Book 1
+        </section>
+
+        <section class="display-main">
+            <h2>Romantic</h2>
+            <div class="book-list">
+                <div class="book-item" th:each="book : ${books}" th:if="${book.mainGenre == 'Computers'}">
+                    <img th:src="${book.imageUrl}" th:alt="${book.title}">
+                    <p th:text="${book.title}">Book Title</p>
+                </div>
             </div>
-            <div class="book-item" data-category="science">
-                <img src="path/to/science1.jpg" alt="Science Book 1">
-                Science Book 1
-            </div>
-            <div class="book-item" data-category="drama">
-                <img src="path/to/drama1.jpg" alt="Drama Book 1">
-                Drama Book 1
-            </div>
-            <div class="book-item" data-category="geography">
-                <img src="path/to/geography1.jpg" alt="Geography Book 1">
-                Geography Book 1
-            </div>
-            <div class="book-item" data-category="comic">
-                <img src="path/to/comic2.jpg" alt="Comic Book 2">
-                Comic Book 2
-            </div>
-        </div>
+        </section>
+
+    </div>
     <div class="container-book">
         <div class="book-display">
             <img src="https://bom.so/TU7t6r" alt="Book Cover" class="book-image">

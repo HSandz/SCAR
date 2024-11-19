@@ -82,6 +82,7 @@ public class BookController {
         return "book-list";
     }
 
+
     @GetMapping("/{id}")
     public String findBookById(@PathVariable("id") int id, Model model) {
         Optional<Book> bookOptional = Optional.ofNullable(bookService.findBookById(id));
