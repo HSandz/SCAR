@@ -11,6 +11,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
+import org.springframework.security.core.Authentication;
 import org.springframework.ui.Model;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -55,7 +56,7 @@ class ChatControllerTest {
         user.setProfilePictureUrl("https://example.com/pic.jpg");
         when(userService.findUsersByUsername("testUser")).thenReturn(user);
 
-        String view = chatController.showChatPage(userDetails, model);
+        String view = chatController.showChatPage((Authentication) userDetails, model);
 
         verify(model).addAttribute("username", "testUser");
         verify(model).addAttribute("profilePictureUrl", "https://example.com/pic.jpg");

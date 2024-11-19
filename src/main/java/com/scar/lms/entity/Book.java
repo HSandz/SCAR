@@ -27,6 +27,9 @@ public class Book {
     @Column(name = "LANGUAGE", length = 50)
     private String language;
 
+    @Column(name = "GENRE", length = 50)
+    private String mainGenre;
+
     @Column(name = "RATING", length = 10, nullable = false)
     private Double rating;
 
