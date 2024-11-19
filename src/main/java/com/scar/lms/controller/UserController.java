@@ -74,7 +74,7 @@ public class UserController {
             return "redirect:/login";
         }
 
-        String username = authenticationService.getCurrentUsername();
+        String username = authenticationService.extractUsernameFromAuthentication(authentication);
         User user = userService.findUsersByUsername(username);
 
         if (user == null) {
@@ -91,19 +91,21 @@ public class UserController {
         String username = authenticationService.extractUsernameFromAuthentication(authentication);
         User user = userService.findUsersByUsername(username);
         model.addAttribute("user", user);
-        return "editProfile";
+        return "edit-profile";
     }
 
     @PostMapping("/profile/edit")
     public String updateProfile(Authentication authentication,
-                                @ModelAttribute("user") User updatedUser,
+                                @RequestParam("username") String updatedUsername,
+                                @RequestParam("displayName") String updatedDisplayName,
+                                @RequestParam("email") String updatedEmail,
                                 Model model) {
         String username = authenticationService.extractUsernameFromAuthentication(authentication);
-        User user = userService.findUsersByUsername(username);
-        if (authenticationService.validateEditProfile(user, updatedUser)) {
+        User currentUser = userService.findUsersByUsername(username);
+        if (!authenticationService.validateEditProfile(currentUser, updatedUsername, updatedDisplayName, updatedEmail)) {
             model.addAttribute("failure", "Profile not updated.");
         }
-        userService.updateUser(user);
+        userService.updateUser(currentUser);
         model.addAttribute("success", "Profile updated successfully.");
         return "redirect:/users/profile";
     }
@@ -111,7 +113,7 @@ public class UserController {
     @GetMapping("/updatePassword")
     public String showUpdatePasswordForm(Model model) {
         model.addAttribute("user", new User());
-        return "updatePassword";
+        return "update-password";
     }
 
     @PostMapping("/updatePassword")

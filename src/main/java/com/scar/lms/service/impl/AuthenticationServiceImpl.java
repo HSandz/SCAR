@@ -2,6 +2,8 @@ package com.scar.lms.service.impl;
 
 import com.scar.lms.entity.User;
 import com.scar.lms.exception.InvalidDataException;
+import com.scar.lms.exception.LibraryException;
+import com.scar.lms.exception.OperationNotAllowedException;
 import com.scar.lms.exception.ResourceNotFoundException;
 import com.scar.lms.repository.UserRepository;
 import com.scar.lms.service.AuthenticationService;
@@ -52,7 +54,7 @@ public class AuthenticationServiceImpl implements AuthenticationService, UserDet
     }
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws ResourceNotFoundException {
+    public UserDetails loadUserByUsername(String username) {
         User user = userRepository
                 .findByUsername(username)
                 .orElseThrow(() -> new ResourceNotFoundException("User with username not found: " + username));
@@ -75,13 +77,11 @@ public class AuthenticationServiceImpl implements AuthenticationService, UserDet
     private boolean validateUsername(String username) {
         String usernameRegex = "^[A-Za-z][A-Za-z0-9_@#]{" + (MIN_USERNAME_LENGTH - 1) + "," + (MAX_USERNAME_LENGTH - 1) + "}$";
         if (!username.matches(usernameRegex)) {
-            System.err.println("Invalid username format: " + username);
-            return false;
+            throw new InvalidDataException("Invalid username format: " + username);
         }
 
         if (userRepository.findByUsername(username).isPresent()) {
-            System.err.println("Username already exists: " + username);
-            return false;
+            throw new OperationNotAllowedException("Username already exists: " + username);
         }
 
         return true;
@@ -89,8 +89,10 @@ public class AuthenticationServiceImpl implements AuthenticationService, UserDet
 
     private boolean validatePassword(String password) {
         if (password.length() < MIN_PASSWORD_LENGTH || password.length() > MAX_PASSWORD_LENGTH) {
-            System.err.println("Password length is invalid.");
-            return false;
+            throw new InvalidDataException(
+                    String.format("Password length should be between %d and %d characters.",
+                            MIN_PASSWORD_LENGTH, MAX_PASSWORD_LENGTH)
+            );
         }
 
         return true;
@@ -99,13 +101,11 @@ public class AuthenticationServiceImpl implements AuthenticationService, UserDet
     private boolean validateEmail(String email) {
         String emailRegex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,6}$";
         if (!email.matches(emailRegex)) {
-            System.err.println("Invalid email format: " + email);
-            return false;
+            throw new InvalidDataException("Invalid email format: " + email);
         }
 
         if (userRepository.findByEmail(email).isPresent()) {
-            System.err.println("Email already exists: " + email);
-            return false;
+            throw new OperationNotAllowedException("Email already exists: " + email);
         }
 
         return true;
@@ -113,25 +113,27 @@ public class AuthenticationServiceImpl implements AuthenticationService, UserDet
 
     private boolean validateDisplayName(String displayName) {
         if (displayName.length() < (MIN_USERNAME_LENGTH - 2) || displayName.length() > MAX_USERNAME_LENGTH) {
-            System.err.println("Display name length is invalid.");
-            return false;
+            throw new InvalidDataException(
+                    String.format("Display name length should be between %d and %d characters.",
+                            MIN_USERNAME_LENGTH - 2, MAX_USERNAME_LENGTH)
+            );
         }
         return true;
     }
 
     @Override
     public boolean updatePassword(String username, String oldPassword, String newPassword) {
-        if (!validatePassword(newPassword)) {
-            System.err.println("Invalid new password.");
-            return false;
+        try {
+            validatePassword(newPassword);
+        } catch (InvalidDataException e) {
+            throw new InvalidDataException("Invalid new password format: " + newPassword);
         }
 
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new ResourceNotFoundException("User with username not found: " + username));
 
         if (!bCryptPasswordEncoder.matches(oldPassword, user.getPassword())) {
-            System.err.println("Old password does not match.");
-            return false;
+            throw new OperationNotAllowedException("Old password is incorrect.");
         }
 
         user.setPassword(bCryptPasswordEncoder.encode(newPassword));
@@ -156,23 +158,12 @@ public class AuthenticationServiceImpl implements AuthenticationService, UserDet
     }
 
     @Override
-    public String getCurrentUsername() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        return extractUsernameFromAuthentication(authentication);
-    }
-
-    @Override
-    public boolean validateEditProfile(User user, User updatedUser) {
-        boolean validUsername = false;
-        boolean validDisplayName = false;
-        if (validateUsername(updatedUser.getUsername())) {
-            user.setUsername(updatedUser.getUsername());
-            validUsername = true;
+    public boolean validateEditProfile(User currentUser, String newUsername, String newDisplayName, String newEmail) {
+        if (currentUser.getEmail().contains("@gmail.com")) {
+            throw new OperationNotAllowedException("Cannot edit email of a Google user.");
         }
-        if (validateDisplayName(updatedUser.getDisplayName())) {
-            user.setDisplayName(updatedUser.getDisplayName());
-            validDisplayName = true;
-        }
-        return validUsername || validDisplayName;
+        return validateUsername(newUsername) &&
+                validateEmail(newEmail) &&
+                validateDisplayName(newDisplayName);
     }
 }

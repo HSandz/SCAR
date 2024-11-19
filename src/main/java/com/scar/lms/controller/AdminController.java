@@ -40,7 +40,7 @@ public class AdminController {
         return "user-view";
     }
 
-    @GetMapping("/user/edit/{userId}")
+    @GetMapping("/edit/user/{userId}")
     public String showUpdateUserForm(@PathVariable int userId, Model model) {
         User user = userService.findUserById(userId);
         model.addAttribute("user", user);
