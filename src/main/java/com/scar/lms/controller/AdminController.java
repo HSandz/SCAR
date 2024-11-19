@@ -4,6 +4,7 @@ import com.scar.lms.entity.User;
 import com.scar.lms.service.AuthenticationService;
 import com.scar.lms.service.UserService;
 
+import jakarta.validation.Valid;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -71,7 +72,7 @@ public class AdminController {
     }
 
     @PostMapping("/user/create")
-    public String createUser(User user) {
+    public String createUser(@Valid User user) {
         userService.createUser(user);
         return "redirect:/admin/users";
     }
