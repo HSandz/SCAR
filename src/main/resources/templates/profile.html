@@ -3,17 +3,182 @@
 <head>
     <meta charset="UTF-8">
     <title>User Profile</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Library Management System</title>
+
+    <link rel="stylesheet" href="/css/book-list.css">
+    <link rel="stylesheet" href="/css/profile.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Jost:ital,wght@0,100..900;1,100..900&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap"
+          rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
+          integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg=="
+          crossorigin="anonymous" referrerpolicy="no-referrer"/>
+    <link rel="stylesheet" href="https://unpkg.com/boxicons@latest/css/boxicons.min.css">
 </head>
 <body>
-    <h1>User Profile</h1>
-    <div>
-        <p><strong>Username:</strong> <span th:text="${user.username}">Username</span></p>
-        <p><strong>Display Name:</strong><span th:text="${user.displayName}">Display name</span></p>
-        <p><strong>Email:</strong><span th:text="${user.email}">Email</span></p>
-        <p><strong>Points:</strong><span th:text="${user.points}">Points</span></p>
-    </div>
-    <a href="/users/profile/edit">Edit Profile</a>
-    <a href="/users/updatePassword">Update Password</a>
-    <a href="/users/profile/delete">Delete Account</a>
+<header class="headpage">
+    <ul class="navmenu">
+        <li><a href="/home">HOME</a></li>
+        <li><a href="#">GENRES<i class='bx bxs-down-arrow'></i></a>
+            <ul class="drop-down">
+                <li><a href="#">Computers</a></li>
+                <li><a href="#">Sciences</a></li>
+                <li><a href="#">Comics</a></li>
+                <li><a href="#">History</a></li>
+                <li><a href="#">Literature</a></li>
+                <li><a href="#">Technology</a></li>
+                <li><a href="#">Romantic</a></li>
+            </ul>
+        </li>
+        <li><a href="#">FAVORITE</a></li>
+    </ul>
+    <ul class="navmenu">
+        <li><a href="#"><i class='bx bx-search'></i></a></li>
+        <li><a href="#"><i class='bx bx-user-circle'></i></a></li>
+    </ul>
+</header>
+<navbar>
+    <ul class="nav__list">
+        <li class="nav__item" data-tooltip="Home">
+            <a href="#">
+                <svg viewBox="0 0 576 512" width="100" title="home">
+                    <path d="M280.37 148.26L96 300.11V464a16 16 0 0 0 16 16l112.06-.29a16 16 0 0 0 15.92-16V368a16 16 0 0 1 16-16h64a16 16 0 0 1 16 16v95.64a16 16 0 0 0 16 16.05L464 480a16 16 0 0 0 16-16V300L295.67 148.26a12.19 12.19 0 0 0-15.3 0zM571.6 251.47L488 182.56V44.05a12 12 0 0 0-12-12h-56a12 12 0 0 0-12 12v72.61L318.47 43a48 48 0 0 0-61 0L4.34 251.47a12 12 0 0 0-1.6 16.9l25.5 31A12 12 0 0 0 45.15 301l235.22-193.74a12.19 12.19 0 0 1 15.3 0L530.9 301a12 12 0 0 0 16.9-1.6l25.5-31a12 12 0 0 0-1.7-16.93z"/>
+                </svg>
+            </a>
+
+
+        </li>
+
+        <li class="nav__item" data-tooltip="Analytics">
+            <a href="#">
+                <svg viewBox="0 0 544 512" width="100" title="chart-pie">
+                    <path d="M527.79 288H290.5l158.03 158.03c6.04 6.04 15.98 6.53 22.19.68 38.7-36.46 65.32-85.61 73.13-140.86 1.34-9.46-6.51-17.85-16.06-17.85zm-15.83-64.8C503.72 103.74 408.26 8.28 288.8.04 279.68-.59 272 7.1 272 16.24V240h223.77c9.14 0 16.82-7.68 16.19-16.8zM224 288V50.71c0-9.55-8.39-17.4-17.84-16.06C86.99 51.49-4.1 155.6.14 280.37 4.5 408.51 114.83 513.59 243.03 511.98c50.4-.63 96.97-16.87 135.26-44.03 7.9-5.6 8.42-17.23 1.57-24.08L224 288z"/>
+                </svg>
+            </a>
+        </li>
+
+        <li class="nav__item" data-tooltip="Trends">
+            <a href="#">
+                <svg viewBox="0 0 512 512" width="100" title="chart-line">
+                    <path d="M496 384H64V80c0-8.84-7.16-16-16-16H16C7.16 64 0 71.16 0 80v336c0 17.67 14.33 32 32 32h464c8.84 0 16-7.16 16-16v-32c0-8.84-7.16-16-16-16zM464 96H345.94c-21.38 0-32.09 25.85-16.97 40.97l32.4 32.4L288 242.75l-73.37-73.37c-12.5-12.5-32.76-12.5-45.25 0l-68.69 68.69c-6.25 6.25-6.25 16.38 0 22.63l22.62 22.62c6.25 6.25 16.38 6.25 22.63 0L192 237.25l73.37 73.37c12.5 12.5 32.76 12.5 45.25 0l96-96 32.4 32.4c15.12 15.12 40.97 4.41 40.97-16.97V112c.01-8.84-7.15-16-15.99-16z"/>
+                </svg>
+            </a>
+        </li>
+
+        <li class="nav__item" data-tooltip="Messages">
+            <a href="#">
+                <svg viewBox="0 0 576 512" width="100" title="inbox">
+                    <path d="M567.938 243.908L462.25 85.374A48.003 48.003 0 0 0 422.311 64H153.689a48 48 0 0 0-39.938 21.374L8.062 243.908A47.994 47.994 0 0 0 0 270.533V400c0 26.51 21.49 48 48 48h480c26.51 0 48-21.49 48-48V270.533a47.994 47.994 0 0 0-8.062-26.625zM162.252 128h251.497l85.333 128H376l-32 64H232l-32-64H76.918l85.334-128z"/>
+                </svg>
+            </a>
+        </li>
+    </ul>
+</navbar>
+
+<div class="container">
+    <section>
+        <div class="container-intro">
+            <section>
+                <h1>WELCOME SCAR</h1>
+                <p>Explore, discover, and enjoy your reading journey with SCARlms!</p>
+            </section>
+            <section>
+                <h2 style="text-align: center;">This is my monthly calendar</h2>
+                <div class="calendar">
+                    <!-- Headers -->
+                    <div class="header">Sun</div>
+                    <div class="header">Mon</div>
+                    <div class="header">Tue</div>
+                    <div class="header">Wed</div>
+                    <div class="header">Thu</div>
+                    <div class="header">Fri</div>
+                    <div class="header">Sat</div>
+
+                    <!-- Days -->
+                    <div class="day">1</div>
+                    <div class="day">2</div>
+                    <div class="day">3</div>
+                    <div class="day">4</div>
+                    <div class="day">5</div>
+                    <div class="day">6</div>
+                    <div class="day">7</div>
+                    <div class="day">8</div>
+                    <div class="day">9</div>
+                    <div class="day">10</div>
+                    <div class="day">11</div>
+                    <div class="day">12</div>
+                    <div class="day">13</div>
+                    <div class="day">14</div>
+                    <div class="day">15</div>
+                    <div class="day">16</div>
+                    <div class="day">17</div>
+                    <div class="day">18</div>
+                    <div class="day">19</div>
+                    <div class="day">20</div>
+                    <div class="day">21</div>
+                    <div class="day">22</div>
+                    <div class="day">23</div>
+                    <div class="day">24</div>
+                    <div class="day">25</div>
+                    <div class="day">26</div>
+                    <div class="day">27</div>
+                    <div class="day">28</div>
+                    <div class="day">29</div>
+                    <div class="day">30</div>
+                    <div class="day">31</div>
+                </div>
+            </section>
+        </div>
+    </section>
+    <section>
+        <div class="container_profile">
+            <section>
+                <div class="container_image">
+                    <!-- Display current profile picture -->
+                    <div class="profile-picture">
+                        <img th:src="${user.profilePictureUrl}" alt="Profile Picture" th:if="${user.profilePictureUrl != null}">
+                    </div>
+                    <p th:if="${user.profilePictureUrl == null}">No profile picture uploaded yet.</p>
+
+                    <!-- Upload form -->
+                    <form th:action="@{'/users/' + ${user.id} + '/upload'}" method="POST" enctype="multipart/form-data">
+                        <input type="file" name="file" accept="image/*" required>
+                        <button type="submit">Upload</button>
+                    </form>
+                </div>
+            </section>
+
+            <section style="padding-top: 40px;">
+                <h>UserName: </h> <br></br>
+                <h>Age: </h> <br></br>
+                <h>Quantity my book: </h><br></br>
+
+            </section>
+
+            <section class="box">
+                <p>1</p>
+            </section>
+
+            <section class="box">
+                <p>1</p>
+            </section>
+        </div>
+    </section>
+</div>
+
+<script src="/js/profile_calendar.js"></script>
+<!--<h1>User Profile</h1>-->
+<!--<div>-->
+<!--    <p><strong>Username:</strong> <span th:text="${user.username}">Username</span></p>-->
+<!--    <p><strong>Display Name:</strong><span th:text="${user.displayName}">Display name</span></p>-->
+<!--    <p><strong>Email:</strong><span th:text="${user.email}">Email</span></p>-->
+<!--    <p><strong>Points:</strong><span th:text="${user.points}">Points</span></p>-->
+<!--</div>-->
+<!--<a href="/users/profile/edit">Edit Profile</a>-->
+<!--<a href="/users/updatePassword">Update Password</a>-->
+<!--<a href="/users/profile/delete">Delete Account</a>-->
 </body>
 </html>
