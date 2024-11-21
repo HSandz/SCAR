@@ -105,6 +105,7 @@ public class AdminController {
         }
 
         model.addAttribute("user", user);
+        model.addAttribute("userCount", userService.findAllUsers().size());
         return "admin-profile";
     }
 

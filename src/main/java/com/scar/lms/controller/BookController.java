@@ -57,6 +57,7 @@ public class BookController {
         model.addAttribute("books", bookPage);
         model.addAttribute("top", bookService.findTopBorrowedBooks());
         model.addAttribute("count", bookService.findAllBooks().size());
+        model.addAttribute("genres", genreService.findAllGenres());
 
         var totalPages = bookPage.getTotalPages();
         if (totalPages > 0) {
@@ -80,7 +81,6 @@ public class BookController {
         model.addAttribute("query", query);
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", totalPages);
-
         return "book-list";
     }
 
