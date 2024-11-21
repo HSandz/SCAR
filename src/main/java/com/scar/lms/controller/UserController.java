@@ -86,14 +86,6 @@ public class UserController {
         return "profile";
     }
 
-    @GetMapping("/profile/edit")
-    public String showEditProfileForm(Authentication authentication, Model model) {
-        String username = authenticationService.extractUsernameFromAuthentication(authentication);
-        User user = userService.findUsersByUsername(username);
-        model.addAttribute("user", user);
-        return "edit-profile";
-    }
-
     @PostMapping("/profile/edit")
     public String updateProfile(Authentication authentication,
                                 @RequestParam("username") String updatedUsername,
@@ -209,5 +201,14 @@ public class UserController {
         User user = userService.findUsersByUsername(username);
         userService.removeFavouriteFor(user, bookId);
         return "redirect:/users/favourites";
+    }
+
+    @GetMapping("/borrow-history")
+    public String showHistory(Authentication authentication, Model model) {
+        String username = authenticationService.extractUsernameFromAuthentication(authentication);
+        User user = userService.findUsersByUsername(username);
+        List<Borrow> history = borrowService.findAllBorrows(user.getId());
+        model.addAttribute("history", history);
+        return "history";
     }
 }

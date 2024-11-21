@@ -8,6 +8,7 @@ import jakarta.validation.Valid;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -72,7 +73,10 @@ public class AdminController {
     }
 
     @PostMapping("/user/create")
-    public String createUser(@Valid User user) {
+    public String createUser(@Valid User user, BindingResult result, Model model) {
+        if (result.hasErrors()) {
+            return "user-create";
+        }
         userService.createUser(user);
         return "redirect:/admin/users";
     }
@@ -109,6 +113,6 @@ public class AdminController {
         String username = authenticationService.extractUsernameFromAuthentication(authentication);
         User user = userService.findUsersByUsername(username);
         model.addAttribute("user", user);
-        return "edit-admin-profile";
+        return "admin-profile";
     }
 }

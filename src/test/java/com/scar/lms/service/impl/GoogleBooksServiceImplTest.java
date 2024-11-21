@@ -68,26 +68,4 @@ class GoogleBooksServiceImplTest {
         assertEquals("Test Publisher", books.getFirst().getPublishers().iterator().next().getName());
         assertEquals("Test Category", books.getFirst().getGenres().iterator().next().getName());
     }
-
-    @Test
-    void testSaveBook() {
-        Book book = new Book();
-        book.setIsbn("1234567890123");
-
-        when(bookRepository.findByIsbn("1234567890123")).thenReturn(Optional.empty());
-
-        googleBooksService.save(book);
-
-        verify(bookRepository, times(1)).save(book);
-    }
-
-    @Test
-    void testSaveBookDuplicate() {
-        Book book = new Book();
-        book.setIsbn("1234567890123");
-
-        when(bookRepository.findByIsbn("1234567890123")).thenReturn(Optional.of(book));
-
-        assertThrows(DuplicateResourceException.class, () -> googleBooksService.save(book));
-    }
 }

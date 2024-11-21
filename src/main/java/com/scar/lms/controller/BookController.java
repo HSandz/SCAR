@@ -55,6 +55,8 @@ public class BookController {
                 (title, authorName, genreName, publisherName, year, pageable);
 
         model.addAttribute("books", bookPage);
+        model.addAttribute("top", bookService.findTopBorrowedBooks());
+        model.addAttribute("count", bookService.findAllBooks().size());
 
         var totalPages = bookPage.getTotalPages();
         if (totalPages > 0) {
@@ -81,7 +83,6 @@ public class BookController {
 
         return "book-list";
     }
-
 
     @GetMapping("/{id}")
     public String findBookById(@PathVariable("id") int id, Model model) {
@@ -137,6 +138,16 @@ public class BookController {
     public String deleteBook(@PathVariable("id") int id) {
         bookService.deleteBook(id);
         return "redirect:/books";
+    }
+
+    @PostMapping("/add/db")
+    public String addBookToDatabase(@Valid @ModelAttribute Book book, BindingResult result, Model model) {
+        if (result.hasErrors()) {
+            addCommonAttributes(model);
+            return "book-list";
+        }
+        bookService.addBook(book);
+        return "redirect:/book-list";
     }
 
     private void addCommonAttributes(Model model) {

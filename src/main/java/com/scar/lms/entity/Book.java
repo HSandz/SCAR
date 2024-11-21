@@ -31,7 +31,7 @@ public class Book {
     private String mainGenre;
 
     @Column(name = "RATING", length = 10, nullable = false)
-    private Double rating = 0.0;
+    private Double rating;
 
     @Column(name = "PUBLICATION_YEAR", length = 10, nullable = false)
     private Integer publicationYear;
@@ -43,7 +43,7 @@ public class Book {
     private String imageUrl;
 
     @Column(name = "BORROW_COUNT", nullable = false)
-    private Integer borrowCount = 0;
+    private int borrowCount = 0;
 
     @ManyToMany(fetch = FetchType.LAZY,
             cascade = { CascadeType.PERSIST, CascadeType.MERGE })
