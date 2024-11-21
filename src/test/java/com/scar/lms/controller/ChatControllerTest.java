@@ -16,7 +16,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.ui.Model;
 
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.ui.Model;
 
 import java.util.Map;
 

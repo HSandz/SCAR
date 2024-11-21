@@ -41,4 +41,6 @@ public interface BookService {
     void updateBook(Book book);
 
     void deleteBook(int id);
+
+    List<Book> findTopBorrowedBooks();
 }

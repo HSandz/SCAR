@@ -25,7 +25,7 @@ public class Author {
     private String email;
 
     @Column(name = "AGE", length = 10)
-    private int age;
+    private Integer age;
 
     @Column(name = "COUNTRY", length = 50)
     private String country;
