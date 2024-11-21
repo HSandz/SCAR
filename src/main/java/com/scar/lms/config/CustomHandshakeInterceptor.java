@@ -3,14 +3,10 @@ package com.scar.lms.config;
 import com.scar.lms.service.AuthenticationService;
 import com.scar.lms.service.UserService;
 import lombok.NonNull;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
-import org.springframework.security.oauth2.core.OAuth2AuthenticatedPrincipal;
-import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.server.HandshakeInterceptor;
@@ -45,7 +41,7 @@ public class CustomHandshakeInterceptor implements HandshakeInterceptor {
                 if (authentication instanceof UsernamePasswordAuthenticationToken) {
                     String username = authentication.getName();
                     attributes.put("username", username);
-                    attributes.put("profilePictureUrl", userService.findUsersByUsername(username).getProfilePictureUrl());
+                    attributes.put("profilePictureUrl", userService.findUserByUsername(username).getProfilePictureUrl());
                 } else if (authentication instanceof OAuth2AuthenticationToken token) {
                     System.out.println("san dep trai");
                     Map<String, Object> attribute = token.getPrincipal().getAttributes();

@@ -75,7 +75,7 @@ public class UserController {
         }
 
         String username = authenticationService.extractUsernameFromAuthentication(authentication);
-        User user = userService.findUsersByUsername(username);
+        User user = userService.findUserByUsername(username);
 
         if (user == null) {
             model.addAttribute("error", "User not found.");
@@ -93,7 +93,7 @@ public class UserController {
                                 @RequestParam("email") String updatedEmail,
                                 Model model) {
         String username = authenticationService.extractUsernameFromAuthentication(authentication);
-        User currentUser = userService.findUsersByUsername(username);
+        User currentUser = userService.findUserByUsername(username);
         if (!authenticationService.validateEditProfile(currentUser, updatedUsername, updatedDisplayName, updatedEmail)) {
             model.addAttribute("failure", "Profile not updated.");
         }
@@ -130,7 +130,7 @@ public class UserController {
     @PostMapping("/profile/delete")
     public String deleteAccount(Authentication authentication, Model model) {
         String username = authenticationService.extractUsernameFromAuthentication(authentication);
-        User user = userService.findUsersByUsername(username);
+        User user = userService.findUserByUsername(username);
         userService.deleteUser(user.getId());
         model.addAttribute("success", "Account deleted successfully.");
         return "redirect:/logout";
@@ -139,7 +139,7 @@ public class UserController {
     @PostMapping("/borrow/{bookId}")
     public String borrowBook(@PathVariable int bookId, Authentication authentication) {
         String username = authenticationService.extractUsernameFromAuthentication(authentication);
-        User user = userService.findUsersByUsername(username);
+        User user = userService.findUserByUsername(username);
         Book book = bookService.findBookById(bookId);
 
         Borrow borrow = new Borrow();
@@ -158,7 +158,7 @@ public class UserController {
     @PostMapping("/return/{bookId}")
     public String returnBook(@PathVariable int bookId, Authentication authentication) {
         String username = authenticationService.extractUsernameFromAuthentication(authentication);
-        User user = userService.findUsersByUsername(username);
+        User user = userService.findUserByUsername(username);
 
         Borrow borrow = borrowService.findBorrow(user.getId(), bookId)
                 .orElseThrow(() -> new RuntimeException("This book is not in your borrowed list."));
@@ -172,8 +172,8 @@ public class UserController {
     @GetMapping("/borrowed-books")
     public String showBorrowedBooks(Authentication authentication, Model model) {
         String username = authenticationService.extractUsernameFromAuthentication(authentication);
-        User user = userService.findUsersByUsername(username);
-        List<Borrow> borrowedBooks = borrowService.findAllBorrows(user.getId());
+        User user = userService.findUserByUsername(username);
+        List<Borrow> borrowedBooks = borrowService.findBorrowsOfUser(user.getId());
         model.addAttribute("borrowedBooks", borrowedBooks);
         return "borrowed-books";
     }
@@ -181,7 +181,7 @@ public class UserController {
     @PostMapping("/add-favourite/{bookId}")
     public String addFavourite(@PathVariable int bookId, Authentication authentication) {
         String username = authenticationService.extractUsernameFromAuthentication(authentication);
-        User user = userService.findUsersByUsername(username);
+        User user = userService.findUserByUsername(username);
         userService.addFavouriteFor(user, bookId);
         return "redirect:/book-list/" + bookId;
     }
@@ -189,7 +189,7 @@ public class UserController {
     @GetMapping("/favourites")
     public String showFavouriteBooks(Authentication authentication, Model model) {
         String username = authenticationService.extractUsernameFromAuthentication(authentication);
-        User user = userService.findUsersByUsername(username);
+        User user = userService.findUserByUsername(username);
         Set<Book> favouriteBooks = userService.findFavouriteBooks(user.getId());
         model.addAttribute("favouriteBooks", favouriteBooks);
         return "favourites";
@@ -198,7 +198,7 @@ public class UserController {
     @PostMapping("/remove-favourite/{bookId}")
     public String removeFavourite(@PathVariable int bookId, Authentication authentication) {
         String username = authenticationService.extractUsernameFromAuthentication(authentication);
-        User user = userService.findUsersByUsername(username);
+        User user = userService.findUserByUsername(username);
         userService.removeFavouriteFor(user, bookId);
         return "redirect:/users/favourites";
     }
@@ -206,8 +206,8 @@ public class UserController {
     @GetMapping("/borrow-history")
     public String showHistory(Authentication authentication, Model model) {
         String username = authenticationService.extractUsernameFromAuthentication(authentication);
-        User user = userService.findUsersByUsername(username);
-        List<Borrow> history = borrowService.findAllBorrows(user.getId());
+        User user = userService.findUserByUsername(username);
+        List<Borrow> history = borrowService.findBorrowsOfUser(user.getId());
         model.addAttribute("history", history);
         return "history";
     }

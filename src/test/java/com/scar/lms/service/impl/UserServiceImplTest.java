@@ -48,18 +48,18 @@ public class UserServiceImplTest {
     }
 
     @Test
-    void testFindUsersByUsername() {
+    void testFindUserByUsername() {
         User user = new User();
         user.setUsername("testuser");
         when(userRepository.findByUsername("testuser")).thenReturn(Optional.of(user));
-        assertEquals(user, userService.findUsersByUsername("testuser"));
+        assertEquals(user, userService.findUserByUsername("testuser"));
         verify(userRepository, times(1)).findByUsername("testuser");
     }
 
     @Test
-    void testFindUsersByUsernameNotFound() {
+    void testFindUserByUsernameNotFound() {
         when(userRepository.findByUsername("testuser")).thenReturn(Optional.empty());
-        assertThrows(ResourceNotFoundException.class, () -> userService.findUsersByUsername("testuser"));
+        assertThrows(ResourceNotFoundException.class, () -> userService.findUserByUsername("testuser"));
     }
 
     @Test

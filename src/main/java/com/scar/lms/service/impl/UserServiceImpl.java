@@ -1,6 +1,7 @@
 package com.scar.lms.service.impl;
 
 import com.scar.lms.entity.Book;
+import com.scar.lms.entity.Role;
 import com.scar.lms.entity.User;
 import com.scar.lms.exception.DuplicateResourceException;
 import com.scar.lms.exception.OperationNotAllowedException;
@@ -36,7 +37,7 @@ public class UserServiceImpl implements UserService {
 
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     @Override
-    public User findUsersByUsername(String username) {
+    public User findUserByUsername(String username) {
         return userRepository
                 .findByUsername(username)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found: " + username));
@@ -134,5 +135,10 @@ public class UserServiceImpl implements UserService {
         persistedUser.getFavouriteBooks().remove(book);
 
         userRepository.save(persistedUser);
+    }
+
+    @Override
+    public List<User> findUsersByRole(Role role) {
+        return userRepository.findByRole(role);
     }
 }

@@ -1,5 +1,6 @@
 package com.scar.lms.repository;
 
+import com.scar.lms.entity.Role;
 import com.scar.lms.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -20,4 +21,6 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 
     @Query("SELECT u FROM User u WHERE u.email LIKE CONCAT('%', ?1, '@gmail.com')")
     Optional<User> findByGoogleEmail(String gmail);
+
+    List<User> findByRole(Role role);
 }

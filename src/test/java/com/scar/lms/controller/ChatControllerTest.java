@@ -59,7 +59,7 @@ class ChatControllerTest {
         User user = new User();
         user.setUsername("testUser");
         user.setProfilePictureUrl("https://example.com/pic.jpg");
-        when(userService.findUsersByUsername("testUser")).thenReturn(user);
+        when(userService.findUserByUsername("testUser")).thenReturn(user);
 
         String view = chatController.showChatPage(authentication, model);
 

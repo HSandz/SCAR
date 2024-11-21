@@ -2,8 +2,9 @@ package com.scar.lms.controller;
 
 import com.scar.lms.entity.User;
 import com.scar.lms.service.AuthenticationService;
+import com.scar.lms.service.BookService;
+import com.scar.lms.service.BorrowService;
 import com.scar.lms.service.UserService;
-
 import jakarta.validation.Valid;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
@@ -22,16 +23,16 @@ public class AdminController {
 
     private final UserService userService;
     private final AuthenticationService authenticationService;
+    private final BookService bookService;
+    private final BorrowService borrowService;
 
     public AdminController(final UserService userService,
-                           final AuthenticationService authenticationService) {
+                           final AuthenticationService authenticationService,
+                           final BookService bookService, BorrowService borrowService) {
         this.userService = userService;
         this.authenticationService = authenticationService;
-    }
-
-    @GetMapping({"/", ""})
-    public String showAdminPage() {
-        return "admin";
+        this.bookService = bookService;
+        this.borrowService = borrowService;
     }
 
     @GetMapping("/users")
@@ -90,29 +91,37 @@ public class AdminController {
         return "redirect:/admin/user";
     }
 
-    @GetMapping("/profile")
+    @GetMapping({"", "/"})
     public String showAdminProfile(Model model, Authentication authentication) {
         if (authentication == null) {
             return "redirect:/login";
         }
 
         String username = authenticationService.extractUsernameFromAuthentication(authentication);
-        User user = userService.findUsersByUsername(username);
+        User user = userService.findUserByUsername(username);
 
         if (user == null) {
             model.addAttribute("error", "User not found.");
             return "error/404";
         }
 
-        model.addAttribute("user", user);
+        model.addAttribute("admin", user);
+        model.addAttribute("adminCount", userService.findUsersByRole(ADMIN).size());
         model.addAttribute("userCount", userService.findAllUsers().size());
+        model.addAttribute("bookCount", bookService.findAllBooks().size());
+        model.addAttribute("borrowCount", borrowService.findAllBorrows().size());
+
+        for (int i = 1; i <= 12; i++) {
+            model.addAttribute("borrowCountMonth" + i, borrowService.findBorrowsByMonth(i).size());
+        }
+
         return "admin-profile";
     }
 
-    @GetMapping("/profile/edit")
+    @PostMapping("/profile/edit")
     public String showEditAdminProfileForm(Authentication authentication, Model model) {
         String username = authenticationService.extractUsernameFromAuthentication(authentication);
-        User user = userService.findUsersByUsername(username);
+        User user = userService.findUserByUsername(username);
         model.addAttribute("user", user);
         return "admin-profile";
     }
