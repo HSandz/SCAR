@@ -13,11 +13,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 
 @Service
 public class CloudStorageServiceImpl implements CloudStorageService {
