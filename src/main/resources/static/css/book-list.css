@@ -9,7 +9,7 @@
 }
 
 header {
-    height: 55px;
+    height: 80px;
     background: linear-gradient(90deg, rgba(163, 171, 226, 1) 41%, rgba(255, 254, 254, 1) 100%);
     top: 0;
     right: 0;
@@ -73,13 +73,13 @@ header {
 }
 
 i {
-    color: #3f0f76;
-    transform: scale(0.7); /* Phóng to 1.5 lần */
+    color: lightslategrey;
+    transform: scale(2.5);
     transform-origin: center; /* Giữ icon cân bằng */
 }
 
 i:hover {
-    color: white;
+    color: black;
 }
 
 /* Body styling */
@@ -132,7 +132,7 @@ body {
     background: white;
     box-shadow: 0px 0px 10px var(--clr-gray200);
     padding: 1rem 0;
-    width: 5rem;
+    width: 7rem;
     height: 100vh;
     position: fixed;
     display: flex;
@@ -144,18 +144,12 @@ body {
         list-style: none;
         position: relative;
 
-        svg {
-            fill: var(--clr-gray400);
-            width: 2.2rem;
-            transition: all 200ms ease-in;
-        }
-
-        svg:hover {
-            fill: var(--clr-gray500);
-        }
-
         &:first-child {
             margin-bottom: 2rem;
+        }
+
+        &:last-child {
+            margin-top: 4rem;
         }
 
         &::before {

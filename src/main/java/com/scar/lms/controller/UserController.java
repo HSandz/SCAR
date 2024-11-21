@@ -192,7 +192,7 @@ public class UserController {
         User user = userService.findUsersByUsername(username);
         Set<Book> favouriteBooks = userService.findFavouriteBooks(user.getId());
         model.addAttribute("favouriteBooks", favouriteBooks);
-        return "favourite-books";
+        return "favourites";
     }
 
     @PostMapping("/remove-favourite/{bookId}")
