@@ -8,7 +8,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "BOOKS")
@@ -26,9 +27,6 @@ public class Book {
 
     @Column(name = "LANGUAGE", length = 50)
     private String language;
-
-    @Column(name = "GENRE", length = 50)
-    private String mainGenre;
 
     @Column(name = "RATING", length = 10, nullable = false)
     private Double rating = 0.0;
@@ -51,6 +49,11 @@ public class Book {
             joinColumns = { @JoinColumn(name = "BOOK_ID") },
             inverseJoinColumns = { @JoinColumn(name = "AUTHOR_ID") })
     private Set<Author> authors = new HashSet<>();
+
+    @ManyToOne(fetch = FetchType.LAZY,
+            cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+    @JoinColumn(name = "GENRE_ID")
+    private Genre mainGenre;
 
     @ManyToMany(fetch = FetchType.LAZY,
             cascade = { CascadeType.PERSIST, CascadeType.MERGE })

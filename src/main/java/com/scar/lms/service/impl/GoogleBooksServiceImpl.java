@@ -131,9 +131,10 @@ public class GoogleBooksServiceImpl implements GoogleBooksService {
                 book.setGenres(genres);
 
                 // Main Genre
-                if (categoriesNode.isArray() && !categoriesNode.isEmpty()) {
-                    book.setMainGenre(categoriesNode.get(0).asText());
-                }
+                String mainCategory = item.path("volumeInfo").path("mainCategory").asText();
+                Genre genre = new Genre();
+                genre.setName(mainCategory);
+                book.setMainGenre(genre);
 
                 books.add(book);
             }

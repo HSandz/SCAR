@@ -8,7 +8,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "GENRES")
@@ -25,4 +26,9 @@ public class Genre {
             cascade = { CascadeType.PERSIST, CascadeType.MERGE },
             mappedBy = "genres")
     private Set<Book> books = new HashSet<>();
+
+    @OneToMany(fetch = FetchType.LAZY,
+            cascade = { CascadeType.PERSIST, CascadeType.MERGE },
+            mappedBy = "mainGenre")
+    private Set<Book> booksMain;
 }

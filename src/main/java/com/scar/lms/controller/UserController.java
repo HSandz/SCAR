@@ -37,17 +37,23 @@ public class UserController {
         this.cloudStorageService = cloudStorageService;
     }
 
-    @GetMapping("/{userId}/upload")
-    public String showUploadForm(@PathVariable int userId, Model model) {
+    @GetMapping("/upload")
+    public String showUploadForm(
+            Authentication authentication,
+            Model model) {
+        int userId = userService.findUsersByUsername(
+                authenticationService.extractUsernameFromAuthentication(authentication)).getId();
         model.addAttribute("user", userService.findUserById(userId));
         return "upload";
     }
 
-    @PostMapping("/{userId}/upload")
+    @PostMapping("/upload")
     public String uploadProfileImage(
-            @PathVariable int userId,
+            Authentication authentication,
             @RequestParam("file") MultipartFile file,
             Model model) {
+        int userId = userService.findUsersByUsername(
+                authenticationService.extractUsernameFromAuthentication(authentication)).getId();
         try {
             User user = userService.findUserById(userId);
             user.setProfilePictureUrl(cloudStorageService.uploadImage(file));
