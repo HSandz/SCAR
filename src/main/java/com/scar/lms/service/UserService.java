@@ -1,6 +1,7 @@
 package com.scar.lms.service;
 
 import com.scar.lms.entity.Book;
+import com.scar.lms.entity.Role;
 import com.scar.lms.entity.User;
 
 import java.util.List;
@@ -14,7 +15,7 @@ public interface UserService {
 
     User findUserById(int id);
 
-    User findUsersByUsername(String username);
+    User findUserByUsername(String username);
 
     User findUserByEmail(String email);
 
@@ -29,4 +30,6 @@ public interface UserService {
     Set<Book> findFavouriteBooks(int id);
 
     void removeFavouriteFor(User user, int bookId);
+
+    List<User> findUsersByRole(Role role);
 }

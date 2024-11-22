@@ -17,5 +17,9 @@ public interface BorrowService {
 
     Optional<Borrow> findBorrow(int bookId, int userId);
 
-    List<Borrow> findAllBorrows(int userId);
+    List<Borrow> findBorrowsOfUser(int userId);
+
+    List<Borrow> findAllBorrows();
+
+    List<Borrow> findBorrowsByMonth(int month);
 }

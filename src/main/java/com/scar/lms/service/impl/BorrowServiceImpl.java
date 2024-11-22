@@ -38,6 +38,7 @@ public class BorrowServiceImpl implements BorrowService {
         borrowRepository.save(borrow);
         Book book = borrow.getBook();
         book.setBorrowCount(book.getBorrowCount() + 1);
+        borrow.getUser().setPoints(borrow.getUser().getPoints() + 1);
     }
 
     @Async
@@ -63,7 +64,17 @@ public class BorrowServiceImpl implements BorrowService {
 
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     @Override
-    public List<Borrow> findAllBorrows(int userId) {
+    public List<Borrow> findBorrowsOfUser(int userId) {
         return borrowRepository.findAllByUserId(userId);
+    }
+
+    @Override
+    public List<Borrow> findAllBorrows() {
+        return borrowRepository.findAll();
+    }
+
+    @Override
+    public List<Borrow> findBorrowsByMonth(int month) {
+        return borrowRepository.findAllByBorrowDateMonth(month);
     }
 }
