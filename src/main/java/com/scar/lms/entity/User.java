@@ -37,8 +37,7 @@ public class User {
     private Role role;
 
     @Column(name = "USER_POINTS")
-    @NonNull
-    private Long points = 0L;
+    private long points = 0;
 
     @Column(name = "PROFILE_PICTURE_URL")
     private String profilePictureUrl;

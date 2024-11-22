@@ -1,5 +1,6 @@
 package com.scar.lms.service.impl;
 
+import ch.qos.logback.classic.Logger;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -13,6 +14,7 @@ import com.scar.lms.exception.DuplicateResourceException;
 import com.scar.lms.repository.BookRepository;
 import com.scar.lms.service.GoogleBooksService;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
@@ -21,6 +23,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.*;
 
+@Slf4j
 @Service
 public class GoogleBooksServiceImpl implements GoogleBooksService {
 
@@ -140,18 +143,8 @@ public class GoogleBooksServiceImpl implements GoogleBooksService {
             }
             return books;
         } catch (JsonProcessingException e) {
-            e.printStackTrace();
+            log.error("Error parsing JSON response from Google Books API", e);
             return Collections.emptyList();
-        }
-    }
-
-    @Async
-    @Override
-    public void save(Book book) {
-        if (bookRepository.findByIsbn(book.getIsbn()).isEmpty()) {
-            bookRepository.save(book);
-        } else {
-            throw new DuplicateResourceException("Book with ISBN " + book.getIsbn() + " already exists");
         }
     }
 }

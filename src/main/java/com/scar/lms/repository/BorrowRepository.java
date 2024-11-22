@@ -1,13 +1,13 @@
 package com.scar.lms.repository;
 
-import com.scar.lms.entity.Book;
 import com.scar.lms.entity.Borrow;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 @Repository
 public interface BorrowRepository extends JpaRepository<Borrow, Integer> {
@@ -17,4 +17,7 @@ public interface BorrowRepository extends JpaRepository<Borrow, Integer> {
     Optional<Borrow> findByUserIdAndBookId(int userId, int bookId);
 
     List<Borrow> findAllByUserId(int userId);
+
+    @Query("SELECT b FROM Borrow b WHERE FUNCTION('MONTH', b.borrowDate) = :month")
+    List<Borrow> findAllByBorrowDateMonth(@Param("month") int month);
 }

@@ -13,7 +13,7 @@ import java.time.LocalDate;
 @Table(name = "BORROWS")
 public class Borrow {
 
-    public static final int MAXIMUM_BORROW_DAY = 150;
+    public static final int MAXIMUM_BORROW_DAYS = 150;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

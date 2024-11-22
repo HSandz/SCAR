@@ -145,6 +145,7 @@ public class BookServiceImpl implements BookService {
         bookRepository.delete(book);
     }
 
+    @Override
     public List<Book> findTopBorrowedBooks() {
         return bookRepository.findTopBorrowedBooks();
     }

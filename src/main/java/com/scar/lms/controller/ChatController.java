@@ -38,7 +38,7 @@ public class ChatController {
     public String showChatPage(Authentication authentication, Model model) {
         String username = authenticationService.extractUsernameFromAuthentication(authentication);
         model.addAttribute("username", username);
-        model.addAttribute("profilePictureUrl", userService.findUsersByUsername(username).getProfilePictureUrl());
+        model.addAttribute("profilePictureUrl", userService.findUserByUsername(username).getProfilePictureUrl());
         return "chat";
     }
 

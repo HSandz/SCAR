@@ -16,7 +16,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.ui.Model;
 
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.ui.Model;
 
 import java.util.Map;
 
@@ -60,7 +59,7 @@ class ChatControllerTest {
         User user = new User();
         user.setUsername("testUser");
         user.setProfilePictureUrl("https://example.com/pic.jpg");
-        when(userService.findUsersByUsername("testUser")).thenReturn(user);
+        when(userService.findUserByUsername("testUser")).thenReturn(user);
 
         String view = chatController.showChatPage(authentication, model);
 
