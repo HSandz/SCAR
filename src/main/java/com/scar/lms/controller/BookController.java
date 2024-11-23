@@ -1,12 +1,12 @@
 package com.scar.lms.controller;
 
-import com.scar.lms.entity.Book;
-import com.scar.lms.entity.Borrow;
-import com.scar.lms.entity.User;
+import com.scar.lms.entity.*;
 import com.scar.lms.service.*;
 
 import jakarta.validation.Valid;
 
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
@@ -22,6 +22,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+@Slf4j
 @Controller
 @RequestMapping("/books")
 public class BookController {
@@ -63,24 +64,37 @@ public class BookController {
                                @RequestParam(defaultValue = "1") int page,
                                @RequestParam(defaultValue = "10") int size) {
 
-        Pageable pageable = PageRequest.of(page, size);
+        Pageable pageable = PageRequest.of(page - 1, size); // Page numbers are 1-based
 
-        var bookPage = bookService.findFilteredAndPaginated
-                (title, authorName, genreName, publisherName, year, pageable);
+        CompletableFuture<Page<Book>> bookPageFuture = bookService.findFilteredAndPaginated(
+                title, authorName, genreName, publisherName, year, pageable);
 
-        model.addAttribute("books", bookPage);
-        model.addAttribute("top", bookService.findTopBorrowedBooks());
-        model.addAttribute("count", bookService.findAllBooks().size());
-        model.addAttribute("genres", genreService.findAllGenres());
+        CompletableFuture<List<Book>> topBorrowedBooksFuture = bookService.findTopBorrowedBooks();
+        CompletableFuture<Long> totalBooksFuture = bookService.countAllBooks();
+        CompletableFuture<List<Genre>> genresFuture = genreService.findAllGenres();
 
-        var totalPages = bookPage.getTotalPages();
-        if (totalPages > 0) {
-            var pageNumbers = IntStream.rangeClosed(1, totalPages).boxed().collect(Collectors.toList());
-            model.addAttribute("pageNumbers", pageNumbers);
+        CompletableFuture.allOf(bookPageFuture, topBorrowedBooksFuture, totalBooksFuture, genresFuture).join();
+
+        try {
+            var bookPage = bookPageFuture.get();
+            model.addAttribute("books", bookPage);
+            model.addAttribute("top", topBorrowedBooksFuture.get());
+            model.addAttribute("count", totalBooksFuture.get());
+            model.addAttribute("genres", genresFuture.get());
+
+            int totalPages = bookPage.getTotalPages();
+            if (totalPages > 0) {
+                var pageNumbers = IntStream.rangeClosed(1, totalPages).boxed().collect(Collectors.toList());
+                model.addAttribute("pageNumbers", pageNumbers);
+            }
+        } catch (Exception e) {
+            log.error("Failed to load data: {}", e.getMessage());
+            model.addAttribute("error", "Failed to load data");
         }
 
         return "view-books";
     }
+
 
     @GetMapping("/search")
     public String searchBooks(@RequestParam(required = false, defaultValue = "") String query,
@@ -196,8 +210,19 @@ public class BookController {
     }
 
     private void addCommonAttributes(Model model) {
-        model.addAttribute("genre", genreService.findAllGenres());
-        model.addAttribute("authors", authorService.findAllAuthors());
-        model.addAttribute("publishers", publisherService.findAllPublishers());
+        try {
+            CompletableFuture<List<Genre>> genresFuture = genreService.findAllGenres();
+            CompletableFuture<List<Author>> authorsFuture = authorService.findAllAuthors();
+            CompletableFuture<List<Publisher>> publishersFuture = publisherService.findAllPublishers();
+
+            CompletableFuture.allOf(genresFuture, authorsFuture, publishersFuture).join();
+
+            model.addAttribute("genre", genresFuture.get());
+            model.addAttribute("authors", authorsFuture.get());
+            model.addAttribute("publishers", publishersFuture.get());
+        } catch (Exception e) {
+            log.error("Failed to load common attributes", e);
+            model.addAttribute("error", "Failed to load common attributes");
+        }
     }
 }

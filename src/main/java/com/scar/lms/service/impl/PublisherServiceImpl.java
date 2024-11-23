@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 public class PublisherServiceImpl implements PublisherService {
@@ -24,8 +25,8 @@ public class PublisherServiceImpl implements PublisherService {
 
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     @Override
-    public List<Publisher> findAllPublishers() {
-        return publisherRepository.findAll();
+    public CompletableFuture<List<Publisher>> findAllPublishers() {
+        return CompletableFuture.completedFuture(publisherRepository.findAll());
     }
 
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)

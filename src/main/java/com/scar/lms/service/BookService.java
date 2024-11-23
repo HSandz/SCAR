@@ -6,6 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 public interface BookService {
 
@@ -23,14 +24,14 @@ public interface BookService {
 
     List<Book> searchBooks(String keyword);
 
-    Page<Book> findPaginated(Pageable pageable);
+    CompletableFuture<Page<Book>> findPaginated(Pageable pageable);
 
-    Page<Book> findFilteredAndPaginated(String title,
-                                        String authorName,
-                                        String genreName,
-                                        String publisherName,
-                                        Integer year,
-                                        Pageable pageable);
+    CompletableFuture<Page<Book>> findFilteredAndPaginated(String title,
+                                                           String authorName,
+                                                           String genreName,
+                                                           String publisherName,
+                                                           Integer year,
+                                                           Pageable pageable);
 
     Book findBookById(int id);
 
@@ -42,5 +43,7 @@ public interface BookService {
 
     void deleteBook(int id);
 
-    List<Book> findTopBorrowedBooks();
+    CompletableFuture<List<Book>> findTopBorrowedBooks();
+
+    CompletableFuture<Long> countAllBooks();
 }

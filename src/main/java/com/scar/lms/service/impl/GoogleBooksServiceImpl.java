@@ -1,6 +1,5 @@
 package com.scar.lms.service.impl;
 
-import ch.qos.logback.classic.Logger;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -10,8 +9,6 @@ import com.scar.lms.entity.Author;
 import com.scar.lms.entity.Book;
 import com.scar.lms.entity.Genre;
 import com.scar.lms.entity.Publisher;
-import com.scar.lms.exception.DuplicateResourceException;
-import com.scar.lms.repository.BookRepository;
 import com.scar.lms.service.GoogleBooksService;
 
 import lombok.extern.slf4j.Slf4j;
@@ -30,14 +27,12 @@ public class GoogleBooksServiceImpl implements GoogleBooksService {
 
     private final RestTemplate restTemplate;
     private final GoogleBooksApiProperties googleBooksApiProperties;
-    private final BookRepository bookRepository;
+
 
     public GoogleBooksServiceImpl(final RestTemplate restTemplate,
-                                  final GoogleBooksApiProperties googleBooksApiProperties,
-                                  final BookRepository bookRepository) {
+                                  final GoogleBooksApiProperties googleBooksApiProperties) {
         this.restTemplate = restTemplate;
         this.googleBooksApiProperties = googleBooksApiProperties;
-        this.bookRepository = bookRepository;
     }
 
     @Override

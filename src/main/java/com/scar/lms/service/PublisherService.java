@@ -3,10 +3,11 @@ package com.scar.lms.service;
 import com.scar.lms.entity.Publisher;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 public interface PublisherService {
 
-    List<Publisher> findAllPublishers();
+    CompletableFuture<List<Publisher>> findAllPublishers();
 
     Publisher findPublisherById(int id);
 

@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 public class GenreServiceImpl implements GenreService {
@@ -24,8 +25,8 @@ public class GenreServiceImpl implements GenreService {
 
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     @Override
-    public List<Genre> findAllGenres() {
-        return genreRepository.findAll();
+    public CompletableFuture<List<Genre>> findAllGenres() {
+        return CompletableFuture.completedFuture(genreRepository.findAll());
     }
 
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)

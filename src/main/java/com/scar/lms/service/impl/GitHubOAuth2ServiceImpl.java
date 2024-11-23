@@ -58,6 +58,7 @@ public class GitHubOAuth2ServiceImpl implements GitHubOAuth2Service {
         // Default email to bypass non-null constraint
         newUser.setEmail("github" + username + "@gmail.com");
         newUser.setRole(USER);
+        newUser.setPoints(0);
         // Default password to bypass non-null constraint
         newUser.setPassword(bCryptPasswordEncoder.encode(username + displayName));
         return userRepository.save(newUser);
