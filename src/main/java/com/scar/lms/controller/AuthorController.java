@@ -29,16 +29,16 @@ public class AuthorController {
     @GetMapping("/add/author")
     public String showAddAuthorForm(Model model) {
         model.addAttribute("author", new Author()); // Assuming you have an Author for form binding
-        return "add-author"; // Points to the Thymeleaf template 'add-author.html'
+        return "add-author";
     }
 
     @PostMapping("/add/author")
     public String addAuthor(@Valid Author author, BindingResult result, Model model) {
         if (result.hasErrors()) {
-            return "add-author"; // Show the form again if validation fails
+            return "add-author";
         }
 
-        authorService.addAuthor(author); // Save the new author via the service
-        return "redirect:/authors"; // Redirect to the list of authors after successful save
+        authorService.addAuthor(author);
+        return "redirect:/authors";
     }
 }

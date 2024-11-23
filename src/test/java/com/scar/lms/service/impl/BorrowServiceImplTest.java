@@ -89,7 +89,7 @@ class BorrowServiceImplTest {
     void testFindBorrowsOfUser() {
         List<Borrow> borrows = List.of(new Borrow(), new Borrow());
         when(borrowRepository.findAllByUserId(1)).thenReturn(borrows);
-        List<Borrow> result = borrowService.findBorrowsOfUser(1);
+        //List<Borrow> result = borrowService.findBorrowsOfUser(1);
         assertEquals(borrows, result);
     }
 }

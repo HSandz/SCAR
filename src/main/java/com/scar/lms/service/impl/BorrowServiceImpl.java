@@ -65,8 +65,8 @@ public class BorrowServiceImpl implements BorrowService {
 
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     @Override
-    public List<Borrow> findBorrowsOfUser(int userId) {
-        return borrowRepository.findAllByUserId(userId);
+    public CompletableFuture<List<Borrow>> findBorrowsOfUser(int userId) {
+        return CompletableFuture.supplyAsync(() -> borrowRepository.findAllByUserId(userId));
     }
 
     @Override

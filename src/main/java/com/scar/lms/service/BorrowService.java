@@ -18,7 +18,7 @@ public interface BorrowService {
 
     Optional<Borrow> findBorrow(int bookId, int userId);
 
-    List<Borrow> findBorrowsOfUser(int userId);
+    CompletableFuture<List<Borrow>> findBorrowsOfUser(int userId);
 
     CompletableFuture<List<Borrow>> findAllBorrows();
 

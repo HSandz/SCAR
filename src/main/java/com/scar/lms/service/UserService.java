@@ -28,7 +28,7 @@ public interface UserService {
 
     void addFavouriteFor(User user, int bookId);
 
-    Set<Book> findFavouriteBooks(int id);
+    CompletableFuture<List<Book>> findFavouriteBooks(int id);
 
     void removeFavouriteFor(User user, int bookId);
 

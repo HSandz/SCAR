@@ -114,9 +114,9 @@ public class UserServiceImpl implements UserService {
 
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     @Override
-    public Set<Book> findFavouriteBooks(int userId) {
+    public CompletableFuture<List<Book>> findFavouriteBooks(int userId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
-        return user.getFavouriteBooks();
+        return CompletableFuture.supplyAsync(() -> List.copyOf(user.getFavouriteBooks()));
     }
 
     @Async

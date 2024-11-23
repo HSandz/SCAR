@@ -5,6 +5,7 @@ import com.scar.lms.entity.Borrow;
 import com.scar.lms.entity.User;
 import com.scar.lms.service.*;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -14,7 +15,9 @@ import org.springframework.web.multipart.MultipartFile;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 
+@Slf4j
 @Controller
 @RequestMapping("/users")
 public class UserController {
@@ -154,7 +157,7 @@ public class UserController {
     public String showBorrowedBooks(Authentication authentication, Model model) {
         String username = authenticationService.extractUsernameFromAuthentication(authentication);
         User user = userService.findUserByUsername(username);
-        List<Borrow> borrowedBooks = borrowService.findBorrowsOfUser(user.getId());
+        List<Borrow> borrowedBooks = getBorrowList(user);
         model.addAttribute("borrowedBooks", borrowedBooks);
         return "borrowed-books";
     }
@@ -171,9 +174,21 @@ public class UserController {
     public String showFavouriteBooks(Authentication authentication, Model model) {
         String username = authenticationService.extractUsernameFromAuthentication(authentication);
         User user = userService.findUserByUsername(username);
-        Set<Book> favouriteBooks = userService.findFavouriteBooks(user.getId());
-        model.addAttribute("favouriteBooks", favouriteBooks);
-        return "favourites";
+        try {
+            CompletableFuture<List<Book>> favouriteBooksFuture = userService.findFavouriteBooks(user.getId());
+            List<Book> favouriteBooks = favouriteBooksFuture.join();
+            if (favouriteBooks == null) {
+                model.addAttribute("error", "Failed to fetch favourite books.");
+                return "error/404";
+            } else {
+                model.addAttribute("favouriteBooks", favouriteBooks);
+                return "favourites";
+            }
+        } catch (Exception e) {
+            log.error("Failed to fetch favourite books.", e);
+            model.addAttribute("error", "Failed to fetch favourite books.");
+            return "error/404";
+        }
     }
 
     @PostMapping("/remove-favourite/{bookId}")
@@ -188,8 +203,24 @@ public class UserController {
     public String showHistory(Authentication authentication, Model model) {
         String username = authenticationService.extractUsernameFromAuthentication(authentication);
         User user = userService.findUserByUsername(username);
-        List<Borrow> history = borrowService.findBorrowsOfUser(user.getId());
-        model.addAttribute("history", history);
-        return "history";
+        try {
+            List<Borrow> borrows = getBorrowList(user);
+
+            if (borrows == null) {
+                model.addAttribute("error", "History not found.");
+                return "error/404";
+            } else {
+                model.addAttribute("history", borrows);
+                return "history";
+            }
+        } catch (Exception e) {
+            model.addAttribute("error", "Failed to fetch history.");
+            return "error/404";
+        }
+    }
+
+    private List<Borrow> getBorrowList(User user) {
+        CompletableFuture<List<Borrow>> borrowsFuture = borrowService.findBorrowsOfUser(user.getId());
+        return borrowsFuture.join();
     }
 }
