@@ -6,10 +6,11 @@ import com.scar.lms.entity.User;
 
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 
 public interface UserService {
 
-    List<User> findAllUsers();
+    CompletableFuture<List<User>> findAllUsers();
 
     List<User> searchUsers(String keyword);
 
@@ -31,5 +32,9 @@ public interface UserService {
 
     void removeFavouriteFor(User user, int bookId);
 
-    List<User> findUsersByRole(Role role);
+    CompletableFuture<List<User>> findUsersByRole(Role role);
+
+    CompletableFuture<Long> countAllUsers();
+
+    CompletableFuture<Long> countUsersByRole(Role role);
 }

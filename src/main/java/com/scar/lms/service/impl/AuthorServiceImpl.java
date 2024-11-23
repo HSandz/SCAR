@@ -26,7 +26,7 @@ public class AuthorServiceImpl implements AuthorService {
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     @Override
     public CompletableFuture<List<Author>> findAllAuthors() {
-        return CompletableFuture.completedFuture(authorRepository.findAll());
+        return CompletableFuture.supplyAsync(authorRepository::findAll);
     }
 
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)

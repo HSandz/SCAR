@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 public class BorrowServiceImpl implements BorrowService {
@@ -69,12 +70,22 @@ public class BorrowServiceImpl implements BorrowService {
     }
 
     @Override
-    public List<Borrow> findAllBorrows() {
-        return borrowRepository.findAll();
+    public CompletableFuture<List<Borrow>> findAllBorrows() {
+        return CompletableFuture.supplyAsync(borrowRepository::findAll);
     }
 
     @Override
-    public List<Borrow> findBorrowsByMonth(int month) {
-        return borrowRepository.findAllByBorrowDateMonth(month);
+    public CompletableFuture<List<Borrow>> findBorrowsByMonth(int month) {
+        return CompletableFuture.supplyAsync(() -> borrowRepository.findAllByBorrowDateMonth(month));
+    }
+
+    @Override
+    public CompletableFuture<Long> countAllBorrows() {
+        return CompletableFuture.supplyAsync(borrowRepository::count);
+    }
+
+    @Override
+    public CompletableFuture<Long> countBorrowsByMonth(int i) {
+        return CompletableFuture.supplyAsync(() -> borrowRepository.countByBorrowDateMonth(i));
     }
 }

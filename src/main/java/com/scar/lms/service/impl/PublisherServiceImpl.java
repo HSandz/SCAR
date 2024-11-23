@@ -26,7 +26,7 @@ public class PublisherServiceImpl implements PublisherService {
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     @Override
     public CompletableFuture<List<Publisher>> findAllPublishers() {
-        return CompletableFuture.completedFuture(publisherRepository.findAll());
+        return CompletableFuture.supplyAsync(publisherRepository::findAll);
     }
 
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)

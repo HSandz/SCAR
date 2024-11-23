@@ -4,6 +4,7 @@ import com.scar.lms.entity.Borrow;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 public interface BorrowService {
 
@@ -19,7 +20,11 @@ public interface BorrowService {
 
     List<Borrow> findBorrowsOfUser(int userId);
 
-    List<Borrow> findAllBorrows();
+    CompletableFuture<List<Borrow>> findAllBorrows();
 
-    List<Borrow> findBorrowsByMonth(int month);
+    CompletableFuture<List<Borrow>> findBorrowsByMonth(int month);
+    
+    CompletableFuture<Long> countAllBorrows();
+
+    CompletableFuture<Long> countBorrowsByMonth(int i);
 }

@@ -6,6 +6,7 @@ import com.scar.lms.service.BookService;
 import com.scar.lms.service.BorrowService;
 import com.scar.lms.service.UserService;
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
@@ -17,8 +18,15 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+
 import static com.scar.lms.entity.Role.ADMIN;
 
+@Slf4j
 @Controller
 @RequestMapping("/admin")
 public class AdminController {
@@ -39,8 +47,22 @@ public class AdminController {
 
     @GetMapping("/users")
     public String listAllUsers(Model model) {
-        model.addAttribute("users", userService.findAllUsers());
-        return "users-list";
+        try {
+            CompletableFuture<List<User>> usersFuture = userService.findAllUsers();
+            List<User> users = usersFuture.join();
+
+            if (users == null) {
+                model.addAttribute("error", "Users not found.");
+                return "error/404";
+            } else {
+                model.addAttribute("users", users);
+                return "user-list";
+            }
+        } catch (Exception e) {
+            log.error("Failed to fetch users.", e);
+            model.addAttribute("error", "Failed to fetch users.");
+            return "error/404";
+        }
     }
 
     @GetMapping("/user/{userId}")
@@ -129,17 +151,45 @@ public class AdminController {
         }
 
         model.addAttribute("admin", user);
-        model.addAttribute("adminCount", userService.findUsersByRole(ADMIN).size());
-        model.addAttribute("userCount", userService.findAllUsers().size());
-        model.addAttribute("bookCount", bookService.findAllBooks().size());
-        model.addAttribute("borrowCount", borrowService.findAllBorrows().size());
 
-        for (int i = 1; i <= 12; i++) {
-            model.addAttribute("borrowCountMonth" + i, borrowService.findBorrowsByMonth(i).size());
+        CompletableFuture<Long> adminCountFuture = userService.countUsersByRole(ADMIN);
+        CompletableFuture<Long> userCountFuture = userService.countAllUsers();
+        CompletableFuture<Long> bookCountFuture = bookService.countAllBooks();
+        CompletableFuture<Long> borrowCountFuture = borrowService.countAllBorrows();
+
+        List<CompletableFuture<Long>> borrowCountMonthFutures = IntStream.rangeClosed(1, 12)
+                .mapToObj(borrowService::countBorrowsByMonth)
+                .toList();
+
+        List<CompletableFuture<?>> futures = new ArrayList<>();
+        futures.add(adminCountFuture);
+        futures.add(userCountFuture);
+        futures.add(bookCountFuture);
+        futures.add(borrowCountFuture);
+        futures.addAll(borrowCountMonthFutures);
+
+        CompletableFuture<Void> allOfFutures = CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]));
+
+        allOfFutures.join();
+
+        try {
+            model.addAttribute("adminCount", adminCountFuture.get());
+            model.addAttribute("userCount", userCountFuture.get());
+            model.addAttribute("bookCount", bookCountFuture.get());
+            model.addAttribute("borrowCount", borrowCountFuture.get());
+
+            for (int i = 1; i <= 12; i++) {
+                model.addAttribute("borrowCountMonth" + i, borrowCountMonthFutures.get(i - 1).get());
+            }
+        } catch (Exception e) {
+            log.error("Error fetching admin profile data", e);
+            model.addAttribute("error", "Failed to load admin profile data.");
+            return "error/500";
         }
 
         return "admin-profile";
     }
+
 
     @PostMapping("/profile/edit")
     public String showEditAdminProfileForm(Authentication authentication, Model model) {

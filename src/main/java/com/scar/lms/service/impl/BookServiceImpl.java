@@ -29,8 +29,8 @@ public class BookServiceImpl implements BookService {
 
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     @Override
-    public List<Book> findAllBooks() {
-        return bookRepository.findAll();
+    public CompletableFuture<List<Book>> findAllBooks() {
+        return CompletableFuture.supplyAsync(bookRepository::findAll);
     }
 
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)

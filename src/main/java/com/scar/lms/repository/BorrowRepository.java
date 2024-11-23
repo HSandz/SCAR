@@ -20,4 +20,7 @@ public interface BorrowRepository extends JpaRepository<Borrow, Integer> {
 
     @Query("SELECT b FROM Borrow b WHERE FUNCTION('MONTH', b.borrowDate) = :month")
     List<Borrow> findAllByBorrowDateMonth(@Param("month") int month);
+
+    @Query("SELECT COUNT(b) FROM Borrow b")
+    Long countByBorrowDateMonth(int i);
 }

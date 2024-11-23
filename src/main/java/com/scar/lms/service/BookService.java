@@ -10,7 +10,7 @@ import java.util.concurrent.CompletableFuture;
 
 public interface BookService {
 
-    List<Book> findAllBooks();
+    CompletableFuture<List<Book>> findAllBooks();
 
     List<Book> findBooksByTitle(String title);
 

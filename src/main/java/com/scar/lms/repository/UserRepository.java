@@ -23,4 +23,6 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     Optional<User> findByGoogleEmail(String gmail);
 
     List<User> findByRole(Role role);
+
+    Long countByRole(Role role);
 }
