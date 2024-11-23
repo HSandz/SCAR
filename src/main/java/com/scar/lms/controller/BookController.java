@@ -1,19 +1,24 @@
 package com.scar.lms.controller;
 
 import com.scar.lms.entity.Book;
+import com.scar.lms.entity.Borrow;
+import com.scar.lms.entity.User;
 import com.scar.lms.service.*;
 
 import jakarta.validation.Valid;
 
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -21,22 +26,31 @@ import java.util.stream.IntStream;
 @RequestMapping("/books")
 public class BookController {
 
+    private final UserService userService;
     private final BookService bookService;
     private final AuthorService authorService;
     private final GenreService genreService;
     private final PublisherService publisherService;
     private final GoogleBooksService googleBooksService;
+    private final AuthenticationService authenticationService;
+    private final BorrowService borrowService;
 
-    public BookController(final BookService bookService,
+    public BookController(final UserService userService,
+                          final BookService bookService,
                           final AuthorService authorService,
                           final GenreService genreService,
                           final PublisherService publisherService,
-                          final GoogleBooksService googleBooksService) {
+                          final GoogleBooksService googleBooksService,
+                          final AuthenticationService authenticationService,
+                          final BorrowService borrowService) {
+        this.userService = userService;
         this.bookService = bookService;
         this.authorService = authorService;
         this.genreService = genreService;
         this.publisherService = publisherService;
         this.googleBooksService = googleBooksService;
+        this.authenticationService = authenticationService;
+        this.borrowService = borrowService;
     }
 
     @GetMapping({ "", "/" })
@@ -74,15 +88,27 @@ public class BookController {
                               Model model) {
         int maxResults = 100;
         int pageSize = 10;
-        List<Book> books = googleBooksService.searchBooks(query, page * pageSize, pageSize);
-        int totalPages = (int) Math.ceil((double) maxResults / pageSize);
 
-        model.addAttribute("books", books);
-        model.addAttribute("query", query);
-        model.addAttribute("currentPage", page);
-        model.addAttribute("totalPages", totalPages);
+        CompletableFuture<List<Book>> futureBooks = googleBooksService.searchBooks(query, page * pageSize, pageSize);
+
+        futureBooks.thenAccept(books -> {
+            int totalPages = (int) Math.ceil((double) maxResults / pageSize);
+
+            synchronized (model) {
+                model.addAttribute("books", books);
+                model.addAttribute("query", query);
+                model.addAttribute("currentPage", page);
+                model.addAttribute("totalPages", totalPages);
+            }
+        }).exceptionally(ex -> {
+            System.err.println("Error occurred while fetching books: " + ex.getMessage());
+            model.addAttribute("error", "Failed to fetch books. Please try again later.");
+            return null;
+        });
+
         return "book-list";
     }
+
 
     @GetMapping("/{id}")
     public String findBookById(@PathVariable("id") int id, Model model) {
@@ -138,6 +164,25 @@ public class BookController {
     public String deleteBook(@PathVariable("id") int id) {
         bookService.deleteBook(id);
         return "redirect:/books";
+    }
+
+    @PostMapping("/borrow/{bookId}")
+    public String borrowBook(@PathVariable int bookId, Authentication authentication) {
+        String username = authenticationService.extractUsernameFromAuthentication(authentication);
+        User user = userService.findUserByUsername(username);
+        Book book = bookService.findBookById(bookId);
+
+        Borrow borrow = new Borrow();
+        borrow.setUser(user);
+        borrow.setBook(book);
+        borrow.setBorrowDate(LocalDate.now());
+
+        borrowService.addBorrow(borrow);
+
+        user.setPoints(user.getPoints() + 1);
+        userService.updateUser(user);
+
+        return "redirect:/book-list";
     }
 
     @PostMapping("/add/db")

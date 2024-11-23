@@ -111,7 +111,6 @@ class ChatControllerTest {
     @Test
     void testSendMessageBot() {
         String userMessage = "Hello, bot!";
-        when(openAIService.getResponse(userMessage)).thenReturn("Hi, how can I help you?");
 
         String view = chatController.sendMessageBot(userMessage, model);
 

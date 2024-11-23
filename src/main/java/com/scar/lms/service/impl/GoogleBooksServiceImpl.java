@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 
 @Slf4j
 @Service
@@ -40,9 +41,10 @@ public class GoogleBooksServiceImpl implements GoogleBooksService {
     }
 
     @Override
-    public List<Book> searchBooks(String query, int startIndex, int maxResults) {
+    @Async
+    public CompletableFuture<List<Book>> searchBooks(String query, int startIndex, int maxResults) {
         if (query == null || query.trim().isEmpty()) {
-            return Collections.emptyList();
+            return CompletableFuture.completedFuture(Collections.emptyList());
         }
 
         String url = googleBooksApiProperties.getUrl() + "?q=" + query
@@ -50,14 +52,17 @@ public class GoogleBooksServiceImpl implements GoogleBooksService {
                 + "&maxResults=" + maxResults
                 + "&key=" + googleBooksApiProperties.getKey();
 
-        ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, null, String.class);
-        String jsonResponse = response.getBody();
-
-        ObjectMapper objectMapper = new ObjectMapper();
         try {
+            // Call Google Books API
+            ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, null, String.class);
+            String jsonResponse = response.getBody();
+
+            // Parse JSON response
+            ObjectMapper objectMapper = new ObjectMapper();
             JsonNode rootNode = objectMapper.readTree(jsonResponse);
             JsonNode itemsNode = rootNode.path("items");
 
+            // Map JSON data to List<Book>
             List<Book> books = new ArrayList<>();
             for (JsonNode item : itemsNode) {
                 Book book = new Book();
@@ -140,10 +145,15 @@ public class GoogleBooksServiceImpl implements GoogleBooksService {
 
                 books.add(book);
             }
-            return books;
+
+            // Return CompletableFuture
+            return CompletableFuture.completedFuture(books);
         } catch (JsonProcessingException e) {
             log.error("Error parsing JSON response from Google Books API", e);
-            return Collections.emptyList();
+            return CompletableFuture.completedFuture(Collections.emptyList());
+        } catch (Exception e) {
+            log.error("Error calling Google Books API", e);
+            return CompletableFuture.completedFuture(Collections.emptyList());
         }
     }
 }

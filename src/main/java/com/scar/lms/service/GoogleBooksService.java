@@ -3,8 +3,9 @@ package com.scar.lms.service;
 import com.scar.lms.entity.Book;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 public interface GoogleBooksService {
 
-    List<Book> searchBooks(String query, int startIndex, int maxResults);
+    CompletableFuture<List<Book>> searchBooks(String query, int startIndex, int maxResults);
 }

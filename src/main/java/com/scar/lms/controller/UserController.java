@@ -136,25 +136,6 @@ public class UserController {
         return "redirect:/logout";
     }
 
-    @PostMapping("/borrow/{bookId}")
-    public String borrowBook(@PathVariable int bookId, Authentication authentication) {
-        String username = authenticationService.extractUsernameFromAuthentication(authentication);
-        User user = userService.findUserByUsername(username);
-        Book book = bookService.findBookById(bookId);
-
-        Borrow borrow = new Borrow();
-        borrow.setUser(user);
-        borrow.setBook(book);
-        borrow.setBorrowDate(LocalDate.now());
-
-        borrowService.addBorrow(borrow);
-
-        user.setPoints(user.getPoints() + 1);
-        userService.updateUser(user);
-
-        return "redirect:/book-list";
-    }
-
     @PostMapping("/return/{bookId}")
     public String returnBook(@PathVariable int bookId, Authentication authentication) {
         String username = authenticationService.extractUsernameFromAuthentication(authentication);

@@ -6,6 +6,7 @@ import com.scar.lms.service.BookService;
 import com.scar.lms.service.BorrowService;
 import com.scar.lms.service.UserService;
 import jakarta.validation.Valid;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import static com.scar.lms.entity.Role.ADMIN;
 
@@ -44,11 +46,15 @@ public class AdminController {
     @GetMapping("/user/{userId}")
     public String showUserPage(@PathVariable int userId, Model model) {
         User user = userService.findUserById(userId);
+        if (user == null) {
+            model.addAttribute("error", "User not found.");
+            return "error/404";
+        }
         model.addAttribute("user", user);
         return "user-view";
     }
 
-    @GetMapping("/edit/user/{userId}")
+    @GetMapping("/user/{userId}/edit")
     public String showUpdateUserForm(@PathVariable int userId, Model model) {
         User user = userService.findUserById(userId);
         model.addAttribute("user", user);
@@ -56,16 +62,25 @@ public class AdminController {
     }
 
     @PostMapping("/user/update")
-    public String updateUser(User user) {
+    public String updateUser(@Valid User user, BindingResult result) {
+        if (result.hasErrors()) {
+            return "user-edit";
+        }
         userService.updateUser(user);
         return "redirect:/admin/users";
     }
 
-    @PostMapping("/delete/user/{userId}")
-    public String deleteUser(@PathVariable int userId) {
-        userService.deleteUser(userId);
+    @PostMapping("/user/{userId}/delete")
+    public String deleteUser(@PathVariable int userId, RedirectAttributes redirectAttributes) {
+        try {
+            userService.deleteUser(userId);
+            redirectAttributes.addFlashAttribute("successMessage", "User deleted successfully.");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Failed to delete user.");
+        }
         return "redirect:/admin/users";
     }
+
 
     @GetMapping("/user/new")
     public String showCreateUserForm(Model model) {
@@ -74,7 +89,7 @@ public class AdminController {
     }
 
     @PostMapping("/user/create")
-    public String createUser(@Valid User user, BindingResult result, Model model) {
+    public String createUser(@Valid User user, BindingResult result) {
         if (result.hasErrors()) {
             return "user-create";
         }
@@ -82,13 +97,22 @@ public class AdminController {
         return "redirect:/admin/users";
     }
 
-    @PostMapping("/grantAuthority/user/{userId}")
-    public String grantAuthority(@PathVariable int userId, Model model) {
+    @PostMapping("/user/{userId}/grantAuthority")
+    @PreAuthorize("hasRole('ADMIN')")
+    public String grantAuthority(@PathVariable int userId, RedirectAttributes redirectAttributes) {
         User user = userService.findUserById(userId);
-        model.addAttribute("user", user);
-        user.setRole(ADMIN);
-        userService.updateUser(user);
-        return "redirect:/admin/user";
+        if (user == null) {
+            redirectAttributes.addFlashAttribute("errorMessage", "User not found.");
+            return "redirect:/admin/users";
+        }
+        try {
+            user.setRole(ADMIN);
+            userService.updateUser(user);
+            redirectAttributes.addFlashAttribute("successMessage", "Authority granted successfully.");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Failed to grant authority.");
+        }
+        return "redirect:/admin/users";
     }
 
     @GetMapping({"", "/"})
@@ -97,8 +121,7 @@ public class AdminController {
             return "redirect:/login";
         }
 
-        String username = authenticationService.extractUsernameFromAuthentication(authentication);
-        User user = userService.findUserByUsername(username);
+        User user = getAuthenticatedUser(authentication);
 
         if (user == null) {
             model.addAttribute("error", "User not found.");
@@ -120,9 +143,14 @@ public class AdminController {
 
     @PostMapping("/profile/edit")
     public String showEditAdminProfileForm(Authentication authentication, Model model) {
-        String username = authenticationService.extractUsernameFromAuthentication(authentication);
-        User user = userService.findUserByUsername(username);
+        User user = getAuthenticatedUser(authentication);
         model.addAttribute("user", user);
         return "admin-profile";
     }
+
+    private User getAuthenticatedUser(Authentication authentication) {
+        String username = authenticationService.extractUsernameFromAuthentication(authentication);
+        return userService.findUserByUsername(username);
+    }
+
 }
