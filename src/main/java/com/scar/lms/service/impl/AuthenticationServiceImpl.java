@@ -1,11 +1,7 @@
 package com.scar.lms.service.impl;
 
-import com.scar.lms.controller.UserController;
 import com.scar.lms.entity.User;
-import com.scar.lms.exception.InvalidDataException;
-import com.scar.lms.exception.LibraryException;
-import com.scar.lms.exception.OperationNotAllowedException;
-import com.scar.lms.exception.ResourceNotFoundException;
+import com.scar.lms.exception.*;
 import com.scar.lms.repository.UserRepository;
 import com.scar.lms.service.AuthenticationService;
 
@@ -13,7 +9,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -22,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.*;
 
+@SuppressWarnings("SameReturnValue")
 @Service
 public class AuthenticationServiceImpl implements AuthenticationService, UserDetailsService {
 
@@ -58,7 +54,7 @@ public class AuthenticationServiceImpl implements AuthenticationService, UserDet
     public UserDetails loadUserByUsername(String username) {
         User user = userRepository
                 .findByUsername(username)
-                .orElseThrow(() -> new ResourceNotFoundException("User with username not found: " + username));
+                .orElseThrow(() -> new UserNotFoundException("User with username not found: " + username));
         return new org.springframework.security.core.userdetails.User(
                 user.getUsername(),
                 user.getPassword(),
@@ -131,7 +127,7 @@ public class AuthenticationServiceImpl implements AuthenticationService, UserDet
         }
 
         User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new ResourceNotFoundException("User with username not found: " + username));
+                .orElseThrow(() -> new UserNotFoundException("User with username not found: " + username));
 
         if (!bCryptPasswordEncoder.matches(oldPassword, user.getPassword())) {
             throw new OperationNotAllowedException("Old password is incorrect.");
@@ -150,7 +146,7 @@ public class AuthenticationServiceImpl implements AuthenticationService, UserDet
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities(String username) {
         User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new ResourceNotFoundException("User with username not found: " + username));
+                .orElseThrow(() -> new UserNotFoundException("User with username not found: " + username));
 
         Set<GrantedAuthority> authorities = new HashSet<>();
         authorities.add(new SimpleGrantedAuthority("ROLE_" + user.getRole().name()));
@@ -172,6 +168,6 @@ public class AuthenticationServiceImpl implements AuthenticationService, UserDet
     public User getAuthenticatedUser(Authentication authentication) {
         String username = extractUsernameFromAuthentication(authentication);
         return userRepository.findByUsername(username)
-                .orElseThrow(() -> new ResourceNotFoundException("User with username not found: " + username));
+                .orElseThrow(() -> new UserNotFoundException("User with username not found: " + username));
     }
 }

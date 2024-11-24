@@ -5,7 +5,6 @@ import com.scar.lms.entity.Role;
 import com.scar.lms.entity.User;
 
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
 public interface UserService {

@@ -36,6 +36,10 @@ public class BorrowServiceImpl implements BorrowService {
         if (borrowRepository.existsById(borrow.getId())) {
             throw new OperationNotAllowedException("Unable to borrow book");
         }
+        extractedAddBorrow(borrow);
+    }
+
+    private void extractedAddBorrow(Borrow borrow) {
         borrowRepository.save(borrow);
         Book book = borrow.getBook();
         book.setBorrowCount(book.getBorrowCount() + 1);

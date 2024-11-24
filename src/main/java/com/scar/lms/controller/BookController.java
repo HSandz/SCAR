@@ -22,6 +22,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+@SuppressWarnings("SameReturnValue")
 @Slf4j
 @Controller
 @RequestMapping("/books")

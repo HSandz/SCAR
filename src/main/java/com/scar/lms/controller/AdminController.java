@@ -28,6 +28,7 @@ import java.util.stream.IntStream;
 
 import static com.scar.lms.entity.Role.ADMIN;
 
+@SuppressWarnings("SameReturnValue")
 @Slf4j
 @Controller
 @RequestMapping("/admin")

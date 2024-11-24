@@ -13,6 +13,7 @@ public class ChatMessage {
     private MessageType type;
     private String profilePictureUrl;
 
+    @SuppressWarnings("unused")
     public enum MessageType {
         CHAT, JOIN, LEAVE
     }

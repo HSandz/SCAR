@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
+@SuppressWarnings("SameReturnValue")
 @Controller
 @RequestMapping("/chat")
 public class ChatController {

@@ -1,8 +1,13 @@
 package com.scar.lms.service.impl;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import com.scar.lms.service.OpenAIService;
+
+import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -14,6 +19,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.concurrent.CompletableFuture;
 
+@Slf4j
 @Service
 public class OpenAIServiceImpl implements OpenAIService {
 
@@ -40,22 +46,26 @@ public class OpenAIServiceImpl implements OpenAIService {
         HttpEntity<String> entity = new HttpEntity<>(requestBody, headers);
 
         try {
-            // Send POST request to OpenAI API
-            ResponseEntity<String> response = restTemplate.exchange(
-                    API_URL,
-                    HttpMethod.POST,
-                    entity,
-                    String.class
-            );
-
-            // Parse response to extract chat completion
-            ObjectMapper mapper = new ObjectMapper();
-            JsonNode jsonResponse = mapper.readTree(response.getBody());
-            String chatResponse = jsonResponse.get("choices").get(0).get("message").get("content").asText();
-            return CompletableFuture.completedFuture(chatResponse);
+            return getChatResponseCompletableFuture(restTemplate, entity);
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("Error processing OpenAI response", e);
             return CompletableFuture.completedFuture("Error processing OpenAI response");
         }
+    }
+
+    private CompletableFuture<String> getChatResponseCompletableFuture(RestTemplate restTemplate, HttpEntity<String> entity) throws JsonProcessingException {
+        // Send POST request to OpenAI API
+        ResponseEntity<String> response = restTemplate.exchange(
+                API_URL,
+                HttpMethod.POST,
+                entity,
+                String.class
+        );
+
+        // Parse response to extract chat completion
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode jsonResponse = mapper.readTree(response.getBody());
+        String chatResponse = jsonResponse.get("choices").get(0).get("message").get("content").asText();
+        return CompletableFuture.completedFuture(chatResponse);
     }
 }

@@ -7,6 +7,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 
 import java.util.Collection;
 
+@SuppressWarnings("SameReturnValue")
 public interface AuthenticationService extends UserDetailsService {
 
     boolean validateRegistration(String username, String password, String displayName, String email);
@@ -15,6 +16,7 @@ public interface AuthenticationService extends UserDetailsService {
 
     String encryptPassword(String password);
 
+    @SuppressWarnings("unused")
     Collection<? extends GrantedAuthority> getAuthorities(String username);
 
     String extractUsernameFromAuthentication(Authentication authentication);

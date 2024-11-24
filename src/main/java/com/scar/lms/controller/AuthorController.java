@@ -1,7 +1,6 @@
 package com.scar.lms.controller;
 
 import com.scar.lms.entity.Author;
-import com.scar.lms.exception.ResourceNotFoundException;
 import com.scar.lms.service.AuthorService;
 
 import jakarta.validation.Valid;
@@ -16,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.List;
 
+@SuppressWarnings("SameReturnValue")
 @Controller
 @RequestMapping("/admin/authors")
 public class AuthorController {

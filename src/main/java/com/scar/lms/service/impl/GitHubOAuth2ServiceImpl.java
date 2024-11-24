@@ -36,13 +36,14 @@ public class GitHubOAuth2ServiceImpl implements GitHubOAuth2Service {
             displayName = username;
         }
 
-        getUser(userId, username, displayName, userRepository, bCryptPasswordEncoder);
+        getUser(username, displayName, userRepository, bCryptPasswordEncoder);
     }
 
-    private User getUser(String userId, String username, String displayName, UserRepository userRepository, BCryptPasswordEncoder bCryptPasswordEncoder) {
+    private void getUser(String username, String displayName, UserRepository userRepository, BCryptPasswordEncoder bCryptPasswordEncoder) {
         Optional<User> existingUser = userRepository.findByUsername(username);
+        //noinspection DuplicatedCode
         if (existingUser.isPresent()) {
-            return existingUser.get();
+            return;
         }
 
         User newUser = new User();
@@ -61,6 +62,6 @@ public class GitHubOAuth2ServiceImpl implements GitHubOAuth2Service {
         newUser.setPoints(0);
         // Default password to bypass non-null constraint
         newUser.setPassword(bCryptPasswordEncoder.encode(username + displayName));
-        return userRepository.save(newUser);
+        userRepository.save(newUser);
     }
 }

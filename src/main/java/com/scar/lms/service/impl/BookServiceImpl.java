@@ -86,6 +86,13 @@ public class BookServiceImpl implements BookService {
 
         Specification<Book> spec = Specification.where(null);
 
+        spec = getSpecification(title, authorName, genreName, publisherName, year, spec);
+
+        Specification<Book> finalSpec = spec;
+        return CompletableFuture.supplyAsync(() -> bookRepository.findAll(finalSpec, pageable));
+    }
+
+    private Specification<Book> getSpecification(String title, String authorName, String genreName, String publisherName, Integer year, Specification<Book> spec) {
         if (title != null) {
             spec = spec.and(BookSpecification.hasTitle(title));
         }
@@ -101,9 +108,7 @@ public class BookServiceImpl implements BookService {
         if (year != null) {
             spec = spec.and(BookSpecification.hasYear(year));
         }
-
-        Specification<Book> finalSpec = spec;
-        return CompletableFuture.supplyAsync(() -> bookRepository.findAll(finalSpec, pageable));
+        return spec;
     }
 
 

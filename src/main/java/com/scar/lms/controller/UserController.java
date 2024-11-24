@@ -13,11 +13,13 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
+@SuppressWarnings("SameReturnValue")
 @Slf4j
 @Controller
 @RequestMapping("/users")
@@ -50,12 +52,7 @@ public class UserController {
             @RequestParam("file") MultipartFile file,
             Model model) {
         try {
-            User user = userService.findUserById(userId);
-            user.setProfilePictureUrl(cloudStorageService.uploadImage(file));
-            userService.updateUser(user);
-
-            model.addAttribute("message", "Image uploaded successfully!");
-            model.addAttribute("user", user);
+            extractedUploadProfileImage(userId, file, model);
 
         } catch (Exception e) {
             log.error("Error uploading profile image.", e);
@@ -63,6 +60,15 @@ public class UserController {
         }
 
         return "upload";
+    }
+
+    private void extractedUploadProfileImage(int userId, MultipartFile file, Model model) throws IOException {
+        User user = userService.findUserById(userId);
+        user.setProfilePictureUrl(cloudStorageService.uploadImage(file));
+        userService.updateUser(user);
+
+        model.addAttribute("message", "Image uploaded successfully!");
+        model.addAttribute("user", user);
     }
 
     @GetMapping({"/", ""})
@@ -140,18 +146,22 @@ public class UserController {
         User user = authenticationService.getAuthenticatedUser(authentication);
 
         try {
-            CompletableFuture<Optional<Borrow>> borrowOptionalFuture = borrowService.findBorrow(user.getId(), bookId);
-            Optional<Borrow> borrowOptional = borrowOptionalFuture.join();
-
-            if (borrowOptional.isPresent()) {
-                Borrow borrow = borrowOptional.get();
-                borrow.setReturnDate(LocalDate.now());
-                borrowService.updateBorrow(borrow);
-            }
+            extractedReturnBook(bookId, user);
             return "redirect:/users/borrowed-books";
         } catch (Exception e) {
             log.error("Failed to return book.", e);
             return "redirect:/users/borrowed-books";
+        }
+    }
+
+    private void extractedReturnBook(int bookId, User user) {
+        CompletableFuture<Optional<Borrow>> borrowOptionalFuture = borrowService.findBorrow(user.getId(), bookId);
+        Optional<Borrow> borrowOptional = borrowOptionalFuture.join();
+
+        if (borrowOptional.isPresent()) {
+            Borrow borrow = borrowOptional.get();
+            borrow.setReturnDate(LocalDate.now());
+            borrowService.updateBorrow(borrow);
         }
     }
 

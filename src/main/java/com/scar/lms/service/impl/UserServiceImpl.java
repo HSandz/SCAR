@@ -5,7 +5,7 @@ import com.scar.lms.entity.Role;
 import com.scar.lms.entity.User;
 import com.scar.lms.exception.DuplicateResourceException;
 import com.scar.lms.exception.OperationNotAllowedException;
-import com.scar.lms.exception.ResourceNotFoundException;
+import com.scar.lms.exception.UserNotFoundException;
 import com.scar.lms.repository.BookRepository;
 import com.scar.lms.repository.UserRepository;
 import com.scar.lms.service.UserService;
@@ -16,7 +16,6 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
 @Service
@@ -33,7 +32,7 @@ public class UserServiceImpl implements UserService {
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     @Override
     public CompletableFuture<List<User>> findAllUsers() {
-        return CompletableFuture.completedFuture(userRepository.findAll());
+        return CompletableFuture.supplyAsync(userRepository::findAll);
     }
 
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
@@ -41,7 +40,7 @@ public class UserServiceImpl implements UserService {
     public User findUserByUsername(String username) {
         return userRepository
                 .findByUsername(username)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found: " + username));
+                .orElseThrow(() -> new UserNotFoundException("User not found: " + username));
     }
 
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
@@ -49,7 +48,7 @@ public class UserServiceImpl implements UserService {
     public User findUserByEmail(String email) {
         return userRepository
                 .findByEmail(email)
-                .orElseThrow(() -> new ResourceNotFoundException("User with email not found: " + email));
+                .orElseThrow(() -> new UserNotFoundException("User with email not found: " + email));
     }
 
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
@@ -63,7 +62,7 @@ public class UserServiceImpl implements UserService {
     public User findUserById(int id) {
         return userRepository
                 .findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("User with id not found: " + id));
+                .orElseThrow(() -> new UserNotFoundException("User with id not found: " + id));
     }
 
     @Async
@@ -90,7 +89,7 @@ public class UserServiceImpl implements UserService {
     public void deleteUser(int id) {
         var user = userRepository
                 .findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("User with id not found: " + id));
+                .orElseThrow(() -> new OperationNotAllowedException("Cannot delete user with id not found: " + id));
         userRepository.delete(user);
     }
 
@@ -98,7 +97,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public void addFavouriteFor(User user, int bookId) {
         User persistedUser = userRepository.findByUsername(user.getUsername())
-                .orElseThrow(() -> new OperationNotAllowedException("User not found: " + user.getUsername()));
+                .orElseThrow(() -> new OperationNotAllowedException("Cannot add favourite for user not found: " + user.getUsername()));
 
         Book book = bookRepository.findById(bookId)
                 .orElseThrow(() -> new OperationNotAllowedException("Book not found with ID: " + bookId));
@@ -115,7 +114,7 @@ public class UserServiceImpl implements UserService {
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     @Override
     public CompletableFuture<List<Book>> findFavouriteBooks(int userId) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
+        User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("User not found"));
         return CompletableFuture.supplyAsync(() -> List.copyOf(user.getFavouriteBooks()));
     }
 
@@ -124,7 +123,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public void removeFavouriteFor(User user, int bookId) {
         User persistedUser = userRepository.findByUsername(user.getUsername())
-                .orElseThrow(() -> new OperationNotAllowedException("User not found: " + user.getUsername()));
+                .orElseThrow(() -> new OperationNotAllowedException("Cannot remove favourite for user not found: " + user.getUsername()));
 
         Book book = bookRepository.findById(bookId)
                 .orElseThrow(() -> new OperationNotAllowedException("Book not found with ID: " + bookId));
