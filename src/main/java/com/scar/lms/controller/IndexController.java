@@ -46,11 +46,15 @@ public class IndexController {
             model.addAttribute("error", "Invalid registration details.");
             return "register";
         }
+        extracted(user);
+        return "redirect:/login";
+    }
+
+    private void extracted(User user) {
         user.setPassword(authenticationService.encryptPassword(user.getPassword()));
         user.setPoints(DEFAULT_USER_POINT);
         user.setRole(USER);
         userService.createUser(user);
-        return "redirect:/login";
     }
 
     @GetMapping("/login")

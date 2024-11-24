@@ -59,8 +59,8 @@ public class BorrowServiceImpl implements BorrowService {
 
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     @Override
-    public Optional<Borrow> findBorrow(int bookId, int userId) {
-        return borrowRepository.findByUserIdAndBookId(userId, bookId);
+    public CompletableFuture<Optional<Borrow>> findBorrow(int bookId, int userId) {
+        return CompletableFuture.supplyAsync(() -> borrowRepository.findByUserIdAndBookId(bookId, userId));
     }
 
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)

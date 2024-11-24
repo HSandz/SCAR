@@ -54,8 +54,8 @@ public class UserServiceImpl implements UserService {
 
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     @Override
-    public List<User> searchUsers(String keyword) {
-        return userRepository.searchUsers(keyword);
+    public CompletableFuture<List<User>> searchUsers(String keyword) {
+        return CompletableFuture.supplyAsync(() -> userRepository.searchUsers(keyword));
     }
 
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)

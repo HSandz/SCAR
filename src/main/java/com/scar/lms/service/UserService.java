@@ -12,7 +12,7 @@ public interface UserService {
 
     CompletableFuture<List<User>> findAllUsers();
 
-    List<User> searchUsers(String keyword);
+    CompletableFuture<List<User>> searchUsers(String keyword);
 
     User findUserById(int id);
 

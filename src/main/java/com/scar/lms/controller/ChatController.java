@@ -82,11 +82,9 @@ public class ChatController {
         CompletableFuture<String> botResponseFuture = openAIService.getResponse(userMessage);
 
         botResponseFuture.thenAccept(botResponse -> {
-            // Add attributes to the model asynchronously
             model.addAttribute("userMessage", userMessage);
             model.addAttribute("botResponse", botResponse);
-        }).exceptionally(ex -> {
-            // Handle any exceptions that occur
+        }).exceptionally(_ -> {
             model.addAttribute("userMessage", userMessage);
             model.addAttribute("botResponse", "Sorry, something went wrong while processing your request.");
             return null;
@@ -94,5 +92,4 @@ public class ChatController {
 
         return "chat-bot";
     }
-
 }

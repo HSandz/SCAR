@@ -15,6 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 @Slf4j
@@ -23,18 +24,15 @@ import java.util.concurrent.CompletableFuture;
 public class UserController {
 
     private final UserService userService;
-    private final BookService bookService;
     private final BorrowService borrowService;
     private final AuthenticationService authenticationService;
     private final CloudStorageService cloudStorageService;
 
     public UserController(final UserService userService,
-                          final BookService bookService,
                           final BorrowService borrowService,
                           final AuthenticationService authenticationService,
                           final CloudStorageService cloudStorageService) {
         this.userService = userService;
-        this.bookService = bookService;
         this.borrowService = borrowService;
         this.authenticationService = authenticationService;
         this.cloudStorageService = cloudStorageService;
@@ -60,6 +58,7 @@ public class UserController {
             model.addAttribute("user", user);
 
         } catch (Exception e) {
+            log.error("Error uploading profile image.", e);
             model.addAttribute("message", "Error uploading profile image: " + e.getMessage());
         }
 
@@ -77,8 +76,7 @@ public class UserController {
             return "redirect:/login";
         }
 
-        String username = authenticationService.extractUsernameFromAuthentication(authentication);
-        User user = userService.findUserByUsername(username);
+        User user = authenticationService.getAuthenticatedUser(authentication);
 
         if (user == null) {
             model.addAttribute("error", "User not found.");
@@ -95,8 +93,7 @@ public class UserController {
                                 @RequestParam("displayName") String updatedDisplayName,
                                 @RequestParam("email") String updatedEmail,
                                 Model model) {
-        String username = authenticationService.extractUsernameFromAuthentication(authentication);
-        User currentUser = userService.findUserByUsername(username);
+        User currentUser = authenticationService.getAuthenticatedUser(authentication);
         if (!authenticationService.validateEditProfile(currentUser, updatedUsername, updatedDisplayName, updatedEmail)) {
             model.addAttribute("failure", "Profile not updated.");
         }
@@ -132,8 +129,7 @@ public class UserController {
 
     @PostMapping("/profile/delete")
     public String deleteAccount(Authentication authentication, Model model) {
-        String username = authenticationService.extractUsernameFromAuthentication(authentication);
-        User user = userService.findUserByUsername(username);
+        User user = authenticationService.getAuthenticatedUser(authentication);
         userService.deleteUser(user.getId());
         model.addAttribute("success", "Account deleted successfully.");
         return "redirect:/logout";
@@ -141,22 +137,27 @@ public class UserController {
 
     @PostMapping("/return/{bookId}")
     public String returnBook(@PathVariable int bookId, Authentication authentication) {
-        String username = authenticationService.extractUsernameFromAuthentication(authentication);
-        User user = userService.findUserByUsername(username);
+        User user = authenticationService.getAuthenticatedUser(authentication);
 
-        Borrow borrow = borrowService.findBorrow(user.getId(), bookId)
-                .orElseThrow(() -> new RuntimeException("This book is not in your borrowed list."));
+        try {
+            CompletableFuture<Optional<Borrow>> borrowOptionalFuture = borrowService.findBorrow(user.getId(), bookId);
+            Optional<Borrow> borrowOptional = borrowOptionalFuture.join();
 
-        borrow.setReturnDate(LocalDate.now());
-        borrowService.updateBorrow(borrow);
-
-        return "redirect:/users/profile";
+            if (borrowOptional.isPresent()) {
+                Borrow borrow = borrowOptional.get();
+                borrow.setReturnDate(LocalDate.now());
+                borrowService.updateBorrow(borrow);
+            }
+            return "redirect:/users/borrowed-books";
+        } catch (Exception e) {
+            log.error("Failed to return book.", e);
+            return "redirect:/users/borrowed-books";
+        }
     }
 
     @GetMapping("/borrowed-books")
     public String showBorrowedBooks(Authentication authentication, Model model) {
-        String username = authenticationService.extractUsernameFromAuthentication(authentication);
-        User user = userService.findUserByUsername(username);
+        User user = authenticationService.getAuthenticatedUser(authentication);
         List<Borrow> borrowedBooks = getBorrowList(user);
         model.addAttribute("borrowedBooks", borrowedBooks);
         return "borrowed-books";
@@ -164,16 +165,14 @@ public class UserController {
 
     @PostMapping("/add-favourite/{bookId}")
     public String addFavourite(@PathVariable int bookId, Authentication authentication) {
-        String username = authenticationService.extractUsernameFromAuthentication(authentication);
-        User user = userService.findUserByUsername(username);
+        User user = authenticationService.getAuthenticatedUser(authentication);
         userService.addFavouriteFor(user, bookId);
         return "redirect:/book-list/" + bookId;
     }
 
     @GetMapping("/favourites")
     public String showFavouriteBooks(Authentication authentication, Model model) {
-        String username = authenticationService.extractUsernameFromAuthentication(authentication);
-        User user = userService.findUserByUsername(username);
+        User user = authenticationService.getAuthenticatedUser(authentication);
         try {
             CompletableFuture<List<Book>> favouriteBooksFuture = userService.findFavouriteBooks(user.getId());
             List<Book> favouriteBooks = favouriteBooksFuture.join();
@@ -193,30 +192,18 @@ public class UserController {
 
     @PostMapping("/remove-favourite/{bookId}")
     public String removeFavourite(@PathVariable int bookId, Authentication authentication) {
-        String username = authenticationService.extractUsernameFromAuthentication(authentication);
-        User user = userService.findUserByUsername(username);
+        User user = authenticationService.getAuthenticatedUser(authentication);
         userService.removeFavouriteFor(user, bookId);
         return "redirect:/users/favourites";
     }
 
+
     @GetMapping("/borrow-history")
     public String showHistory(Authentication authentication, Model model) {
-        String username = authenticationService.extractUsernameFromAuthentication(authentication);
-        User user = userService.findUserByUsername(username);
-        try {
-            List<Borrow> borrows = getBorrowList(user);
-
-            if (borrows == null) {
-                model.addAttribute("error", "History not found.");
-                return "error/404";
-            } else {
-                model.addAttribute("history", borrows);
-                return "history";
-            }
-        } catch (Exception e) {
-            model.addAttribute("error", "Failed to fetch history.");
-            return "error/404";
-        }
+        User user = authenticationService.getAuthenticatedUser(authentication);
+        List<Borrow> borrowHistory = getBorrowList(user);
+        model.addAttribute("borrowHistory", borrowHistory);
+        return "borrow-history";
     }
 
     private List<Borrow> getBorrowList(User user) {

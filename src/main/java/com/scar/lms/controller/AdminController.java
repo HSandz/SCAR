@@ -145,7 +145,7 @@ public class AdminController {
             return "redirect:/login";
         }
 
-        User user = getAuthenticatedUser(authentication);
+        User user = authenticationService.getAuthenticatedUser(authentication);
 
         if (user == null) {
             model.addAttribute("error", "User not found.");
@@ -195,14 +195,9 @@ public class AdminController {
 
     @PostMapping("/profile/edit")
     public String showEditAdminProfileForm(Authentication authentication, Model model) {
-        User user = getAuthenticatedUser(authentication);
+        User user = authenticationService.getAuthenticatedUser(authentication);
         model.addAttribute("user", user);
         return "admin-profile";
-    }
-
-    private User getAuthenticatedUser(Authentication authentication) {
-        String username = authenticationService.extractUsernameFromAuthentication(authentication);
-        return userService.findUserByUsername(username);
     }
 
 }
