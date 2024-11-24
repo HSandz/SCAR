@@ -71,7 +71,6 @@ header {
 .navmenu li:hover .drop-down {
     display: block;
 }
-
 i {
     color: lightslategrey;
     transform: scale(2.5);
