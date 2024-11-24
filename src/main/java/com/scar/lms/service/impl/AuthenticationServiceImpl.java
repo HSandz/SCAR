@@ -1,5 +1,6 @@
 package com.scar.lms.service.impl;
 
+import com.scar.lms.controller.UserController;
 import com.scar.lms.entity.User;
 import com.scar.lms.exception.InvalidDataException;
 import com.scar.lms.exception.LibraryException;
@@ -165,5 +166,12 @@ public class AuthenticationServiceImpl implements AuthenticationService, UserDet
         return validateUsername(newUsername) &&
                 validateEmail(newEmail) &&
                 validateDisplayName(newDisplayName);
+    }
+
+    @Override
+    public User getAuthenticatedUser(Authentication authentication) {
+        String username = extractUsernameFromAuthentication(authentication);
+        return userRepository.findByUsername(username)
+                .orElseThrow(() -> new ResourceNotFoundException("User with username not found: " + username));
     }
 }

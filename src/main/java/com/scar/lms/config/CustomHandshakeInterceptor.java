@@ -1,8 +1,10 @@
 package com.scar.lms.config;
 
-import com.scar.lms.service.AuthenticationService;
 import com.scar.lms.service.UserService;
+
 import lombok.NonNull;
+import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -14,18 +16,17 @@ import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
 
 import jakarta.servlet.http.HttpSession;
+
 import java.util.Map;
 
+@Slf4j
 @Component
 public class CustomHandshakeInterceptor implements HandshakeInterceptor {
 
     private final UserService userService;
-    private final AuthenticationService authenticationService;
 
-    public CustomHandshakeInterceptor(final UserService userService,
-                                      final AuthenticationService authenticationService) {
+    public CustomHandshakeInterceptor(final UserService userService) {
         this.userService = userService;
-        this.authenticationService = authenticationService;
     }
 
     @Override
@@ -36,14 +37,14 @@ public class CustomHandshakeInterceptor implements HandshakeInterceptor {
         if (request instanceof org.springframework.http.server.ServletServerHttpRequest servletRequest) {
             HttpSession session = servletRequest.getServletRequest().getSession(false);
             if (session != null) {
-                //Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
                 Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
                 if (authentication instanceof UsernamePasswordAuthenticationToken) {
+                    System.out.println("UsernamePassword detected");
                     String username = authentication.getName();
                     attributes.put("username", username);
                     attributes.put("profilePictureUrl", userService.findUserByUsername(username).getProfilePictureUrl());
                 } else if (authentication instanceof OAuth2AuthenticationToken token) {
-                    System.out.println("san dep trai");
+                    System.out.println("OAuth2 detected");
                     Map<String, Object> attribute = token.getPrincipal().getAttributes();
                     attributes.put("username", attribute.get("login"));
                     attributes.put("profilePictureUrl", attribute.get("avatar_url"));
@@ -61,5 +62,8 @@ public class CustomHandshakeInterceptor implements HandshakeInterceptor {
                                @NonNull ServerHttpResponse response,
                                @NonNull WebSocketHandler wsHandler,
                                Exception ex) {
+        if (ex != null) {
+            log.error("Websocket handshake failed.", ex);
+        }
     }
 }

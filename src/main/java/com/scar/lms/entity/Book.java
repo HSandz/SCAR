@@ -75,5 +75,4 @@ public class Book {
             cascade = { CascadeType.PERSIST, CascadeType.MERGE },
             mappedBy = "book")
     private Set<Borrow> borrows = new HashSet<>();
-
 }

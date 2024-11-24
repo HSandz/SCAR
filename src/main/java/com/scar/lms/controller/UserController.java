@@ -5,6 +5,8 @@ import com.scar.lms.entity.Borrow;
 import com.scar.lms.entity.User;
 import com.scar.lms.service.*;
 
+import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -13,25 +15,24 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Set;
+import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
+@Slf4j
 @Controller
 @RequestMapping("/users")
 public class UserController {
 
     private final UserService userService;
-    private final BookService bookService;
     private final BorrowService borrowService;
     private final AuthenticationService authenticationService;
     private final CloudStorageService cloudStorageService;
 
     public UserController(final UserService userService,
-                          final BookService bookService,
                           final BorrowService borrowService,
                           final AuthenticationService authenticationService,
                           final CloudStorageService cloudStorageService) {
         this.userService = userService;
-        this.bookService = bookService;
         this.borrowService = borrowService;
         this.authenticationService = authenticationService;
         this.cloudStorageService = cloudStorageService;
@@ -57,6 +58,7 @@ public class UserController {
             model.addAttribute("user", user);
 
         } catch (Exception e) {
+            log.error("Error uploading profile image.", e);
             model.addAttribute("message", "Error uploading profile image: " + e.getMessage());
         }
 
@@ -74,8 +76,7 @@ public class UserController {
             return "redirect:/login";
         }
 
-        String username = authenticationService.extractUsernameFromAuthentication(authentication);
-        User user = userService.findUserByUsername(username);
+        User user = authenticationService.getAuthenticatedUser(authentication);
 
         if (user == null) {
             model.addAttribute("error", "User not found.");
@@ -92,8 +93,7 @@ public class UserController {
                                 @RequestParam("displayName") String updatedDisplayName,
                                 @RequestParam("email") String updatedEmail,
                                 Model model) {
-        String username = authenticationService.extractUsernameFromAuthentication(authentication);
-        User currentUser = userService.findUserByUsername(username);
+        User currentUser = authenticationService.getAuthenticatedUser(authentication);
         if (!authenticationService.validateEditProfile(currentUser, updatedUsername, updatedDisplayName, updatedEmail)) {
             model.addAttribute("failure", "Profile not updated.");
         }
@@ -129,86 +129,85 @@ public class UserController {
 
     @PostMapping("/profile/delete")
     public String deleteAccount(Authentication authentication, Model model) {
-        String username = authenticationService.extractUsernameFromAuthentication(authentication);
-        User user = userService.findUserByUsername(username);
+        User user = authenticationService.getAuthenticatedUser(authentication);
         userService.deleteUser(user.getId());
         model.addAttribute("success", "Account deleted successfully.");
         return "redirect:/logout";
     }
 
-    @PostMapping("/borrow/{bookId}")
-    public String borrowBook(@PathVariable int bookId, Authentication authentication) {
-        String username = authenticationService.extractUsernameFromAuthentication(authentication);
-        User user = userService.findUserByUsername(username);
-        Book book = bookService.findBookById(bookId);
-
-        Borrow borrow = new Borrow();
-        borrow.setUser(user);
-        borrow.setBook(book);
-        borrow.setBorrowDate(LocalDate.now());
-
-        borrowService.addBorrow(borrow);
-
-        user.setPoints(user.getPoints() + 1);
-        userService.updateUser(user);
-
-        return "redirect:/book-list";
-    }
-
     @PostMapping("/return/{bookId}")
     public String returnBook(@PathVariable int bookId, Authentication authentication) {
-        String username = authenticationService.extractUsernameFromAuthentication(authentication);
-        User user = userService.findUserByUsername(username);
+        User user = authenticationService.getAuthenticatedUser(authentication);
 
-        Borrow borrow = borrowService.findBorrow(user.getId(), bookId)
-                .orElseThrow(() -> new RuntimeException("This book is not in your borrowed list."));
+        try {
+            CompletableFuture<Optional<Borrow>> borrowOptionalFuture = borrowService.findBorrow(user.getId(), bookId);
+            Optional<Borrow> borrowOptional = borrowOptionalFuture.join();
 
-        borrow.setReturnDate(LocalDate.now());
-        borrowService.updateBorrow(borrow);
-
-        return "redirect:/users/profile";
+            if (borrowOptional.isPresent()) {
+                Borrow borrow = borrowOptional.get();
+                borrow.setReturnDate(LocalDate.now());
+                borrowService.updateBorrow(borrow);
+            }
+            return "redirect:/users/borrowed-books";
+        } catch (Exception e) {
+            log.error("Failed to return book.", e);
+            return "redirect:/users/borrowed-books";
+        }
     }
 
     @GetMapping("/borrowed-books")
     public String showBorrowedBooks(Authentication authentication, Model model) {
-        String username = authenticationService.extractUsernameFromAuthentication(authentication);
-        User user = userService.findUserByUsername(username);
-        List<Borrow> borrowedBooks = borrowService.findBorrowsOfUser(user.getId());
+        User user = authenticationService.getAuthenticatedUser(authentication);
+        List<Borrow> borrowedBooks = getBorrowList(user);
         model.addAttribute("borrowedBooks", borrowedBooks);
         return "borrowed-books";
     }
 
     @PostMapping("/add-favourite/{bookId}")
     public String addFavourite(@PathVariable int bookId, Authentication authentication) {
-        String username = authenticationService.extractUsernameFromAuthentication(authentication);
-        User user = userService.findUserByUsername(username);
+        User user = authenticationService.getAuthenticatedUser(authentication);
         userService.addFavouriteFor(user, bookId);
         return "redirect:/book-list/" + bookId;
     }
 
     @GetMapping("/favourites")
     public String showFavouriteBooks(Authentication authentication, Model model) {
-        String username = authenticationService.extractUsernameFromAuthentication(authentication);
-        User user = userService.findUserByUsername(username);
-        Set<Book> favouriteBooks = userService.findFavouriteBooks(user.getId());
-        model.addAttribute("favouriteBooks", favouriteBooks);
-        return "favourites";
+        User user = authenticationService.getAuthenticatedUser(authentication);
+        try {
+            CompletableFuture<List<Book>> favouriteBooksFuture = userService.findFavouriteBooks(user.getId());
+            List<Book> favouriteBooks = favouriteBooksFuture.join();
+            if (favouriteBooks == null) {
+                model.addAttribute("error", "Failed to fetch favourite books.");
+                return "error/404";
+            } else {
+                model.addAttribute("favouriteBooks", favouriteBooks);
+                return "favourites";
+            }
+        } catch (Exception e) {
+            log.error("Failed to fetch favourite books.", e);
+            model.addAttribute("error", "Failed to fetch favourite books.");
+            return "error/404";
+        }
     }
 
     @PostMapping("/remove-favourite/{bookId}")
     public String removeFavourite(@PathVariable int bookId, Authentication authentication) {
-        String username = authenticationService.extractUsernameFromAuthentication(authentication);
-        User user = userService.findUserByUsername(username);
+        User user = authenticationService.getAuthenticatedUser(authentication);
         userService.removeFavouriteFor(user, bookId);
         return "redirect:/users/favourites";
     }
 
+
     @GetMapping("/borrow-history")
     public String showHistory(Authentication authentication, Model model) {
-        String username = authenticationService.extractUsernameFromAuthentication(authentication);
-        User user = userService.findUserByUsername(username);
-        List<Borrow> history = borrowService.findBorrowsOfUser(user.getId());
-        model.addAttribute("history", history);
-        return "history";
+        User user = authenticationService.getAuthenticatedUser(authentication);
+        List<Borrow> borrowHistory = getBorrowList(user);
+        model.addAttribute("borrowHistory", borrowHistory);
+        return "borrow-history";
+    }
+
+    private List<Borrow> getBorrowList(User user) {
+        CompletableFuture<List<Borrow>> borrowsFuture = borrowService.findBorrowsOfUser(user.getId());
+        return borrowsFuture.join();
     }
 }

@@ -3,10 +3,11 @@ package com.scar.lms.service;
 import com.scar.lms.entity.Author;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 public interface AuthorService {
 
-    List<Author> findAllAuthors();
+    CompletableFuture<List<Author>> findAllAuthors();
 
     List<Author> findAuthorsByCountry(String country);
 

@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 public class BookServiceImpl implements BookService {
@@ -28,8 +29,8 @@ public class BookServiceImpl implements BookService {
 
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     @Override
-    public List<Book> findAllBooks() {
-        return bookRepository.findAll();
+    public CompletableFuture<List<Book>> findAllBooks() {
+        return CompletableFuture.supplyAsync(bookRepository::findAll);
     }
 
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
@@ -69,18 +70,19 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public Page<Book> findPaginated(Pageable pageable) {
-        return bookRepository.findAll(pageable);
+    public CompletableFuture<Page<Book>> findPaginated(Pageable pageable) {
+        return CompletableFuture.supplyAsync(() -> bookRepository.findAll(pageable));
     }
 
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
+    @Async
     @Override
-    public Page<Book> findFilteredAndPaginated(String title,
-                                               String authorName,
-                                               String genreName,
-                                               String publisherName,
-                                               Integer year,
-                                               Pageable pageable) {
+    public CompletableFuture<Page<Book>> findFilteredAndPaginated(String title,
+                                                                  String authorName,
+                                                                  String genreName,
+                                                                  String publisherName,
+                                                                  Integer year,
+                                                                  Pageable pageable) {
 
         Specification<Book> spec = Specification.where(null);
 
@@ -100,8 +102,10 @@ public class BookServiceImpl implements BookService {
             spec = spec.and(BookSpecification.hasYear(year));
         }
 
-        return bookRepository.findAll(spec, pageable);
+        Specification<Book> finalSpec = spec;
+        return CompletableFuture.supplyAsync(() -> bookRepository.findAll(finalSpec, pageable));
     }
+
 
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     @Override
@@ -145,8 +149,16 @@ public class BookServiceImpl implements BookService {
         bookRepository.delete(book);
     }
 
+    @Async
     @Override
-    public List<Book> findTopBorrowedBooks() {
-        return bookRepository.findTopBorrowedBooks();
+    public CompletableFuture<List<Book>> findTopBorrowedBooks() {
+        return CompletableFuture.supplyAsync(bookRepository::findTopBorrowedBooks);
+    }
+
+
+    @Async
+    @Override
+    public CompletableFuture<Long> countAllBooks() {
+        return CompletableFuture.supplyAsync(bookRepository::count);
     }
 }

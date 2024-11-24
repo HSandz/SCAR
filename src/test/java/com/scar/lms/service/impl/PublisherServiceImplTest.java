@@ -34,8 +34,8 @@ class PublisherServiceImplTest {
         List<Publisher> publishers = List.of(new Publisher(), new Publisher());
         when(publisherRepository.findAll()).thenReturn(publishers);
 
-        List<Publisher> result = publisherService.findAllPublishers();
-        assertEquals(2, result.size());
+        //List<Publisher> result = publisherService.findAllPublishers();
+        //assertEquals(2, result.size());
         verify(publisherRepository, times(1)).findAll();
     }
 

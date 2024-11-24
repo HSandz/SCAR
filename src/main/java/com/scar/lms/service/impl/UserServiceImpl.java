@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -31,8 +32,8 @@ public class UserServiceImpl implements UserService {
 
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     @Override
-    public List<User> findAllUsers() {
-        return userRepository.findAll();
+    public CompletableFuture<List<User>> findAllUsers() {
+        return CompletableFuture.completedFuture(userRepository.findAll());
     }
 
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
@@ -53,8 +54,8 @@ public class UserServiceImpl implements UserService {
 
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     @Override
-    public List<User> searchUsers(String keyword) {
-        return userRepository.searchUsers(keyword);
+    public CompletableFuture<List<User>> searchUsers(String keyword) {
+        return CompletableFuture.supplyAsync(() -> userRepository.searchUsers(keyword));
     }
 
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
@@ -113,9 +114,9 @@ public class UserServiceImpl implements UserService {
 
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     @Override
-    public Set<Book> findFavouriteBooks(int userId) {
+    public CompletableFuture<List<Book>> findFavouriteBooks(int userId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
-        return user.getFavouriteBooks();
+        return CompletableFuture.supplyAsync(() -> List.copyOf(user.getFavouriteBooks()));
     }
 
     @Async
@@ -138,7 +139,17 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<User> findUsersByRole(Role role) {
-        return userRepository.findByRole(role);
+    public CompletableFuture<List<User>> findUsersByRole(Role role) {
+        return CompletableFuture.supplyAsync(() -> userRepository.findByRole(role));
+    }
+
+    @Override
+    public CompletableFuture<Long> countAllUsers() {
+        return CompletableFuture.supplyAsync(userRepository::count);
+    }
+
+    @Override
+    public CompletableFuture<Long> countUsersByRole(Role role) {
+        return CompletableFuture.supplyAsync(() -> userRepository.countByRole(role));
     }
 }

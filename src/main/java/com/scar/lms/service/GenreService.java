@@ -3,10 +3,11 @@ package com.scar.lms.service;
 import com.scar.lms.entity.Genre;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 public interface GenreService {
 
-    List<Genre> findAllGenres();
+    CompletableFuture<List<Genre>> findAllGenres();
 
     Genre findGenreById(int id);
 

@@ -1,5 +1,8 @@
 package com.scar.lms.service;
 
+import java.util.concurrent.CompletableFuture;
+
 public interface OpenAIService {
-    String getResponse(String userMessage);
+
+    CompletableFuture<String> getResponse(String userMessage);
 }
