@@ -6,6 +6,7 @@ import com.scar.lms.entity.User;
 import com.scar.lms.service.*;
 
 import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -14,7 +15,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
 @Slf4j

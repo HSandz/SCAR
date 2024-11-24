@@ -5,8 +5,11 @@ import com.scar.lms.service.AuthenticationService;
 import com.scar.lms.service.BookService;
 import com.scar.lms.service.BorrowService;
 import com.scar.lms.service.UserService;
+
 import jakarta.validation.Valid;
+
 import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
@@ -21,7 +24,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static com.scar.lms.entity.Role.ADMIN;

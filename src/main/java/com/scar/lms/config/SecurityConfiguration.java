@@ -2,6 +2,7 @@ package com.scar.lms.config;
 
 import com.scar.lms.service.AuthenticationService;
 import com.scar.lms.service.impl.oauth2.CustomOAuth2UserService;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
