@@ -28,8 +28,8 @@ public class Book {
     @Column(name = "LANGUAGE", length = 50)
     private String language;
 
-    @Column(name = "RATING", length = 10, nullable = false)
-    private Double rating;
+    @Column(name = "RATING", length = 10)
+    private Double rating = 0D;
 
     @Column(name = "PUBLICATION_YEAR", length = 10, nullable = false)
     private Integer publicationYear;
@@ -40,7 +40,7 @@ public class Book {
     @Column(name = "IMAGE_URL")
     private String imageUrl;
 
-    @Column(name = "BORROW_COUNT", nullable = false)
+    @Column(name = "BORROW_COUNT")
     private int borrowCount = 0;
 
     @ManyToMany(fetch = FetchType.LAZY,
