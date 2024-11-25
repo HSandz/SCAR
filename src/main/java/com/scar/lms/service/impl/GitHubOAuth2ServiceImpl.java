@@ -26,7 +26,7 @@ public class GitHubOAuth2ServiceImpl implements GitHubOAuth2Service {
     }
 
     @Override
-    public void registerNewUser(OAuth2User oAuth2User) {
+    public User registerNewUser(OAuth2User oAuth2User) {
         Map<String, Object> attributes = oAuth2User.getAttributes();
         String username = (String) attributes.get("login"); // GitHub's username
         String userId = String.valueOf(attributes.get("id")); // GitHub's unique ID
@@ -36,7 +36,7 @@ public class GitHubOAuth2ServiceImpl implements GitHubOAuth2Service {
             displayName = username;
         }
 
-        getUser(userId, username, displayName, userRepository, bCryptPasswordEncoder);
+        return getUser(userId, username, displayName, userRepository, bCryptPasswordEncoder);
     }
 
     private User getUser(String userId, String username, String displayName, UserRepository userRepository, BCryptPasswordEncoder bCryptPasswordEncoder) {

@@ -68,7 +68,7 @@ public class UserController {
             model.addAttribute("message", "Error uploading profile image: " + e.getMessage());
         }
 
-        return "upload";
+        return "profile";
     }
 
     @GetMapping({"/", ""})
