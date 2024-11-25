@@ -44,8 +44,7 @@ public class UserController {
     public String showUploadForm(
             Authentication authentication,
             Model model) {
-        int userId = userService.findUserByUsername(
-                authenticationService.extractUsernameFromAuthentication(authentication)).getId();
+            int userId = getUser(authentication).getId();
         model.addAttribute("user", userService.findUserById(userId));
         return "upload";
     }
@@ -55,8 +54,7 @@ public class UserController {
             Authentication authentication,
             @RequestParam("file") MultipartFile file,
             Model model) {
-        int userId = userService.findUserByUsername(
-                authenticationService.extractUsernameFromAuthentication(authentication)).getId();
+            int userId = getUser(authentication).getId();
         try {
             extractedUploadProfileImage(userId, file, model);
 
