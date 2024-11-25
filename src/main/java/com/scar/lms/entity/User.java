@@ -53,5 +53,4 @@ public class User {
             joinColumns = { @JoinColumn(name = "USER_ID") },
             inverseJoinColumns = { @JoinColumn(name = "BOOK_ID") })
     private Set<Book> favouriteBooks = new HashSet<>();
-
 }

@@ -4,6 +4,7 @@ import com.scar.lms.model.ChatMessage;
 import com.scar.lms.service.AuthenticationService;
 import com.scar.lms.service.OpenAIService;
 import com.scar.lms.service.UserService;
+
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
 
 @Controller
 @RequestMapping("/chat")
@@ -77,9 +79,17 @@ public class ChatController {
 
     @PostMapping("/bot")
     public String sendMessageBot(@RequestParam("userMessage") String userMessage, Model model) {
-        String botResponse = openAIService.getResponse(userMessage);
-        model.addAttribute("userMessage", userMessage);
-        model.addAttribute("botResponse", botResponse);
+        CompletableFuture<String> botResponseFuture = openAIService.getResponse(userMessage);
+
+        botResponseFuture.thenAccept(botResponse -> {
+            model.addAttribute("userMessage", userMessage);
+            model.addAttribute("botResponse", botResponse);
+        }).exceptionally(_ -> {
+            model.addAttribute("userMessage", userMessage);
+            model.addAttribute("botResponse", "Sorry, something went wrong while processing your request.");
+            return null;
+        });
+
         return "chat-bot";
     }
 }

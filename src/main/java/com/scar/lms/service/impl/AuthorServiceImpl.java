@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 public class AuthorServiceImpl implements AuthorService {
@@ -24,8 +25,8 @@ public class AuthorServiceImpl implements AuthorService {
 
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     @Override
-    public List<Author> findAllAuthors() {
-        return authorRepository.findAll();
+    public CompletableFuture<List<Author>> findAllAuthors() {
+        return CompletableFuture.supplyAsync(authorRepository::findAll);
     }
 
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)

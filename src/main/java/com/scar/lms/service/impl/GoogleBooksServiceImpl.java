@@ -1,6 +1,5 @@
 package com.scar.lms.service.impl;
 
-import ch.qos.logback.classic.Logger;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -10,8 +9,6 @@ import com.scar.lms.entity.Author;
 import com.scar.lms.entity.Book;
 import com.scar.lms.entity.Genre;
 import com.scar.lms.entity.Publisher;
-import com.scar.lms.exception.DuplicateResourceException;
-import com.scar.lms.repository.BookRepository;
 import com.scar.lms.service.GoogleBooksService;
 
 import lombok.extern.slf4j.Slf4j;
@@ -22,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 
 @Slf4j
 @Service
@@ -29,20 +27,19 @@ public class GoogleBooksServiceImpl implements GoogleBooksService {
 
     private final RestTemplate restTemplate;
     private final GoogleBooksApiProperties googleBooksApiProperties;
-    private final BookRepository bookRepository;
+
 
     public GoogleBooksServiceImpl(final RestTemplate restTemplate,
-                                  final GoogleBooksApiProperties googleBooksApiProperties,
-                                  final BookRepository bookRepository) {
+                                  final GoogleBooksApiProperties googleBooksApiProperties) {
         this.restTemplate = restTemplate;
         this.googleBooksApiProperties = googleBooksApiProperties;
-        this.bookRepository = bookRepository;
     }
 
     @Override
-    public List<Book> searchBooks(String query, int startIndex, int maxResults) {
+    @Async
+    public CompletableFuture<List<Book>> searchBooks(String query, int startIndex, int maxResults) {
         if (query == null || query.trim().isEmpty()) {
-            return Collections.emptyList();
+            return CompletableFuture.completedFuture(Collections.emptyList());
         }
 
         String url = googleBooksApiProperties.getUrl() + "?q=" + query
@@ -50,14 +47,17 @@ public class GoogleBooksServiceImpl implements GoogleBooksService {
                 + "&maxResults=" + maxResults
                 + "&key=" + googleBooksApiProperties.getKey();
 
-        ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, null, String.class);
-        String jsonResponse = response.getBody();
-
-        ObjectMapper objectMapper = new ObjectMapper();
         try {
+            // Call Google Books API
+            ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, null, String.class);
+            String jsonResponse = response.getBody();
+
+            // Parse JSON response
+            ObjectMapper objectMapper = new ObjectMapper();
             JsonNode rootNode = objectMapper.readTree(jsonResponse);
             JsonNode itemsNode = rootNode.path("items");
 
+            // Map JSON data to List<Book>
             List<Book> books = new ArrayList<>();
             for (JsonNode item : itemsNode) {
                 Book book = new Book();
@@ -141,10 +141,15 @@ public class GoogleBooksServiceImpl implements GoogleBooksService {
 
                 books.add(book);
             }
-            return books;
+
+            // Return CompletableFuture
+            return CompletableFuture.completedFuture(books);
         } catch (JsonProcessingException e) {
             log.error("Error parsing JSON response from Google Books API", e);
-            return Collections.emptyList();
+            return CompletableFuture.completedFuture(Collections.emptyList());
+        } catch (Exception e) {
+            log.error("Error calling Google Books API", e);
+            return CompletableFuture.completedFuture(Collections.emptyList());
         }
     }
 }

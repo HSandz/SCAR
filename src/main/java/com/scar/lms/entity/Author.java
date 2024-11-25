@@ -38,5 +38,4 @@ public class Author {
             cascade = { CascadeType.PERSIST, CascadeType.MERGE },
             mappedBy = "authors")
     private Set<Book> books = new HashSet<>();
-
 }

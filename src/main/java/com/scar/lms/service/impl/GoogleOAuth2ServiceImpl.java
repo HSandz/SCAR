@@ -25,7 +25,7 @@ public class GoogleOAuth2ServiceImpl implements GoogleOAuth2Service {
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
     }
 
-    public User registerNewUser(OAuth2User oAuth2User) {
+    public void registerNewUser(OAuth2User oAuth2User) {
         Map<String, Object> attributes = oAuth2User.getAttributes();
         String email = (String) attributes.get("email");
         String username = (String) attributes.get("given_name");
@@ -35,7 +35,7 @@ public class GoogleOAuth2ServiceImpl implements GoogleOAuth2Service {
             displayName = username;
         }
 
-        return getUser(email, username, displayName, userRepository, bCryptPasswordEncoder);
+        getUser(email, username, displayName, userRepository, bCryptPasswordEncoder);
     }
 
     private User getUser(String email, String username, String displayName, UserRepository userRepository, BCryptPasswordEncoder bCryptPasswordEncoder) {
@@ -56,6 +56,7 @@ public class GoogleOAuth2ServiceImpl implements GoogleOAuth2Service {
         newUser.setDisplayName(displayName);
         newUser.setEmail(email);
         newUser.setRole(USER);
+        newUser.setPoints(0);
         // Default password to bypass non-null constraint
         newUser.setPassword(bCryptPasswordEncoder.encode(username + displayName)); // a default password pattern
         return userRepository.save(newUser);
