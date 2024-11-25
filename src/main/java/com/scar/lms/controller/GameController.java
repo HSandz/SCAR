@@ -5,6 +5,7 @@ import com.scar.lms.entity.User;
 import com.scar.lms.service.AuthenticationService;
 import com.scar.lms.service.BookService;
 import com.scar.lms.service.UserService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -17,6 +18,8 @@ import java.util.List;
 import java.util.Random;
 import java.util.concurrent.CompletableFuture;
 
+@SuppressWarnings("SameReturnValue")
+@Slf4j
 @Controller
 @RequestMapping("/game")
 public class GameController {
@@ -63,11 +66,11 @@ public class GameController {
 
             // Set game parameters based on mode
             if (mode.equalsIgnoreCase("hard")) {
-                points = 10;
-                maxGuesses = 3;
+                points = 15;
+                maxGuesses = 4;
             } else {
-                points = 5;
-                maxGuesses = 5;
+                points = 10;
+                maxGuesses = 7;
             }
             remainingGuesses = maxGuesses;
 
@@ -78,7 +81,15 @@ public class GameController {
                 return "game";
             }
 
-            revealedTitle = new StringBuilder("_".repeat(title.length()));
+            // Replace the initialization of revealedTitle
+            revealedTitle = new StringBuilder();
+            for (char c : title.toCharArray()) {
+                if (c == ' ') {
+                    revealedTitle.append(' '); // Keep spaces as spaces
+                } else {
+                    revealedTitle.append('_'); // Replace other characters with underscores
+                }
+            }
 
             // Add initial model attributes
             model.addAttribute("authors", currentBook.getAuthors());
@@ -86,7 +97,7 @@ public class GameController {
             model.addAttribute("points", points);
             model.addAttribute("remainingGuesses", remainingGuesses);
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("Failed to load game data.", e);
             model.addAttribute("error", "Failed to load game data.");
         }
 
@@ -114,7 +125,7 @@ public class GameController {
         }
 
         try {
-            // Check if the guess is correct
+            // If the user's guess matches the entire title
             if (guess.equalsIgnoreCase(correctTitle)) {
                 // Fetch user and update points
                 CompletableFuture<User> userFuture = authenticationService.getAuthenticatedUser(authentication);
@@ -135,26 +146,33 @@ public class GameController {
                 return "game-result";
             }
 
-            // Handle incorrect guess
-            remainingGuesses--;
-            points = Math.max(0, points - 1);
+            // Handle single-letter guesses
+            if (guess.length() == 1) {
+                char guessedChar = guess.charAt(0);
+                boolean found = false;
 
-            // Reveal one more letter of the title
-            boolean revealed = false;
-            for (int i = 0; i < correctTitle.length(); i++) {
-                if (revealedTitle.charAt(i) == '_' && correctTitle.charAt(i) != ' ') {
-                    revealedTitle.setCharAt(i, correctTitle.charAt(i));
-                    revealed = true;
-                    break;
+                for (int i = 0; i < correctTitle.length(); i++) {
+                    if (Character.toLowerCase(correctTitle.charAt(i)) == Character.toLowerCase(guessedChar) &&
+                            revealedTitle.charAt(i) == '_') {
+                        revealedTitle.setCharAt(i, correctTitle.charAt(i)); // Reveal the letter
+                        found = true;
+                    }
                 }
+
+                if (found) {
+                    model.addAttribute("message", "Good guess!");
+                } else {
+                    remainingGuesses--;
+                    points = Math.max(0, points - 1); // Deduct points for incorrect guesses
+                    model.addAttribute("error", "Incorrect guess.");
+                }
+            } else {
+                remainingGuesses--;
+                points = Math.max(0, points - 1); // Deduct points for incorrect guesses
+                model.addAttribute("error", "Invalid guess. Please guess a single letter or the full title.");
             }
 
-            if (!revealed) {
-                model.addAttribute("error", "No more letters to reveal.");
-            }
-
-            // Update model for the next guess
-            model.addAttribute("isCorrect", false);
+            // Update model attributes for the next guess
             model.addAttribute("authors", currentBook.getAuthors());
             model.addAttribute("hint", revealedTitle.toString());
             model.addAttribute("remainingGuesses", remainingGuesses);
@@ -167,11 +185,21 @@ public class GameController {
                 model.addAttribute("pointsEarned", points);
                 return "game-result";
             }
+
+            // Check if the title is fully guessed
+            if (revealedTitle.toString().equalsIgnoreCase(correctTitle)) {
+                model.addAttribute("isCorrect", true);
+                model.addAttribute("correctTitle", correctTitle);
+                model.addAttribute("pointsEarned", points);
+                return "game-result";
+            }
+
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("An unexpected error occurred.", e);
             model.addAttribute("error", "An unexpected error occurred: " + e.getMessage());
         }
 
         return "game";
     }
+
 }
