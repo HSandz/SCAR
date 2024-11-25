@@ -22,8 +22,8 @@ public class Publisher {
     @Column(name = "NAME", length = 50, nullable = false)
     private String name;
 
-    @ManyToMany(fetch = FetchType.EAGER,
-            cascade = { CascadeType.PERSIST, CascadeType.MERGE },
-            mappedBy = "publishers")
-    private Set<Book> books = new HashSet<>();
+//    @ManyToMany(fetch = FetchType.EAGER,
+//            cascade = { CascadeType.PERSIST, CascadeType.MERGE },
+//            mappedBy = "publishers")
+//    private Set<Book> books = new HashSet<>();
 }

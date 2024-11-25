@@ -42,6 +42,9 @@ public class User {
     @Column(name = "PROFILE_PICTURE_URL")
     private String profilePictureUrl;
 
+    @Column(name = "ABOUT_ME")
+    private String aboutMe;
+
     @OneToMany(fetch = FetchType.EAGER,
             cascade = { CascadeType.PERSIST, CascadeType.MERGE },
             mappedBy = "user")
@@ -53,4 +56,9 @@ public class User {
             joinColumns = { @JoinColumn(name = "USER_ID") },
             inverseJoinColumns = { @JoinColumn(name = "BOOK_ID") })
     private Set<Book> favouriteBooks = new HashSet<>();
+
+    @OneToMany(fetch = FetchType.EAGER,
+            cascade = { CascadeType.PERSIST, CascadeType.MERGE },
+            mappedBy = "user")
+    private Set<Notify> notifies = new HashSet<>();
 }

@@ -1,6 +1,6 @@
 package com.scar.lms.controller;
 
-import com.scar.lms.model.ChatMessage;
+import com.scar.lms.model.ChatMessageDTO;
 import com.scar.lms.service.AuthenticationService;
 import com.scar.lms.service.OpenAIService;
 import com.scar.lms.service.UserService;
@@ -59,24 +59,24 @@ public class ChatController {
 
     @MessageMapping("/chat.addUser")
     @SendTo("/topic/chat")
-    public ChatMessage addUser(@Payload ChatMessage chatMessage, SimpMessageHeaderAccessor headerAccessor) {
+    public ChatMessageDTO addUser(@Payload ChatMessageDTO chatMessageDTO, SimpMessageHeaderAccessor headerAccessor) {
         String username = (String) Objects.requireNonNull(headerAccessor.getSessionAttributes()).get("username");
         String profilePictureUrl = (String) headerAccessor.getSessionAttributes().get("profilePictureUrl");
-        chatMessage.setSender(username != null ? username : "Anonymous");
-        chatMessage.setType(ChatMessage.MessageType.JOIN);
-        chatMessage.setContent((username != null ? username : "Anonymous") + " joined the chat");
-        chatMessage.setProfilePictureUrl(profilePictureUrl);
-        return chatMessage;
+        chatMessageDTO.setSender(username != null ? username : "Anonymous");
+        chatMessageDTO.setType(ChatMessageDTO.MessageType.JOIN);
+        chatMessageDTO.setContent((username != null ? username : "Anonymous") + " joined the chat");
+        chatMessageDTO.setProfilePictureUrl(profilePictureUrl);
+        return chatMessageDTO;
     }
 
     @MessageMapping("/chat.sendMessage")
     @SendTo("/topic/chat")
-    public ChatMessage sendMessage(@Payload ChatMessage chatMessage, SimpMessageHeaderAccessor headerAccessor) {
+    public ChatMessageDTO sendMessage(@Payload ChatMessageDTO chatMessageDTO, SimpMessageHeaderAccessor headerAccessor) {
         String username = (String) Objects.requireNonNull(headerAccessor.getSessionAttributes()).get("username");
         String profilePictureUrl = (String) headerAccessor.getSessionAttributes().get("profilePictureUrl");
-        chatMessage.setSender(username != null ? username : "Anonymous");
-        chatMessage.setProfilePictureUrl(profilePictureUrl);
-        return chatMessage;
+        chatMessageDTO.setSender(username != null ? username : "Anonymous");
+        chatMessageDTO.setProfilePictureUrl(profilePictureUrl);
+        return chatMessageDTO;
     }
 
     @GetMapping("/bot")

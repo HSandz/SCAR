@@ -19,7 +19,7 @@ public class Book {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @Column(name = "ISBN", length = 20, nullable = false, unique = true)
+    @Column(name = "ISBN", length = 20)
     private String isbn;
 
     @Column(name = "TITLE", length = 100, nullable = false)
@@ -34,7 +34,7 @@ public class Book {
     @Column(name = "PUBLICATION_YEAR", length = 10, nullable = false)
     private Integer publicationYear;
 
-    @Column(name = "DESCRIPTION", length = 500)
+    @Column(name = "DESCRIPTION")
     private String description;
 
     @Column(name = "IMAGE_URL")
@@ -43,31 +43,35 @@ public class Book {
     @Column(name = "BORROW_COUNT")
     private int borrowCount = 0;
 
-    @ManyToMany(fetch = FetchType.EAGER,
-            cascade = { CascadeType.PERSIST, CascadeType.MERGE })
-    @JoinTable(name = "BOOK_AUTHOR",
-            joinColumns = { @JoinColumn(name = "BOOK_ID") },
-            inverseJoinColumns = { @JoinColumn(name = "AUTHOR_ID") })
-    private Set<Author> authors = new HashSet<>();
+    @Column(name = "AUTHOR")
+    private String author;
 
-    @ManyToOne(fetch = FetchType.EAGER,
-            cascade = { CascadeType.PERSIST, CascadeType.MERGE })
-    @JoinColumn(name = "GENRE_ID")
-    private Genre mainGenre;
+    @Column(name = "GENRE")
+    private String genre;
 
-    @ManyToMany(fetch = FetchType.EAGER,
-            cascade = { CascadeType.PERSIST, CascadeType.MERGE })
-    @JoinTable(name = "BOOK_GENRE",
-            joinColumns = { @JoinColumn(name = "BOOK_ID") },
-            inverseJoinColumns = { @JoinColumn(name = "GENRE_ID") })
-    private Set<Genre> genres = new HashSet<>();
+    @Column(name = "PUBLISHER")
+    private String publisher;
 
-    @ManyToMany(fetch = FetchType.EAGER,
-            cascade = { CascadeType.PERSIST, CascadeType.MERGE })
-    @JoinTable(name = "BOOK_PUBLISHER",
-            joinColumns = { @JoinColumn(name = "BOOK_ID") },
-            inverseJoinColumns = { @JoinColumn(name = "PUBLISHER_ID") })
-    private Set<Publisher> publishers = new HashSet<>();
+//    @ManyToMany(fetch = FetchType.EAGER,
+//            cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+//    @JoinTable(name = "BOOK_AUTHOR",
+//            joinColumns = { @JoinColumn(name = "BOOK_ID") },
+//            inverseJoinColumns = { @JoinColumn(name = "AUTHOR_ID") })
+//    private Set<Author> authors = new HashSet<>();
+
+//    @ManyToMany(fetch = FetchType.EAGER,
+//            cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+//    @JoinTable(name = "BOOK_GENRE",
+//            joinColumns = { @JoinColumn(name = "BOOK_ID") },
+//            inverseJoinColumns = { @JoinColumn(name = "GENRE_ID") })
+//    private Set<Genre> genres = new HashSet<>();
+
+//    @ManyToMany(fetch = FetchType.EAGER,
+//            cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+//    @JoinTable(name = "BOOK_PUBLISHER",
+//            joinColumns = { @JoinColumn(name = "BOOK_ID") },
+//            inverseJoinColumns = { @JoinColumn(name = "PUBLISHER_ID") })
+//    private Set<Publisher> publishers = new HashSet<>();
 
     @ManyToMany(fetch = FetchType.EAGER,
             cascade = { CascadeType.PERSIST, CascadeType.MERGE },

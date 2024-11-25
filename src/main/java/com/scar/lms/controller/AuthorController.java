@@ -17,7 +17,7 @@ import java.util.concurrent.CompletableFuture;
 @SuppressWarnings("SameReturnValue")
 @Slf4j
 @Controller
-@RequestMapping("/admin/authors")
+@RequestMapping("/authors")
 public class AuthorController {
 
     private final AuthorService authorService;
@@ -47,7 +47,7 @@ public class AuthorController {
         }
 
         authorService.addAuthor(author);
-        return "redirect:/admin/authors";
+        return "redirect:/authors";
     }
 
     @GetMapping("/update/{authorId}")

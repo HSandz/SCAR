@@ -1,7 +1,7 @@
 package com.scar.lms.controller;
 
 import com.scar.lms.entity.User;
-import com.scar.lms.model.ChatMessage;
+import com.scar.lms.model.ChatMessageDTO;
 import com.scar.lms.service.AuthenticationService;
 import com.scar.lms.service.OpenAIService;
 import com.scar.lms.service.UserService;
@@ -79,23 +79,23 @@ class ChatControllerTest {
 
     @Test
     void testAddUser() {
-        ChatMessage chatMessage = new ChatMessage();
+        ChatMessageDTO chatMessageDTO = new ChatMessageDTO();
         when(headerAccessor.getSessionAttributes()).thenReturn(Map.of("username", "testUser", "profilePictureUrl", "https://example.com/pic.jpg"));
 
-        ChatMessage result = chatController.addUser(chatMessage, headerAccessor);
+        ChatMessageDTO result = chatController.addUser(chatMessageDTO, headerAccessor);
 
         assertEquals("testUser", result.getSender());
-        assertEquals(ChatMessage.MessageType.JOIN, result.getType());
+        assertEquals(ChatMessageDTO.MessageType.JOIN, result.getType());
         assertEquals("testUser joined the chat", result.getContent());
         assertEquals("https://example.com/pic.jpg", result.getProfilePictureUrl());
     }
 
     @Test
     void testSendMessage_WebSocket() {
-        ChatMessage chatMessage = new ChatMessage();
+        ChatMessageDTO chatMessageDTO = new ChatMessageDTO();
         when(headerAccessor.getSessionAttributes()).thenReturn(Map.of("username", "testUser", "profilePictureUrl", "https://example.com/pic.jpg"));
 
-        ChatMessage result = chatController.sendMessage(chatMessage, headerAccessor);
+        ChatMessageDTO result = chatController.sendMessage(chatMessageDTO, headerAccessor);
 
         assertEquals("testUser", result.getSender());
         assertEquals("https://example.com/pic.jpg", result.getProfilePictureUrl());

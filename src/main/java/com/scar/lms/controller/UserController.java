@@ -107,6 +107,13 @@ public class UserController {
         return "profile";
     }
 
+    @GetMapping("/profile/edit")
+    public String showEditProfileForm(Authentication authentication, Model model) {
+        User user = authenticationService.getAuthenticatedUser(authentication);
+        model.addAttribute("user", user);
+        return "edit-user";
+    }
+
     @PostMapping("/profile/edit")
     public String updateProfile(Authentication authentication,
                                 @RequestParam("username") String updatedUsername,
@@ -119,7 +126,7 @@ public class UserController {
         }
         userService.updateUser(currentUser);
         model.addAttribute("success", "Profile updated successfully.");
-        return "redirect:/users/profile";
+        return "redirect:/users/profile/edit";
     }
 
     @GetMapping("/updatePassword")

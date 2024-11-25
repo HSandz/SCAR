@@ -14,7 +14,7 @@ import java.util.List;
 
 @SuppressWarnings("SameReturnValue")
 @Controller
-@RequestMapping("/admin/genres")
+@RequestMapping("/genres")
 public class GenreController {
 
     private final GenreService genreService;
@@ -43,34 +43,5 @@ public class GenreController {
         }
         genreService.createGenre(genre);
         return "redirect:/genres";
-    }
-
-    @GetMapping("/update/{genreId}")
-    public String showUpdateGenreForm(@PathVariable int genreId, Model model) {
-        try {
-            Genre genre = genreService.findGenreById(genreId).join();
-            model.addAttribute("genre", genre);
-        } catch (Exception e) {
-            model.addAttribute("error", "Genre not found.");
-        }
-        return "update-genre";
-    }
-
-    @PostMapping("/update")
-    public String updateGenre(@Valid @ModelAttribute Genre genre, BindingResult result, Model model) {
-        if (result.hasErrors()) {
-            model.addAttribute("genre", genre);
-            return "update-genre";
-        }
-
-        extractedUpdateGenre(genre);
-        return "redirect:/genres";
-    }
-
-    private void extractedUpdateGenre(Genre genre) {
-        Genre updatedGenre = genreService.findGenreById(genre.getId()).join();
-        updatedGenre.setName(genre.getName());
-        updatedGenre.setBooks(genre.getBooks());
-        genreService.updateGenre(genre);
     }
 }
