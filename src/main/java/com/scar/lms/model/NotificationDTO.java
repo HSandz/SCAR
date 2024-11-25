@@ -9,9 +9,9 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Notification {
+public class NotificationDTO {
     private String content;
-    private LocalDateTime timestamp;
+    private LocalDateTime sendTime;
     private NotificationType type;
 
     public enum NotificationType {
