@@ -158,7 +158,6 @@ public class BookServiceImpl implements BookService {
         return CompletableFuture.supplyAsync(bookRepository::findTopBorrowedBooks);
     }
 
-
     @Async
     @Override
     public CompletableFuture<Long> countAllBooks() {

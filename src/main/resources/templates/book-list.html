@@ -90,18 +90,11 @@
 </nav>
     <div class="container">
         <section class="display-main">
-                <div class="top-books">
-                    <div class="book1">
-                        <img src="" alt="Sách 1">
-                        <p>Sách 1</p>
-                    </div>
-                    <div class="book2">
-                        <img src="" alt="Sách 2">
-                        <p>Sách 2</p>
-                    </div>
-                    <div class="book3">
-                        <img src="" alt="Sách 3">
-                        <p>Sách 3</p>
+                <h2>Top 10</h2>
+                <div class="book-list">
+                    <div class="book-item" th:each="book : ${tops}">
+                        <img th:src="${book.imageUrl}" th:alt="${book.title}">
+                        <p th:text="${book.title}">Book Title</p>
                     </div>
                 </div>
                 <div class="categories">
