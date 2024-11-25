@@ -189,7 +189,7 @@ public class AdminController {
             return "error/500";
         }
 
-        return "admin-profile";
+        return "admin";
     }
 
 
