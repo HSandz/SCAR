@@ -40,17 +40,23 @@ public class UserController {
         this.cloudStorageService = cloudStorageService;
     }
 
-    @GetMapping("/{userId}/upload")
-    public String showUploadForm(@PathVariable int userId, Model model) {
+    @GetMapping("/upload")
+    public String showUploadForm(
+            Authentication authentication,
+            Model model) {
+        int userId = userService.findUserByUsername(
+                authenticationService.extractUsernameFromAuthentication(authentication)).getId();
         model.addAttribute("user", userService.findUserById(userId));
         return "upload";
     }
 
-    @PostMapping("/{userId}/upload")
+    @PostMapping("/upload")
     public String uploadProfileImage(
-            @PathVariable int userId,
+            Authentication authentication,
             @RequestParam("file") MultipartFile file,
             Model model) {
+        int userId = userService.findUserByUsername(
+                authenticationService.extractUsernameFromAuthentication(authentication)).getId();
         try {
             extractedUploadProfileImage(userId, file, model);
 
@@ -59,7 +65,7 @@ public class UserController {
             model.addAttribute("message", "Error uploading profile image: " + e.getMessage());
         }
 
-        return "upload";
+        return "profile";
     }
 
     private void extractedUploadProfileImage(int userId, MultipartFile file, Model model) throws IOException {
@@ -230,7 +236,7 @@ public class UserController {
         User user = getUser(authentication);
         List<Borrow> borrowHistory = getBorrowList(user);
         model.addAttribute("borrowHistory", borrowHistory);
-        return "borrow-history";
+        return "history";
     }
 
     private User getUser(Authentication authentication) {

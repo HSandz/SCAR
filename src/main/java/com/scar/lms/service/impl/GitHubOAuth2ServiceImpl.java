@@ -26,7 +26,7 @@ public class GitHubOAuth2ServiceImpl implements GitHubOAuth2Service {
     }
 
     @Override
-    public void registerNewUser(OAuth2User oAuth2User) {
+    public User registerNewUser(OAuth2User oAuth2User) {
         Map<String, Object> attributes = oAuth2User.getAttributes();
         String username = (String) attributes.get("login"); // GitHub's username
         String userId = String.valueOf(attributes.get("id")); // GitHub's unique ID
@@ -36,14 +36,14 @@ public class GitHubOAuth2ServiceImpl implements GitHubOAuth2Service {
             displayName = username;
         }
 
-        getUser(username, displayName, userRepository, bCryptPasswordEncoder);
+        return getUser(userId, username, displayName, userRepository, bCryptPasswordEncoder);
     }
 
-    private void getUser(String username, String displayName, UserRepository userRepository, BCryptPasswordEncoder bCryptPasswordEncoder) {
+    private User getUser(String userId, String username, String displayName, UserRepository userRepository, BCryptPasswordEncoder bCryptPasswordEncoder) {
         Optional<User> existingUser = userRepository.findByUsername(username);
         //noinspection DuplicatedCode
         if (existingUser.isPresent()) {
-            return;
+            return existingUser.get();
         }
 
         User newUser = new User();
@@ -62,6 +62,6 @@ public class GitHubOAuth2ServiceImpl implements GitHubOAuth2Service {
         newUser.setPoints(0);
         // Default password to bypass non-null constraint
         newUser.setPassword(bCryptPasswordEncoder.encode(username + displayName));
-        userRepository.save(newUser);
+        return userRepository.save(newUser);
     }
 }

@@ -71,7 +71,6 @@ header {
 .navmenu li:hover .drop-down {
     display: block;
 }
-
 i {
     color: lightslategrey;
     transform: scale(2.5);
@@ -209,6 +208,10 @@ a:hover {
     margin-bottom: 20px; /* Optional: Adds space below the section */
     background-color: #fff; /* Optional: Sets a background color */
     box-shadow: 0 2px 5px rgba(0,0,0,0.1); /* Optional: Adds a shadow for better visibility */
+}
+
+.top-books {
+
 }
 .book-list {
     display: flex;
