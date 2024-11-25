@@ -8,7 +8,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "AUTHORS")
@@ -33,7 +34,7 @@ public class Author {
     @Column(name = "DESCRIPTION", length = 500)
     private String description;
 
-    @ManyToMany(fetch = FetchType.LAZY,
+    @ManyToMany(fetch = FetchType.EAGER,
             cascade = { CascadeType.PERSIST, CascadeType.MERGE },
             mappedBy = "authors")
     private Set<Book> books = new HashSet<>();

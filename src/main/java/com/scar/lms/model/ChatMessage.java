@@ -2,6 +2,8 @@ package com.scar.lms.model;
 
 import lombok.*;
 
+import java.time.LocalDateTime;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -10,8 +12,9 @@ import lombok.*;
 public class ChatMessage {
     private String content;
     private String sender;
-    private MessageType type;
+    private LocalDateTime timestamp;
     private String profilePictureUrl;
+    private MessageType type;
 
     public enum MessageType {
         CHAT, JOIN, LEAVE
