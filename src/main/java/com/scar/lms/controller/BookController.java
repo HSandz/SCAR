@@ -116,7 +116,7 @@ public class BookController {
                 model.addAttribute("totalPages", totalPages);
             }
         }).exceptionally(ex -> {
-            System.err.println("Error occurred while fetching books: " + ex.getMessage());
+            log.error("Failed to fetch books: {}", ex.getMessage());
             model.addAttribute("error", "Failed to fetch books. Please try again later.");
             return null;
         });
@@ -187,6 +187,12 @@ public class BookController {
         User user = userService.findUserByUsername(username);
         Book book = bookService.findBookById(bookId);
 
+        extractedBorrowBook(user, book);
+
+        return "redirect:/book-list";
+    }
+
+    private void extractedBorrowBook(User user, Book book) {
         Borrow borrow = new Borrow();
         borrow.setUser(user);
         borrow.setBook(book);
@@ -196,8 +202,6 @@ public class BookController {
 
         user.setPoints(user.getPoints() + 1);
         userService.updateUser(user);
-
-        return "redirect:/book-list";
     }
 
     @PostMapping("/add/db")

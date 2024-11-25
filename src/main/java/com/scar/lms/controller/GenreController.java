@@ -8,10 +8,7 @@ import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -46,5 +43,30 @@ public class GenreController {
         }
         genreService.createGenre(genre);
         return "redirect:/publishers";
+    }
+
+    @GetMapping("/update/{genreId}")
+    public String showUpdateGenreForm(@PathVariable int genreId, Model model) {
+        Genre genre = genreService.findGenreById(genreId);
+        model.addAttribute("genre", genre);
+        return "update-genre";
+    }
+
+    @PostMapping("/update")
+    public String updateGenre(@Valid @ModelAttribute Genre genre, BindingResult result, Model model) {
+        if (result.hasErrors()) {
+            model.addAttribute("genre", genre);
+            return "update-genre";
+        }
+
+        extractedUpdateGenre(genre);
+        return "redirect:/genres";
+    }
+
+    private void extractedUpdateGenre(Genre genre) {
+        Genre updatedGenre = genreService.findGenreById(genre.getId());
+        updatedGenre.setName(genre.getName());
+        updatedGenre.setBooks(genre.getBooks());
+        genreService.updateGenre(genre);
     }
 }
