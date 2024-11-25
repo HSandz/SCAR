@@ -5,6 +5,7 @@ import com.scar.lms.exception.*;
 import com.scar.lms.repository.UserRepository;
 import com.scar.lms.service.AuthenticationService;
 
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -16,6 +17,7 @@ import org.springframework.security.oauth2.client.authentication.OAuth2Authentic
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 
 @SuppressWarnings("SameReturnValue")
 @Service
@@ -35,16 +37,17 @@ public class AuthenticationServiceImpl implements AuthenticationService, UserDet
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
     }
 
+    @Async
     @Override
-    public String extractUsernameFromAuthentication(Authentication authentication) {
+    public CompletableFuture<String> extractUsernameFromAuthentication(Authentication authentication) {
         if (authentication instanceof OAuth2AuthenticationToken token) {
             if (token.getPrincipal() == null || token.getPrincipal().getAttributes() == null) {
                 throw new InvalidDataException("OAuth2 token principal or attributes are null");
             }
             Map<String, Object> attributes = token.getPrincipal().getAttributes();
-            return (String) attributes.get("login");
+            return CompletableFuture.completedFuture((String) attributes.get("email"));
         } else if (authentication instanceof UsernamePasswordAuthenticationToken) {
-            return authentication.getName();
+            return CompletableFuture.completedFuture(authentication.getName());
         } else {
             throw new InvalidDataException("Unsupported authentication type");
         }
@@ -164,10 +167,12 @@ public class AuthenticationServiceImpl implements AuthenticationService, UserDet
                 validateDisplayName(newDisplayName);
     }
 
+    @Async
     @Override
-    public User getAuthenticatedUser(Authentication authentication) {
-        String username = extractUsernameFromAuthentication(authentication);
+    public CompletableFuture<User> getAuthenticatedUser(Authentication authentication) {
+        String username = authentication.getName();
         return userRepository.findByUsername(username)
-                .orElseThrow(() -> new UserNotFoundException("User with username not found: " + username));
+                .map(CompletableFuture::completedFuture)
+                .orElseGet(() -> CompletableFuture.failedFuture(new UserNotFoundException("User with username not found: " + username)));
     }
 }

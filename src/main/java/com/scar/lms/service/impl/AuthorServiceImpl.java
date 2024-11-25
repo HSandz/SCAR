@@ -23,30 +23,36 @@ public class AuthorServiceImpl implements AuthorService {
         this.authorRepository = authorRepository;
     }
 
+    @Async
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     @Override
     public CompletableFuture<List<Author>> findAllAuthors() {
         return CompletableFuture.supplyAsync(authorRepository::findAll);
     }
 
+    @Async
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     @Override
-    public List<Author> findAuthorsByCountry(String country) {
-        return authorRepository.findByCountry(country);
+    public CompletableFuture<List<Author>> findAuthorsByCountry(String country) {
+        return CompletableFuture.supplyAsync(() -> authorRepository.findByCountry(country));
     }
 
+    @Async
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     @Override
-    public List<Author> findAuthorsByAge(int age) {
-        return authorRepository.findByAge(age);
+    public CompletableFuture<List<Author>> findAuthorsByAge(int age) {
+        return CompletableFuture.supplyAsync(() -> authorRepository.findByAge(age));
     }
 
+    @Async
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     @Override
-    public Author findAuthorByEmail(String email) {
+    public CompletableFuture<Author> findAuthorByEmail(String email) {
         return authorRepository
                 .findByEmail(email)
-                .orElseThrow(() -> new ResourceNotFoundException("Author with email not found" + email));
+                .map(CompletableFuture::completedFuture)
+                .orElse(CompletableFuture.failedFuture(
+                        new ResourceNotFoundException("Author with email not found: " + email)));
     }
 
     @Async
@@ -73,11 +79,14 @@ public class AuthorServiceImpl implements AuthorService {
         authorRepository.delete(author);
     }
 
+    @Async
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     @Override
-    public Author findAuthorById(int id) {
+    public CompletableFuture<Author> findAuthorById(int id) {
         return authorRepository
                 .findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Author with id not found" + id));
+                .map(CompletableFuture::completedFuture)
+                .orElse(CompletableFuture.failedFuture(
+                        new ResourceNotFoundException("Author with id not found: " + id)));
     }
 }

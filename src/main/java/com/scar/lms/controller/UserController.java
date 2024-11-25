@@ -63,12 +63,21 @@ public class UserController {
     }
 
     private void extractedUploadProfileImage(int userId, MultipartFile file, Model model) throws IOException {
-        User user = userService.findUserById(userId);
-        user.setProfilePictureUrl(cloudStorageService.uploadImage(file));
-        userService.updateUser(user);
+        try {
+            if (file.isEmpty()) {
+                throw new IOException("File is empty.");
+            } else {
+                User user = userService.findUserById(userId).join();
+                user.setProfilePictureUrl(cloudStorageService.uploadImage(file));
+                userService.updateUser(user);
 
-        model.addAttribute("message", "Image uploaded successfully!");
-        model.addAttribute("user", user);
+                model.addAttribute("message", "Image uploaded successfully!");
+                model.addAttribute("user", user);
+            }
+        } catch (IOException e) {
+            log.error("Error uploading profile image.", e);
+            model.addAttribute("message", "Error uploading profile image: " + e.getMessage());
+        }
     }
 
     @GetMapping({"/", ""})
@@ -82,7 +91,8 @@ public class UserController {
             return "redirect:/login";
         }
 
-        User user = authenticationService.getAuthenticatedUser(authentication);
+        CompletableFuture<User> userFuture = authenticationService.getAuthenticatedUser(authentication);
+        User user = userFuture.join();
 
         if (user == null) {
             model.addAttribute("error", "User not found.");
@@ -99,7 +109,7 @@ public class UserController {
                                 @RequestParam("displayName") String updatedDisplayName,
                                 @RequestParam("email") String updatedEmail,
                                 Model model) {
-        User currentUser = authenticationService.getAuthenticatedUser(authentication);
+        User currentUser = getUser(authentication);
         if (!authenticationService.validateEditProfile(currentUser, updatedUsername, updatedDisplayName, updatedEmail)) {
             model.addAttribute("failure", "Profile not updated.");
         }
@@ -119,13 +129,19 @@ public class UserController {
                                  @RequestParam("oldPassword") String oldPassword,
                                  @RequestParam("newPassword") String newPassword,
                                  Model model) {
-        String username = authenticationService.extractUsernameFromAuthentication(authentication);
-        if (!authenticationService.updatePassword(username, oldPassword, newPassword)) {
-            model.addAttribute("error", "Password update failed. Please check your old password and try again.");
+        try {
+            String username = authenticationService.extractUsernameFromAuthentication(authentication).join();
+            if (!authenticationService.updatePassword(username, oldPassword, newPassword)) {
+                model.addAttribute("error", "Password update failed. Please check your old password and try again.");
+                return "update-password";
+            }
+            model.addAttribute("success", "Password updated successfully.");
+            return "redirect:/login";
+        } catch (Exception e) {
+            log.error("Failed to update password.", e);
+            model.addAttribute("error", "Failed to update password.");
             return "update-password";
         }
-        model.addAttribute("success", "Password updated successfully.");
-        return "redirect:/login";
     }
 
     @GetMapping("/profile/delete")
@@ -135,7 +151,7 @@ public class UserController {
 
     @PostMapping("/profile/delete")
     public String deleteAccount(Authentication authentication, Model model) {
-        User user = authenticationService.getAuthenticatedUser(authentication);
+        User user = getUser(authentication);
         userService.deleteUser(user.getId());
         model.addAttribute("success", "Account deleted successfully.");
         return "redirect:/logout";
@@ -143,7 +159,7 @@ public class UserController {
 
     @PostMapping("/return/{bookId}")
     public String returnBook(@PathVariable int bookId, Authentication authentication) {
-        User user = authenticationService.getAuthenticatedUser(authentication);
+        User user = getUser(authentication);
 
         try {
             extractedReturnBook(bookId, user);
@@ -167,7 +183,7 @@ public class UserController {
 
     @GetMapping("/borrowed-books")
     public String showBorrowedBooks(Authentication authentication, Model model) {
-        User user = authenticationService.getAuthenticatedUser(authentication);
+        User user = getUser(authentication);
         List<Borrow> borrowedBooks = getBorrowList(user);
         model.addAttribute("borrowedBooks", borrowedBooks);
         return "borrowed-books";
@@ -175,14 +191,15 @@ public class UserController {
 
     @PostMapping("/add-favourite/{bookId}")
     public String addFavourite(@PathVariable int bookId, Authentication authentication) {
-        User user = authenticationService.getAuthenticatedUser(authentication);
+        User user = getUser(authentication);
         userService.addFavouriteFor(user, bookId);
         return "redirect:/book-list/" + bookId;
     }
 
     @GetMapping("/favourites")
     public String showFavouriteBooks(Authentication authentication, Model model) {
-        User user = authenticationService.getAuthenticatedUser(authentication);
+        CompletableFuture<User> userFuture = authenticationService.getAuthenticatedUser(authentication);
+        User user = userFuture.join();
         try {
             CompletableFuture<List<Book>> favouriteBooksFuture = userService.findFavouriteBooks(user.getId());
             List<Book> favouriteBooks = favouriteBooksFuture.join();
@@ -202,7 +219,7 @@ public class UserController {
 
     @PostMapping("/remove-favourite/{bookId}")
     public String removeFavourite(@PathVariable int bookId, Authentication authentication) {
-        User user = authenticationService.getAuthenticatedUser(authentication);
+        User user = getUser(authentication);
         userService.removeFavouriteFor(user, bookId);
         return "redirect:/users/favourites";
     }
@@ -210,10 +227,15 @@ public class UserController {
 
     @GetMapping("/borrow-history")
     public String showHistory(Authentication authentication, Model model) {
-        User user = authenticationService.getAuthenticatedUser(authentication);
+        User user = getUser(authentication);
         List<Borrow> borrowHistory = getBorrowList(user);
         model.addAttribute("borrowHistory", borrowHistory);
         return "borrow-history";
+    }
+
+    private User getUser(Authentication authentication) {
+        CompletableFuture<User> userFuture = authenticationService.getAuthenticatedUser(authentication);
+        return userFuture.join();
     }
 
     private List<Borrow> getBorrowList(User user) {

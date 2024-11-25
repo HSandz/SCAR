@@ -127,13 +127,18 @@ public class BookController {
 
     @GetMapping("/{id}")
     public String findBookById(@PathVariable("id") int id, Model model) {
-        Optional<Book> bookOptional = Optional.ofNullable(bookService.findBookById(id));
-        if (bookOptional.isPresent()) {
-            model.addAttribute("book", bookOptional.get());
-        } else {
-            return "redirect:/error?message=Book+not+found";
+        try {
+            Book book = bookService.findBookById(id).join();
+            if (book != null) {
+                model.addAttribute("book", book);
+            } else {
+                return "redirect:/error?message=Book+not+found";
+            }
+            return "view-book";
+        } catch (Exception e) {
+            log.error("Failed to load book", e);
+            return "redirect:/error?message=Failed+to+load+book";
         }
-        return "view-book";
     }
 
     @GetMapping("/add")
@@ -155,12 +160,17 @@ public class BookController {
 
     @GetMapping("/update/{id}")
     public String showUpdateForm(@PathVariable("id") int id, Model model) {
-        Optional<Book> bookOptional = Optional.ofNullable(bookService.findBookById(id));
-        if (bookOptional.isPresent()) {
-            model.addAttribute("book", bookOptional.get());
-            return "update-book";
-        } else {
-            return "redirect:/error?message=Book+not+found";
+        try {
+            Book book = bookService.findBookById(id).join();
+            if (book != null) {
+                model.addAttribute("book", book);
+                return "update-book";
+            } else {
+                return "redirect:/error?message=Book+not+found";
+            }
+        } catch (Exception e) {
+            log.error("Failed to load book", e);
+            return "redirect:/error?message=Failed+to+load+book";
         }
     }
 
@@ -183,11 +193,17 @@ public class BookController {
 
     @PostMapping("/borrow/{bookId}")
     public String borrowBook(@PathVariable int bookId, Authentication authentication) {
-        String username = authenticationService.extractUsernameFromAuthentication(authentication);
-        User user = userService.findUserByUsername(username);
-        Book book = bookService.findBookById(bookId);
 
-        extractedBorrowBook(user, book);
+        try {
+            CompletableFuture<User> userFuture = authenticationService.getAuthenticatedUser(authentication);
+            CompletableFuture<Book> bookFuture = bookService.findBookById(bookId);
+            CompletableFuture.allOf(userFuture, bookFuture).join();
+
+            extractedBorrowBook(userFuture.get(), bookFuture.get());
+        } catch (Exception e) {
+            log.error("Failed to borrow book", e);
+            return "redirect:/error?message=Failed+to+borrow+book";
+        }
 
         return "redirect:/book-list";
     }
@@ -215,13 +231,13 @@ public class BookController {
     }
 
     private void addCommonAttributes(Model model) {
+        CompletableFuture<List<Genre>> genresFuture = genreService.findAllGenres();
+        CompletableFuture<List<Author>> authorsFuture = authorService.findAllAuthors();
+        CompletableFuture<List<Publisher>> publishersFuture = publisherService.findAllPublishers();
+
+        CompletableFuture.allOf(genresFuture, authorsFuture, publishersFuture).join();
+
         try {
-            CompletableFuture<List<Genre>> genresFuture = genreService.findAllGenres();
-            CompletableFuture<List<Author>> authorsFuture = authorService.findAllAuthors();
-            CompletableFuture<List<Publisher>> publishersFuture = publisherService.findAllPublishers();
-
-            CompletableFuture.allOf(genresFuture, authorsFuture, publishersFuture).join();
-
             model.addAttribute("genre", genresFuture.get());
             model.addAttribute("authors", authorsFuture.get());
             model.addAttribute("publishers", publishersFuture.get());

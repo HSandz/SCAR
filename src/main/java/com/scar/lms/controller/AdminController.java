@@ -67,20 +67,42 @@ public class AdminController {
 
     @GetMapping("/user/{userId}")
     public String showUserPage(@PathVariable int userId, Model model) {
-        User user = userService.findUserById(userId);
-        if (user == null) {
-            model.addAttribute("error", "User not found.");
+        try {
+            CompletableFuture<User> userFuture = userService.findUserById(userId);
+            User user = userFuture.join();
+
+            if (user == null) {
+                model.addAttribute("error", "User not found.");
+                return "error/404";
+            } else {
+                model.addAttribute("user", user);
+                return "user-view";
+            }
+        } catch (Exception e) {
+            log.error("Failed to fetch user.", e);
+            model.addAttribute("error", "Failed to fetch user.");
             return "error/404";
         }
-        model.addAttribute("user", user);
-        return "user-view";
     }
 
     @GetMapping("/user/{userId}/edit")
     public String showUpdateUserForm(@PathVariable int userId, Model model) {
-        User user = userService.findUserById(userId);
-        model.addAttribute("user", user);
-        return "user-edit";
+        try {
+            CompletableFuture<User> userFuture = userService.findUserById(userId);
+            User user = userFuture.join();
+
+            if (user == null) {
+                model.addAttribute("error", "User not found.");
+                return "error/404";
+            } else {
+                model.addAttribute("user", user);
+                return "user-edit";
+            }
+        } catch (Exception e) {
+            log.error("Failed to fetch user.", e);
+            model.addAttribute("error", "Failed to fetch user.");
+            return "error/404";
+        }
     }
 
     @PostMapping("/user/update")
@@ -96,12 +118,17 @@ public class AdminController {
     }
 
     private void extractedUpdateUser(User user) {
-        User existingUser = userService.findUserById(user.getId());
+        try {
+            CompletableFuture<User> existingUserFuture = userService.findUserById(user.getId());
+            User existingUser = existingUserFuture.join();
 
-        existingUser.setDisplayName(user.getDisplayName());
-        existingUser.setEmail(user.getEmail());
+            existingUser.setDisplayName(user.getDisplayName());
+            existingUser.setEmail(user.getEmail());
 
-        userService.updateUser(existingUser);
+            userService.updateUser(existingUser);
+        } catch (Exception e) {
+            log.error("Failed to update user.", e);
+        }
     }
 
 
@@ -135,15 +162,16 @@ public class AdminController {
     @PostMapping("/user/{userId}/grantAuthority")
     @PreAuthorize("hasRole('ADMIN')")
     public String grantAuthority(@PathVariable int userId, RedirectAttributes redirectAttributes) {
-        User user = userService.findUserById(userId);
-        if (user == null) {
-            redirectAttributes.addFlashAttribute("errorMessage", "User not found.");
-            return "redirect:/admin/users";
-        }
         try {
-            user.setRole(ADMIN);
-            userService.updateUser(user);
-            redirectAttributes.addFlashAttribute("successMessage", "Authority granted successfully.");
+            User user = userService.findUserById(userId).join();
+            if (user == null) {
+                redirectAttributes.addFlashAttribute("errorMessage", "User not found.");
+                return "redirect:/admin/users";
+            } else {
+                user.setRole(ADMIN);
+                userService.updateUser(user);
+                redirectAttributes.addFlashAttribute("successMessage", "Authority granted successfully.");
+            }
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", "Failed to grant authority.");
         }
@@ -156,7 +184,8 @@ public class AdminController {
             return "redirect:/login";
         }
 
-        User user = authenticationService.getAuthenticatedUser(authentication);
+        CompletableFuture<User> userFuture = authenticationService.getAuthenticatedUser(authentication);
+        User user = userFuture.join();
 
         if (user == null) {
             model.addAttribute("error", "User not found.");
@@ -206,7 +235,8 @@ public class AdminController {
 
     @PostMapping("/profile/edit")
     public String showEditAdminProfileForm(Authentication authentication, Model model) {
-        User user = authenticationService.getAuthenticatedUser(authentication);
+        CompletableFuture<User> userFuture = authenticationService.getAuthenticatedUser(authentication);
+        User user = userFuture.join();
         model.addAttribute("user", user);
         return "admin-profile";
     }

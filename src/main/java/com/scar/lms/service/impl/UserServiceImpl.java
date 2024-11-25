@@ -29,40 +29,51 @@ public class UserServiceImpl implements UserService {
         this.bookRepository = bookRepository;
     }
 
+    @Async
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     @Override
     public CompletableFuture<List<User>> findAllUsers() {
         return CompletableFuture.supplyAsync(userRepository::findAll);
     }
 
+    @Async
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     @Override
-    public User findUserByUsername(String username) {
+    public CompletableFuture<User> findUserByUsername(String username) {
         return userRepository
                 .findByUsername(username)
-                .orElseThrow(() -> new UserNotFoundException("User not found: " + username));
+                .map(CompletableFuture::completedFuture)
+                .orElse(CompletableFuture.failedFuture(
+                        new UserNotFoundException("User with username not found: " + username)));
     }
 
+    @Async
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     @Override
-    public User findUserByEmail(String email) {
+    public CompletableFuture<User> findUserByEmail(String email) {
         return userRepository
                 .findByEmail(email)
-                .orElseThrow(() -> new UserNotFoundException("User with email not found: " + email));
+                .map(CompletableFuture::completedFuture)
+                .orElse(CompletableFuture.failedFuture(
+                        new UserNotFoundException("User with email not found: " + email)));
     }
 
+    @Async
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     @Override
     public CompletableFuture<List<User>> searchUsers(String keyword) {
         return CompletableFuture.supplyAsync(() -> userRepository.searchUsers(keyword));
     }
 
+    @Async
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     @Override
-    public User findUserById(int id) {
+    public CompletableFuture<User> findUserById(int id) {
         return userRepository
                 .findById(id)
-                .orElseThrow(() -> new UserNotFoundException("User with id not found: " + id));
+                .map(CompletableFuture::completedFuture)
+                .orElse(CompletableFuture.failedFuture(
+                        new UserNotFoundException("User with ID not found: " + id)));
     }
 
     @Async
@@ -111,6 +122,7 @@ public class UserServiceImpl implements UserService {
         userRepository.save(persistedUser);
     }
 
+    @Async
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     @Override
     public CompletableFuture<List<Book>> findFavouriteBooks(int userId) {
@@ -137,16 +149,19 @@ public class UserServiceImpl implements UserService {
         userRepository.save(persistedUser);
     }
 
+    @Async
     @Override
     public CompletableFuture<List<User>> findUsersByRole(Role role) {
         return CompletableFuture.supplyAsync(() -> userRepository.findByRole(role));
     }
 
+    @Async
     @Override
     public CompletableFuture<Long> countAllUsers() {
         return CompletableFuture.supplyAsync(userRepository::count);
     }
 
+    @Async
     @Override
     public CompletableFuture<Long> countUsersByRole(Role role) {
         return CompletableFuture.supplyAsync(() -> userRepository.countByRole(role));

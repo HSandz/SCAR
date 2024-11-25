@@ -5,14 +5,17 @@ import com.scar.lms.service.AuthorService;
 
 import jakarta.validation.Valid;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @SuppressWarnings("SameReturnValue")
+@Slf4j
 @Controller
 @RequestMapping("/admin/authors")
 public class AuthorController {
@@ -49,9 +52,15 @@ public class AuthorController {
 
     @GetMapping("/update/{authorId}")
     public String updateAuthorInfoForm(@PathVariable int authorId, Model model) {
-        Author author = authorService.findAuthorById(authorId);
-        model.addAttribute("author", author);
-        return "redirect:/admin/authors";
+        try {
+            CompletableFuture<Author> authorFuture = authorService.findAuthorById(authorId);
+            Author author = authorFuture.join();
+            model.addAttribute("author", author);
+            return "redirect:/admin/authors";
+        } catch (Exception e) {
+            model.addAttribute("error", "Author not found.");
+            return "error/404";
+        }
     }
 
     @PostMapping("/update")
@@ -66,14 +75,18 @@ public class AuthorController {
     }
 
     private void extractedUpdateAuthorInfo(Author author) {
-        Author updatedAuthor = authorService.findAuthorById(author.getId());
+        try {
+            Author updatedAuthor = authorService.findAuthorById(author.getId()).join();
 
-        updatedAuthor.setDescription(author.getDescription());
-        updatedAuthor.setName(author.getName());
-        updatedAuthor.setCountry(author.getCountry());
-        updatedAuthor.setAge(author.getAge());
-        updatedAuthor.setEmail(author.getEmail());
+            updatedAuthor.setDescription(author.getDescription());
+            updatedAuthor.setName(author.getName());
+            updatedAuthor.setCountry(author.getCountry());
+            updatedAuthor.setAge(author.getAge());
+            updatedAuthor.setEmail(author.getEmail());
 
-        authorService.updateAuthor(updatedAuthor);
+            authorService.updateAuthor(updatedAuthor);
+        } catch (Exception e) {
+            log.error("Failed to update author.", e);
+        }
     }
 }

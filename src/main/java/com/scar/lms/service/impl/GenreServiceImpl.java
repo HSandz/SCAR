@@ -31,10 +31,12 @@ public class GenreServiceImpl implements GenreService {
 
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     @Override
-    public Genre findGenreById(int id) {
+    public CompletableFuture<Genre> findGenreById(int id) {
         return genreRepository
                 .findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Genre with ID not found: " + id));
+                .map(CompletableFuture::completedFuture)
+                .orElse(CompletableFuture.failedFuture(
+                        new ResourceNotFoundException("Genre with ID not found: " + id)));
     }
 
     @Async

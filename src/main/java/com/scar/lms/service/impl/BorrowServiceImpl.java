@@ -61,33 +61,43 @@ public class BorrowServiceImpl implements BorrowService {
         borrowRepository.delete(borrow);
     }
 
+    @Async
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     @Override
     public CompletableFuture<Optional<Borrow>> findBorrow(int bookId, int userId) {
         return CompletableFuture.supplyAsync(() -> borrowRepository.findByUserIdAndBookId(bookId, userId));
     }
 
+    @Async
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     @Override
     public CompletableFuture<List<Borrow>> findBorrowsOfUser(int userId) {
         return CompletableFuture.supplyAsync(() -> borrowRepository.findAllByUserId(userId));
     }
 
+    @Async
+    @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     @Override
     public CompletableFuture<List<Borrow>> findAllBorrows() {
         return CompletableFuture.supplyAsync(borrowRepository::findAll);
     }
 
+    @Async
+    @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     @Override
     public CompletableFuture<List<Borrow>> findBorrowsByMonth(int month) {
         return CompletableFuture.supplyAsync(() -> borrowRepository.findAllByBorrowDateMonth(month));
     }
 
+    @Async
+    @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     @Override
     public CompletableFuture<Long> countAllBorrows() {
         return CompletableFuture.supplyAsync(borrowRepository::count);
     }
 
+    @Async
+    @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     @Override
     public CompletableFuture<Long> countBorrowsByMonth(int i) {
         return CompletableFuture.supplyAsync(() -> borrowRepository.countByBorrowDateMonth(i));

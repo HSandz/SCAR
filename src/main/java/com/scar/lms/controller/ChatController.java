@@ -39,9 +39,15 @@ public class ChatController {
 
     @GetMapping("")
     public String showChatPage(Authentication authentication, Model model) {
-        String username = authenticationService.extractUsernameFromAuthentication(authentication);
-        model.addAttribute("username", username);
-        model.addAttribute("profilePictureUrl", userService.findUserByUsername(username).getProfilePictureUrl());
+        try {
+            String username = authenticationService.extractUsernameFromAuthentication(authentication).join();
+            model.addAttribute("username", username);
+            model.addAttribute("profilePictureUrl",
+                    userService.findUserByUsername(username).join().getProfilePictureUrl());
+        } catch (Exception e) {
+            model.addAttribute("username", "Anonymous");
+            model.addAttribute("profilePictureUrl", "https://i.imgur.com/8bYkY7j.png");
+        }
         return "chat";
     }
 

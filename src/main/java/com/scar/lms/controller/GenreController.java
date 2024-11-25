@@ -47,8 +47,12 @@ public class GenreController {
 
     @GetMapping("/update/{genreId}")
     public String showUpdateGenreForm(@PathVariable int genreId, Model model) {
-        Genre genre = genreService.findGenreById(genreId);
-        model.addAttribute("genre", genre);
+        try {
+            Genre genre = genreService.findGenreById(genreId).join();
+            model.addAttribute("genre", genre);
+        } catch (Exception e) {
+            model.addAttribute("error", "Genre not found.");
+        }
         return "update-genre";
     }
 
@@ -64,7 +68,7 @@ public class GenreController {
     }
 
     private void extractedUpdateGenre(Genre genre) {
-        Genre updatedGenre = genreService.findGenreById(genre.getId());
+        Genre updatedGenre = genreService.findGenreById(genre.getId()).join();
         updatedGenre.setName(genre.getName());
         updatedGenre.setBooks(genre.getBooks());
         genreService.updateGenre(genre);
