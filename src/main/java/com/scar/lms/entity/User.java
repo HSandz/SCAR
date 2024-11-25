@@ -7,9 +7,9 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
-@RequiredArgsConstructor
 @AllArgsConstructor
 @Table(name = "USERS")
 public class User {
@@ -42,12 +42,12 @@ public class User {
     @Column(name = "PROFILE_PICTURE_URL")
     private String profilePictureUrl;
 
-    @OneToMany(fetch = FetchType.LAZY,
+    @OneToMany(fetch = FetchType.EAGER,
             cascade = { CascadeType.PERSIST, CascadeType.MERGE },
             mappedBy = "user")
     private Set<Borrow> borrows = new HashSet<>();
 
-    @ManyToMany(fetch = FetchType.LAZY,
+    @ManyToMany(fetch = FetchType.EAGER,
             cascade = { CascadeType.PERSIST, CascadeType.MERGE })
     @JoinTable(name = "FAVOURITES",
             joinColumns = { @JoinColumn(name = "USER_ID") },

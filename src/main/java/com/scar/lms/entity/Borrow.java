@@ -1,15 +1,13 @@
 package com.scar.lms.entity;
 
 import jakarta.persistence.*;
-import lombok.NonNull;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDate;
 
 @Entity
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "BORROWS")
@@ -29,13 +27,13 @@ public class Borrow {
     @NonNull
     private LocalDate returnDate;
 
-    @ManyToOne(fetch = FetchType.LAZY,
+    @ManyToOne(fetch = FetchType.EAGER,
             cascade = { CascadeType.PERSIST, CascadeType.MERGE })
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "USER_ID")
     private User user;
 
-    @ManyToOne(fetch = FetchType.LAZY,
+    @ManyToOne(fetch = FetchType.EAGER,
             cascade = { CascadeType.PERSIST, CascadeType.MERGE })
-    @JoinColumn(name = "book_id")
+    @JoinColumn(name = "BOOK_ID")
     private Book book;
 }
