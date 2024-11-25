@@ -51,7 +51,7 @@ public class SecurityConfiguration {
                                 "/images/**",
                                 "/favicon.ico").permitAll()
                         .requestMatchers("/books/**", "/user/**", "/chat").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
-                        .requestMatchers("/admin/**").hasAuthority("ROLE_ADMIN")
+                        //.requestMatchers("/admin/**").hasAuthority("ROLE_ADMIN")
                         .requestMatchers("/ws/**", "/app/**").authenticated()
                         .anyRequest().authenticated()
                 )

@@ -209,7 +209,7 @@ public class UserController {
         User user = authenticationService.getAuthenticatedUser(authentication);
         List<Borrow> borrowHistory = getBorrowList(user);
         model.addAttribute("borrowHistory", borrowHistory);
-        return "borrow-history";
+        return "history";
     }
 
     private List<Borrow> getBorrowList(User user) {
