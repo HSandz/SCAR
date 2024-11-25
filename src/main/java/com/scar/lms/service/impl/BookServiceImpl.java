@@ -126,7 +126,7 @@ public class BookServiceImpl implements BookService {
     @Async
     @Override
     public void addBook(Book book) {
-        if (bookRepository.findByIsbn(book.getIsbn()).isPresent()) {
+        if (book.getIsbn() != null && bookRepository.findByIsbn(book.getIsbn()).isPresent()) {
             throw new DuplicateResourceException("Book with ISBN " + book.getIsbn() + " already exists");
         } else if (bookRepository.findById(book.getId()).isPresent()) {
             throw new DuplicateResourceException("Book with id " + book.getId() + " already exists");

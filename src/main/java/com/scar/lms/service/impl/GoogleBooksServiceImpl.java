@@ -5,10 +5,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.scar.lms.config.GoogleBooksApiProperties;
-import com.scar.lms.entity.Author;
 import com.scar.lms.entity.Book;
-import com.scar.lms.entity.Genre;
-import com.scar.lms.entity.Publisher;
 import com.scar.lms.service.GoogleBooksService;
 
 import lombok.extern.slf4j.Slf4j;
@@ -27,7 +24,6 @@ public class GoogleBooksServiceImpl implements GoogleBooksService {
 
     private final RestTemplate restTemplate;
     private final GoogleBooksApiProperties googleBooksApiProperties;
-
 
     public GoogleBooksServiceImpl(final RestTemplate restTemplate,
                                   final GoogleBooksApiProperties googleBooksApiProperties) {
@@ -93,17 +89,11 @@ public class GoogleBooksServiceImpl implements GoogleBooksService {
                 // Description
                 book.setDescription(item.path("volumeInfo").path("description").asText());
 
-                // Authors
-                Set<Author> authors = new HashSet<>();
+                // Author
                 JsonNode authorsNode = item.path("volumeInfo").path("authors");
-                if (authorsNode.isArray()) {
-                    for (JsonNode authorName : authorsNode) {
-                        Author author = new Author();
-                        author.setName(authorName.asText());
-                        authors.add(author);
-                    }
+                if (authorsNode.isArray() && !authorsNode.isEmpty()) {
+                    book.setAuthor(authorsNode.get(0).asText());
                 }
-                book.setAuthors(authors);
 
                 // Image URL
                 JsonNode imageLinksNode = item.path("volumeInfo").path("imageLinks");
@@ -112,32 +102,16 @@ public class GoogleBooksServiceImpl implements GoogleBooksService {
                 }
 
                 // Publisher
-                Set<Publisher> publishers = new HashSet<>();
                 String publisherName = item.path("volumeInfo").path("publisher").asText();
                 if (!publisherName.isEmpty()) {
-                    Publisher publisher = new Publisher();
-                    publisher.setName(publisherName);
-                    publishers.add(publisher);
+                    book.setPublisher(publisherName);
                 }
-                book.setPublishers(publishers);
 
-                // Genres (Categories)
-                Set<Genre> genres = new HashSet<>();
+                // Genre (Categories)
                 JsonNode categoriesNode = item.path("volumeInfo").path("categories");
-                if (categoriesNode.isArray()) {
-                    for (JsonNode category : categoriesNode) {
-                        Genre genre = new Genre();
-                        genre.setName(category.asText());
-                        genres.add(genre);
-                    }
+                if (categoriesNode.isArray() && categoriesNode.size() > 0) {
+                    book.setGenre(categoriesNode.get(0).asText());
                 }
-                book.setGenres(genres);
-
-                // Main Genre
-                String mainCategory = item.path("volumeInfo").path("mainCategory").asText();
-                Genre genre = new Genre();
-                genre.setName(mainCategory);
-                book.setMainGenre(genre);
 
                 books.add(book);
             }
