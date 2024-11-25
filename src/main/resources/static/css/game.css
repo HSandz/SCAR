@@ -1,0 +1,142 @@
+/* General Reset and Body Styles */
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f7f7f7;
+    color: #333;
+    margin: 0;
+    padding: 0;
+}
+
+/* Container for Game */
+.container-game {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+    margin: 30px 100px;
+}
+
+/* Section for each block of content */
+.container-game section {
+    background-color: #c5c5dd;
+    border: 2px solid white;
+    padding: 20px;
+    border-radius: 10px;
+}
+
+/* Heading styles for game */
+.container-game h1 {
+    text-align: center;
+    font-size: 60px;
+    padding: 20px;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+/* Hint text */
+.container-game .hint {
+    font-size: 24px;
+    text-align: center;
+    font-weight: bold;
+    letter-spacing: 2px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+/* Button style for game interaction */
+.container-game button {
+    background-color: #007bff;
+    color: white;
+    padding: 12px 20px;
+    font-size: 18px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 100%;
+    margin: 10px 0;
+}
+
+.container-game button:hover {
+    background-color: #0056b3;
+}
+
+/* Points and guesses section */
+.container-game .game-info {
+    font-size: 18px;
+    text-align: center;
+    margin-top: 20px;
+}
+
+.container-game .game-info span {
+    font-weight: bold;
+    color: #007bff;
+}
+
+/* Game result section */
+.container-game-result {
+    text-align: center;
+    background-color: #c5c5dd;
+    padding: 40px 20px;
+    border-radius: 15px;
+    margin: 30px 100px;
+}
+
+.container-game-result h2 {
+    font-size: 50px;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.container-game-result .result-message {
+    font-size: 22px;
+    margin: 20px 0;
+}
+
+.container-game-result .result-message.correct {
+    color: green;
+}
+
+.container-game-result .result-message.incorrect {
+    color: red;
+}
+
+.container-game-result .result-message span {
+    font-weight: bold;
+}
+
+/* Game over style */
+.container-game-result .game-over {
+    font-size: 24px;
+    margin-top: 30px;
+    color: red;
+    font-weight: bold;
+}
+
+/* Author list for game hint */
+.container-game .authors {
+    font-size: 18px;
+    margin: 10px 0;
+    color: #555;
+}
+
+.container-game .authors li {
+    padding: 5px 0;
+    text-align: center;
+}
+
+/* Styles for active guess buttons */
+.container-game .day, .container-game .header {
+    padding: 10px;
+    text-align: center;
+    border: 0.5px solid #ddd;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.container-game .day:hover {
+    background-color: #f0f0f0;
+}
+
+.container-game .day.active {
+    background-color: #90caf9;
+    color: white;
+}

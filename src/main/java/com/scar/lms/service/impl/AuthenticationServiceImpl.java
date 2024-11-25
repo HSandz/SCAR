@@ -45,7 +45,10 @@ public class AuthenticationServiceImpl implements AuthenticationService, UserDet
                 throw new InvalidDataException("OAuth2 token principal or attributes are null");
             }
             Map<String, Object> attributes = token.getPrincipal().getAttributes();
-            return CompletableFuture.completedFuture((String) attributes.get("email"));
+            if (attributes.get("login") == null) {
+                return CompletableFuture.completedFuture((String) attributes.get("given_name"));
+            }
+            return CompletableFuture.completedFuture((String) attributes.get("login"));
         } else if (authentication instanceof UsernamePasswordAuthenticationToken) {
             return CompletableFuture.completedFuture(authentication.getName());
         } else {
@@ -170,9 +173,9 @@ public class AuthenticationServiceImpl implements AuthenticationService, UserDet
     @Async
     @Override
     public CompletableFuture<User> getAuthenticatedUser(Authentication authentication) {
-        String username = authentication.getName();
+        String username = extractUsernameFromAuthentication(authentication).join();
         return userRepository.findByUsername(username)
                 .map(CompletableFuture::completedFuture)
-                .orElseGet(() -> CompletableFuture.failedFuture(new UserNotFoundException("User with username not found: " + username)));
+                .orElseGet(() -> CompletableFuture.failedFuture(new UserNotFoundException("User with username notfound: " + username)));
     }
 }

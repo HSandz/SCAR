@@ -37,12 +37,12 @@ public class GenreController {
     }
 
     @PostMapping("/add")
-    public String addPublisher(@Valid @ModelAttribute Genre genre, BindingResult result) {
+    public String addGenre(@Valid @ModelAttribute Genre genre, BindingResult result) {
         if (result.hasErrors()) {
             return "add-genre";
         }
         genreService.createGenre(genre);
-        return "redirect:/publishers";
+        return "redirect:/genres";
     }
 
     @GetMapping("/update/{genreId}")
