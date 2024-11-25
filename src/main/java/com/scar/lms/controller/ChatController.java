@@ -51,7 +51,7 @@ public class ChatController {
     }
 
     @MessageMapping("/chat.addUser")
-    @SendTo("/topic/public")
+    @SendTo("/topic/chat")
     public ChatMessage addUser(@Payload ChatMessage chatMessage, SimpMessageHeaderAccessor headerAccessor) {
         String username = (String) Objects.requireNonNull(headerAccessor.getSessionAttributes()).get("username");
         String profilePictureUrl = (String) headerAccessor.getSessionAttributes().get("profilePictureUrl");
