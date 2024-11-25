@@ -1,3 +1,21 @@
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f9f9f9;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+.main-content {
+    display: grid;
+    gap: 10px; /* Optional: Adds space between rows */
+    padding: 20px; /* Optional: Adds padding around the container */
+    background-color: #f5f5f5; /* Optional: Sets a background color */
+    border: 1px solid #ddd; /* Optional: Adds a border */
+    border-radius: 8px; /* Optional: Rounds the corners */
+    margin: 0px 100px 10px 200px;
+}
 /* Container styling */
 .card-container {
     display: flex;
@@ -5,7 +23,6 @@
     justify-content: center;
     margin: 20px;
 }
-
 /* Card styling */
 .card {
     position: relative;
@@ -69,4 +86,52 @@
 
 .card:hover .btn {
     opacity: 1; /* Show button */
+}
+
+.chart-container {
+    text-align: center;
+    width: 80%;
+    max-width: 600px;
+}
+
+h1 {
+    margin-bottom: 20px;
+    font-size: 24px;
+    color: #333;
+}
+
+.chart {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    height: 300px;
+    margin: 20px 0;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 10px;
+}
+
+.bar {
+    width: 6%;
+    background-color: #4CAF50;
+    margin: 0 2px;
+    transition: background-color 0.3s ease;
+}
+
+.bar:hover {
+    background-color: #45a049;
+}
+
+.labels {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+    color: #555;
+}
+
+.labels span {
+    flex: 1;
+    text-align: center;
+    font-size: 12px;
 }

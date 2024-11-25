@@ -2,9 +2,7 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Page Title</title>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Page</title>
     <link rel="stylesheet" href="/css/favourites.css">
     <link rel="stylesheet" href="/css/book-list.css">
     <link rel="stylesheet" href="/css/admin.css">
@@ -16,9 +14,11 @@
           integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg=="
           crossorigin="anonymous" referrerpolicy="no-referrer"/>
     <link rel="stylesheet" href="https://unpkg.com/boxicons@latest/css/boxicons.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-<div th:replace="frame :: body"></div>
+<header th:replace="frame :: header"></header>
+<navbar th:replace="frame :: navbar"></navbar>
 <div class="main-content">
     <section>
         <div class="card-container">
@@ -50,9 +50,18 @@
                 </div>
                 <button class="btn">Click</button>
             </div>
+            <script>
+                const buttons = document.querySelectorAll('.btn');
+
+                buttons.forEach((button) => {
+                    button.addEventListener('click', () => {
+                        alert('Button clicked!');
+                    });
+                });
+            </script>
         </div>
     </section>
-    <section style="display=grid; grid-template-columns: 1fr 1fr 2fr">
+    <section style="display:grid; grid-template-columns: 1fr 1fr 2.5fr;" class="display-main">
         <div>
             <img src="/avatar/${admin.username}" alt="Admin Avatar">
         </div>
@@ -62,9 +71,38 @@
             <p><i>Phone:</i><br> ${admin.phone}</p>
             <p><i>Address:</i><br> ${admin.address}</p>
         </div>
-        <div>
-
+        <div style="width: 80%; margin: auto; text-align: center;">
+            <h1>Books Borrowed Per Month</h1>
+            <canvas id="borrowChart" width="400" height="200"></canvas>
         </div>
+        <script>
+            // Dữ liệu từ Thymeleaf
+            const labels = /*[[${months}]]*/ ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+            const data = /*[[${borrowCounts}]]*/ [70, 50, 90, 60, 80, 40, 100, 65, 75, 85, 95, 60];
+
+            // Tạo biểu đồ bằng Chart.js
+            const ctx = document.getElementById('borrowChart').getContext('2d');
+            const borrowChart = new Chart(ctx, {
+                type: 'bar', // Loại biểu đồ
+                data: {
+                    labels: labels, // Tháng
+                    datasets: [{
+                        label: 'Number of Books Borrowed',
+                        data: data, // Số liệu
+                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true // Bắt đầu từ 0
+                        }
+                    }
+                }
+            });
+        </script>
     </section>
 </div>
 </body>

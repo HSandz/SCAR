@@ -209,6 +209,10 @@ a:hover {
     background-color: #fff; /* Optional: Sets a background color */
     box-shadow: 0 2px 5px rgba(0,0,0,0.1); /* Optional: Adds a shadow for better visibility */
 }
+
+.top-books {
+
+}
 .book-list {
     display: flex;
     flex-wrap: nowrap;
