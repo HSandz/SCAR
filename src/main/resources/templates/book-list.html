@@ -88,114 +88,170 @@
         </li>
     </ul>
 </nav>
-    <div class="container">
-        <section class="display-main">
-                <h2>Top 10</h2>
-                <div class="book-list">
-                    <div class="book-item" th:each="book : ${tops}">
+<div class="container">
+    <section class="display-main">
+        <h2>Top 10</h2>
+        <div class="book-list">
+            <div class="book-item" th:each="book : ${tops}">
+                    <div class="tile">
                         <img th:src="${book.imageUrl}" th:alt="${book.title}">
+                        <div class="details">
+                            <p class="info" th:text="${book.title}">Book Title</p>
+                        </div>
+                    </div>
+            </div>
+        </div>
+        <div class="categories">
+            <button class="category">All</button>
+            <button class="category">Comic</button>
+            <button class="category">History</button>
+            <button class="category">Science</button>
+            <button class="category">Drama</button>
+            <button class="category">Geography</button>
+        </div>
+    </section>
+    <section class="display-main">
+        <h2>Computers</h2>
+        <div class="book-list">
+            <button class="scroll-button left" onclick="scrollLeft()">&#9664;</button>
+            <div class="book-item" th:each="book : ${books}" th:if="${book.genre == 'Computers'}">
+                <div class="tiles">
+                    <div class="tile">
+                        <img th:src="${book.imageUrl}" th:alt="${book.title}">
+                        <div class="details">
+                            <span th:text="${book.title}">Book Title</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+<!--            <button class="scroll-button right" onclick="scrollRight()">&#9654;</button>-->
+<!--            <script>const tiles = document.querySelector('.tiles');-->
+
+<!--            function scrollLeft() {-->
+<!--                tiles.scrollBy({-->
+<!--                    left: -200, // Khoảng cách cuộn sang trái (pixels)-->
+<!--                    behavior: 'smooth' // Hiệu ứng cuộn mượt-->
+<!--                });-->
+<!--            }-->
+
+<!--            function scrollRight() {-->
+<!--                tiles.scrollBy({-->
+<!--                    left: 200, // Khoảng cách cuộn sang phải (pixels)-->
+<!--                    behavior: 'smooth'-->
+<!--                });-->
+<!--            }-->
+<!--            </script>-->
+        </div>
+    </section>
+
+    <section class="display-main">
+        <h2>Sciences</h2>
+        <div class="book-list">
+            <div class="book-item" th:each="book : ${books}" th:if="${book.genre == 'Sciences'}">
+                <div class="tile">
+                    <img th:src="${book.imageUrl}" th:alt="${book.title}">
+                    <div class="details">
                         <p th:text="${book.title}">Book Title</p>
                     </div>
                 </div>
-                <div class="categories">
-                    <button class="category">All</button>
-                    <button class="category">Comic</button>
-                    <button class="category">History</button>
-                    <button class="category">Science</button>
-                    <button class="category">Drama</button>
-                    <button class="category">Geography</button>
-                </div>
-        </section>
-        <section class="display-main">
-            <h2>Computers</h2>
-            <div class="book-list">
-                <div class="book-item" th:each="book : ${books}" th:if="${book.genre == 'Computers'}">
-                    <img th:src="${book.imageUrl}" th:alt="${book.title}">
-                    <p th:text="${book.title}">Book Title</p>
-                </div>
-            </div>
-        </section>
-
-        <section class="display-main">
-            <h2>Sciences</h2>
-            <div class="book-list">
-                <div class="book-item" th:each="book : ${books}" th:if="${book.genre == 'Sciences'}">
-                    <img th:src="${book.imageUrl}" th:alt="${book.title}">
-                    <p th:text="${book.title}">Book Title</p>
-                </div>
-            </div>
-        </section>
-
-        <section class="display-main">
-            <h2>Comics</h2>
-            <div class="book-list">
-                <div class="book-item" th:each="book : ${books}" th:if="${book.genre == 'Comics'}">
-                    <img th:src="${book.imageUrl}" th:alt="${book.title}">
-                    <p th:text="${book.title}">Book Title</p>
-                </div>
-            </div>
-        </section>
-
-        <section class="display-main">
-            <h2>History</h2>
-            <div class="book-list">
-                <div class="book-item" th:each="book : ${books}" th:if="${book.genre == 'History'}">
-                    <img th:src="${book.imageUrl}" th:alt="${book.title}">
-                    <p th:text="${book.title}">Book Title</p>
-                </div>
-            </div>
-        </section>
-
-        <section class="display-main">
-            <h2>Literature</h2>
-            <div class="book-list">
-                <div class="book-item" th:each="book : ${books}" th:if="${book.genre == 'Literature'}">
-                    <img th:src="${book.imageUrl}" th:alt="${book.title}">
-                    <p th:text="${book.title}">Book Title</p>
-                </div>
-            </div>
-        </section>
-
-        <section class="display-main">
-            <h2>Technology</h2>
-            <div class="book-list">
-                <div class="book-item" th:each="book : ${books}" th:if="${book.genre == 'Technology'}">
-                    <img th:src="${book.imageUrl}" th:alt="${book.title}">
-                    <p th:text="${book.title}">Book Title</p>
-                </div>
-            </div>
-        </section>
-
-        <section class="display-main">
-            <h2>Romantic</h2>
-            <div class="book-list">
-                <div class="book-item" th:each="book : ${books}" th:if="${book.genre == 'Romantic'}">
-                    <img th:src="${book.imageUrl}" th:alt="${book.title}">
-                    <p th:text="${book.title}">Book Title</p>
-                </div>
-            </div>
-        </section>
-
-        <section class="display-main">
-            <h2>All Books</h2>
-            <div class="book-list">
-                <div class="book-item" th:each="book : ${books}">
-                    <img th:src="${book.imageUrl}" th:alt="${book.title}">
-                    <p th:text="${book.title}">Book Title</p>
-                </div>
-            </div>
-        </section>
-    </div>
-    <div class="container-book">
-        <div class="book-display">
-            <img src="https://bom.so/TU7t6r" alt="Book Cover" class="book-image">
-            <div class="book-info">
-                <h3 class="book-title">Tên sách</h3>
-                <p class="book-author">Tác giả: Tên tác giả</p>
-                <p class="book-description">Mô tả: Đây là phần mô tả sách...</p>
             </div>
         </div>
+    </section>
+
+    <section class="display-main">
+        <h2>Comics</h2>
+        <div class="book-list">
+            <div class="book-item" th:each="book : ${books}" th:if="${book.genre == 'Comics'}">
+                <div class="tile">
+                    <img th:src="${book.imageUrl}" th:alt="${book.title}">
+                    <div class="details">
+                        <p th:text="${book.title}">Book Title</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="display-main">
+        <h2>History</h2>
+        <div class="book-list">
+            <div class="book-item" th:each="book : ${books}" th:if="${book.genre == 'History'}">
+                <div class="tile">
+                    <img th:src="${book.imageUrl}" th:alt="${book.title}">
+                    <div class="details">
+                        <p th:text="${book.title}">Book Title</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="display-main">
+        <h2>Literature</h2>
+        <div class="book-list">
+            <div class="book-item" th:each="book : ${books}" th:if="${book.genre == 'Literature'}">
+                <div class="tile">
+                    <img th:src="${book.imageUrl}" th:alt="${book.title}">
+                    <div class="details">
+                        <p th:text="${book.title}">Book Title</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="display-main">
+        <h2>Technology</h2>
+        <div class="book-list">
+            <div class="book-item" th:each="book : ${books}" th:if="${book.genre == 'Technology'}">
+                <div class="tile">
+                    <img th:src="${book.imageUrl}" th:alt="${book.title}">
+                    <div class="details">
+                        <p th:text="${book.title}">Book Title</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="display-main">
+        <h2>Romantic</h2>
+        <div class="book-list">
+            <div class="book-item" th:each="book : ${books}" th:if="${book.genre == 'Romantic'}">
+                <div class="tile">
+                    <img th:src="${book.imageUrl}" th:alt="${book.title}">
+                    <div class="details">
+                        <p th:text="${book.title}">Book Title</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="display-main">
+        <h2>All Books</h2>
+        <div class="book-list">
+            <div class="book-item" th:each="book : ${books}">
+                <div class="tile">
+                    <img th:src="${book.imageUrl}" th:alt="${book.title}">
+                    <div class="details">
+                        <p th:text="${book.title}">Book Title</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+<div class="container-book">
+    <div class="book-display">
+        <img src="https://bom.so/TU7t6r" alt="Book Cover" class="book-image">
+        <div class="book-info">
+            <h3 class="book-title">Tên sách</h3>
+            <p class="book-author">Tác giả: Tên tác giả</p>
+            <p class="book-description">Mô tả: Đây là phần mô tả sách...</p>
+        </div>
     </div>
+</div>
 <!-- Book results -->
 
 <!-- Message for no books found -->

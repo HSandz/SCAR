@@ -1,3 +1,5 @@
+@import url(//codepen.io/chrisdothtml/pen/ojLzJK.css);
+
 * {
     margin: 0;
     padding: 0;
@@ -19,6 +21,7 @@ header {
     justify-content: space-between;
     padding: 20px 10%;
 }
+
 .headpage {
     position: sticky;
 }
@@ -71,6 +74,7 @@ header {
 .navmenu li:hover .drop-down {
     display: block;
 }
+
 i {
     color: lightslategrey;
     transform: scale(2.5);
@@ -175,6 +179,7 @@ body {
 ul {
     list-style-type: none;
 }
+
 li {
     float: left;
     display: inline;
@@ -207,27 +212,109 @@ a:hover {
     padding: 20px; /* Optional: Adds padding inside the section */
     margin-bottom: 20px; /* Optional: Adds space below the section */
     background-color: #fff; /* Optional: Sets a background color */
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1); /* Optional: Adds a shadow for better visibility */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Optional: Adds a shadow for better visibility */
 }
 
-.top-books {
-
-}
 .book-list {
     display: flex;
     flex-wrap: nowrap;
     overflow-x: auto;
-    box-sizing: border-box;
+    /*box-sizing: border-box;*/
     max-width: 1000px;
+    height: auto;
 }
 
 .book-item {
     flex: 0 0 auto;
-    margin-right: 15px; /* Khoảng cách giữa các item */
-    max-width: 150px; /* Đặt kích thước tối đa phù hợp */
-    box-sizing: border-box;
+    margin-right: 20px; /* Khoảng cách giữa các item */
+    min-width: 150px; /* Đặt kích thước tối đa phù hợp */
+    /*box-sizing: border-box;*/
     word-wrap: break-word;
+    border: none;
+    border-radius: 0;
 }
+
+.tile {
+    /*display: inline-block;*/
+    position: relative;
+    overflow: hidden;
+    border-radius: 3px;
+    box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.1);
+    flex-shrink: 0;
+    margin:0 0 20px 0;
+    display: flex;
+    flex-wrap: nowrap; /* Không cho phép cuộn xuống dòng */
+    gap: 20px; /* Khoảng cách giữa các sách */
+    overflow-x: auto; /* Hiển thị thanh cuộn ngang nếu cần */
+}
+
+.tile img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+}
+
+.tile .details {
+    font-size: 12px;
+    color: #fff;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0));
+    box-sizing: border-box;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+}
+
+.tile:hover .details {
+    opacity: 1;
+}
+
+.tile .details .info {
+    font-size: 12px;
+    color: #fff;
+    text-align: left;
+    word-wrap: break-word;
+    padding: 10px 5px 8px 10px;
+}
+
+/*.scroll-button {*/
+/*    width: 50px;*/
+/*    height: 50px;*/
+/*    border: none;*/
+/*    background-color: rgba(0, 0, 0, 0.5);*/
+/*    color: white;*/
+/*    font-size: 20px;*/
+/*    border-radius: 50%;*/
+/*    cursor: pointer;*/
+/*    display: flex;*/
+/*    align-items: center;*/
+/*    justify-content: center;*/
+/*    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);*/
+/*    transition: background-color 0.3s ease;*/
+/*}*/
+
+/*.scroll-button:hover {*/
+/*    background-color: rgba(0, 0, 0, 0.8);*/
+/*}*/
+
+/*.scroll-button.left {*/
+/*    position: absolute;*/
+/*    left: 10px;*/
+/*}*/
+
+/*.scroll-button.right {*/
+/*    position: absolute;*/
+/*    right: 10px;*/
+/*}*/
 
 .container-book {
     position: fixed;
@@ -238,8 +325,9 @@ a:hover {
     justify-content: flex-end;
     background-color: #f5f5f5;
     padding: 10px;
-    box-shadow: -2px 0 5px rgba(0,0,0,0.1);
+    box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1);
 }
+
 .book-display {
     display: flex;
     flex-direction: column; /* Căn ảnh trên và thông tin dưới */
@@ -253,7 +341,7 @@ a:hover {
 }
 
 .book-image {
-    width: 100%; /* Để ảnh vừa khung */
+    width: 100%;
     height: auto;
     border-radius: 4px;
 }
