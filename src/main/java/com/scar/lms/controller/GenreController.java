@@ -1,7 +1,6 @@
 package com.scar.lms.controller;
 
 import com.scar.lms.entity.Genre;
-import com.scar.lms.exception.ResourceNotFoundException;
 import com.scar.lms.service.GenreService;
 
 import jakarta.validation.Valid;
@@ -17,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import java.util.List;
 
 @Controller
-@RequestMapping("/admin/genres")
+@RequestMapping("/genres")
 public class GenreController {
 
     private final GenreService genreService;
@@ -40,11 +39,11 @@ public class GenreController {
     }
 
     @PostMapping("/add")
-    public String addPublisher(@Valid @ModelAttribute Genre genre, BindingResult result) {
+    public String addGenre(@Valid @ModelAttribute Genre genre, BindingResult result) {
         if (result.hasErrors()) {
             return "add-genre";
         }
         genreService.createGenre(genre);
-        return "redirect:/publishers";
+        return "redirect:/genres";
     }
 }

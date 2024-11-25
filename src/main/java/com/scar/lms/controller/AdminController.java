@@ -1,6 +1,7 @@
 package com.scar.lms.controller;
 
 import com.scar.lms.entity.User;
+import com.scar.lms.model.NotificationDTO;
 import com.scar.lms.service.AuthenticationService;
 import com.scar.lms.service.BookService;
 import com.scar.lms.service.BorrowService;
@@ -10,6 +11,9 @@ import jakarta.validation.Valid;
 
 import lombok.extern.slf4j.Slf4j;
 
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.Payload;
+import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
@@ -192,7 +196,6 @@ public class AdminController {
         return "admin";
     }
 
-
     @PostMapping("/profile/edit")
     public String showEditAdminProfileForm(Authentication authentication, Model model) {
         User user = authenticationService.getAuthenticatedUser(authentication);
@@ -200,4 +203,15 @@ public class AdminController {
         return "admin-profile";
     }
 
+    @GetMapping("/notifications")
+    public String showNotificationPage() {
+        return "notifications";
+    }
+
+    @MessageMapping("/notificationDTO.sendNotification")
+    @SendTo("/topic/notifications")
+    public NotificationDTO sendNotification(@Payload NotificationDTO notificationDTO) {
+
+        return notificationDTO;
+    }
 }

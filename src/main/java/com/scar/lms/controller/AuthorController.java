@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import java.util.List;
 
 @Controller
-@RequestMapping("/admin/authors")
+@RequestMapping("/authors")
 public class AuthorController {
 
     private final AuthorService authorService;
@@ -47,6 +47,6 @@ public class AuthorController {
         }
 
         authorService.addAuthor(author);
-        return "redirect:/admin/authors";
+        return "redirect:/authors";
     }
 }

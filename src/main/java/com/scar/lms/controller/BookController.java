@@ -54,6 +54,26 @@ public class BookController {
         this.borrowService = borrowService;
     }
 
+    @GetMapping("/api")
+    public String searchBooks(@RequestParam(value = "query", defaultValue = "") String query,
+                              @RequestParam(value = "startIndex", defaultValue = "0") int startIndex,
+                              @RequestParam(value = "maxResults", defaultValue = "10") int maxResults,
+                              Model model) {
+        try {
+            CompletableFuture<List<Book>> booksFuture = googleBooksService.searchBooks(query, startIndex, maxResults);
+            List<Book> books = booksFuture.get().stream()
+                                          .filter(book -> book.getIsbn() != null)
+                                          .collect(Collectors.toList());
+
+            model.addAttribute("books", books);
+            model.addAttribute("query", query);
+            return "api";
+        } catch (Exception e) {
+            model.addAttribute("error", "An error occurred while fetching books.");
+            return "error";
+        }
+    }
+
     @GetMapping({ "", "/" })
     public String findAllBooks(Model model,
                                @RequestParam(required = false) String title,
@@ -64,7 +84,7 @@ public class BookController {
                                @RequestParam(defaultValue = "1") int page,
                                @RequestParam(defaultValue = "10") int size) {
 
-        Pageable pageable = PageRequest.of(page - 1, size); // Page numbers are 1-based
+        Pageable pageable = PageRequest.of(page - 1, size);
 
         CompletableFuture<Page<Book>> bookPageFuture = bookService.findFilteredAndPaginated(
                 title, authorName, genreName, publisherName, year, pageable);
@@ -97,28 +117,16 @@ public class BookController {
 
 
     @GetMapping("/search")
-    public String searchBooks(@RequestParam(required = false, defaultValue = "") String query,
-                              @RequestParam(required = false, defaultValue = "0") int page,
-                              Model model) {
-        int maxResults = 100;
-        int pageSize = 10;
+    public String searchBooks(Model model) {
+        try {
+            CompletableFuture<List<Book>> futureBooks = bookService.findAllBooks();
+            List<Book> books = futureBooks.get(); // Wait for the future to complete and get the result
 
-        CompletableFuture<List<Book>> futureBooks = googleBooksService.searchBooks(query, page * pageSize, pageSize);
-
-        futureBooks.thenAccept(books -> {
-            int totalPages = (int) Math.ceil((double) maxResults / pageSize);
-
-            synchronized (model) {
-                model.addAttribute("books", books);
-                model.addAttribute("query", query);
-                model.addAttribute("currentPage", page);
-                model.addAttribute("totalPages", totalPages);
-            }
-        }).exceptionally(ex -> {
+            model.addAttribute("books", books);
+        } catch (Exception ex) {
             System.err.println("Error occurred while fetching books: " + ex.getMessage());
             model.addAttribute("error", "Failed to fetch books. Please try again later.");
-            return null;
-        });
+        }
 
         return "book-list";
     }
@@ -200,13 +208,10 @@ public class BookController {
     }
 
     @PostMapping("/add/db")
-    public String addBookToDatabase(@Valid @ModelAttribute Book book, BindingResult result, Model model) {
-        if (result.hasErrors()) {
-            addCommonAttributes(model);
-            return "book-list";
-        }
+    public String addBookToDatabase(@Valid @ModelAttribute Book book, BindingResult result) {
+        book.setDescription(null);
         bookService.addBook(book);
-        return "redirect:/book-list";
+        return "api";
     }
 
     private void addCommonAttributes(Model model) {
