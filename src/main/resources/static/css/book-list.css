@@ -217,8 +217,8 @@ a:hover {
     display: flex;
     flex-wrap: nowrap;
     overflow-x: auto;
-    max-width: 100%;
     box-sizing: border-box;
+    max-width: 1000px;
 }
 
 .book-item {

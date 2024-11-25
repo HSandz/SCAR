@@ -60,7 +60,7 @@ public class BookController {
                               @RequestParam(value = "maxResults", defaultValue = "10") int maxResults,
                               Model model) {
         try {
-            CompletableFuture<List<Book>> booksFuture = googleBooksService.searchBooks(query, startIndex, maxResults);
+            CompletableFuture<List<Book>> booksFuture = googleBooksService.searchBooks(query, startIndex, 40);
             List<Book> books = booksFuture.get().stream()
                                           .filter(book -> book.getIsbn() != null)
                                           .collect(Collectors.toList());
@@ -119,10 +119,13 @@ public class BookController {
     @GetMapping("/search")
     public String searchBooks(Model model) {
         try {
-            CompletableFuture<List<Book>> futureBooks = bookService.findAllBooks();
-            List<Book> books = futureBooks.get(); // Wait for the future to complete and get the result
+            var futureBooks = bookService.findAllBooks();
+            var futureTops = bookService.findTopBorrowedBooks();
 
-            model.addAttribute("books", books);
+            CompletableFuture.allOf(futureBooks, futureTops).join();
+
+            model.addAttribute("books", futureBooks.get());
+            model.addAttribute("tops", futureTops.get());
         } catch (Exception ex) {
             System.err.println("Error occurred while fetching books: " + ex.getMessage());
             model.addAttribute("error", "Failed to fetch books. Please try again later.");

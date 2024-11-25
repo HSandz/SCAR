@@ -178,7 +178,6 @@ public class BookServiceImpl implements BookService {
         return CompletableFuture.supplyAsync(bookRepository::findTopBorrowedBooks);
     }
 
-
     @Async
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     @Override

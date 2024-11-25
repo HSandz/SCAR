@@ -90,18 +90,11 @@
 </nav>
     <div class="container">
         <section class="display-main">
-                <div class="top-books">
-                    <div class="book1">
-                        <img src="" alt="Sách 1">
-                        <p>Sách 1</p>
-                    </div>
-                    <div class="book2">
-                        <img src="" alt="Sách 2">
-                        <p>Sách 2</p>
-                    </div>
-                    <div class="book3">
-                        <img src="" alt="Sách 3">
-                        <p>Sách 3</p>
+                <h2>Top 10</h2>
+                <div class="book-list">
+                    <div class="book-item" th:each="book : ${tops}">
+                        <img th:src="${book.imageUrl}" th:alt="${book.title}">
+                        <p th:text="${book.title}">Book Title</p>
                     </div>
                 </div>
                 <div class="categories">
@@ -204,39 +197,6 @@
         </div>
     </div>
 <!-- Book results -->
-<div th:if="${not #lists.isEmpty(books)}">
-    <h2>Found Books:</h2>
-    <ul>
-        <li th:each="book : ${books}">
-            <div class="book-item">
-                <!-- Book image -->
-                <img th:src="${book.imageUrl}" alt="Book Cover" class="book-cover" />
-
-                <!-- Book details -->
-                <div class="book-details">
-                    <h3 th:text="${book.title}">Book Title</h3>
-                    <p><strong>ISBN:</strong> <span th:text="${book.isbn}">ISBN</span></p>
-                    <p><strong>Language:</strong> <span th:text="${book.language}">Language</span></p>
-                    <p><strong>Rating:</strong> <span th:text="${book.rating}">Rating</span></p>
-                    <p><strong>Publication Year:</strong> <span th:text="${book.publicationYear}">Publication Year</span></p>
-                    <p><strong>Description:</strong> <span th:text="${book.description}">Description</span></p>
-
-                    <!-- Display authors, genres, publishers, and users if available -->
-                    <p><strong>Author:</strong>
-                        <span class="tag" th:text="${book.author}">Author Name</span>
-                    </p>
-                    <p><strong>Genre:</strong>
-                        <span class="tag" th:text="${book.genre}">Genre Name</span>
-                    </p>
-                    <p><strong>Publisher:</strong>
-                        <span class="tag" th:text="${book.publisher}">Publisher Name</span>
-                    </p>
-                </div>
-            </div>
-            <hr />
-        </li>
-    </ul>
-</div>
 
 <!-- Message for no books found -->
 <div th:if="${#lists.isEmpty(books)}" class="empty-message">
