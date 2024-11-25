@@ -50,91 +50,87 @@ public class AdminController {
     }
 
     @GetMapping("/users")
-    public String listAllUsers(Model model) {
-        try {
-            CompletableFuture<List<User>> usersFuture = userService.findAllUsers();
-            List<User> users = usersFuture.join();
-
-            if (users == null) {
-                model.addAttribute("error", "Users not found.");
-                return "error/404";
-            } else {
-                model.addAttribute("users", users);
-                return "user-list";
-            }
-        } catch (Exception e) {
-            log.error("Failed to fetch users.", e);
-            model.addAttribute("error", "Failed to fetch users.");
-            return "error/404";
-        }
+    public CompletableFuture<String> listAllUsers(Model model) {
+        return userService.findAllUsers()
+                .thenApply(users -> {
+                    if (users == null) {
+                        model.addAttribute("error", "Users not found.");
+                        return "error/404";
+                    } else {
+                        model.addAttribute("users", users);
+                        return "user-list";
+                    }
+                })
+                .exceptionally(e -> {
+                    log.error("Failed to fetch users.", e);
+                    model.addAttribute("error", "Failed to fetch users.");
+                    return "error/404";
+                });
     }
 
     @GetMapping("/user/{userId}")
-    public String showUserPage(@PathVariable int userId, Model model) {
-        try {
-            CompletableFuture<User> userFuture = userService.findUserById(userId);
-            User user = userFuture.join();
-
-            if (user == null) {
-                model.addAttribute("error", "User not found.");
-                return "error/404";
-            } else {
-                model.addAttribute("user", user);
-                return "user-view";
-            }
-        } catch (Exception e) {
-            log.error("Failed to fetch user.", e);
-            model.addAttribute("error", "Failed to fetch user.");
-            return "error/404";
-        }
+    public CompletableFuture<String> showUserPage(@PathVariable int userId, Model model) {
+        return userService.findUserById(userId)
+                .thenApply(user -> {
+                    if (user == null) {
+                        model.addAttribute("error", "User not found.");
+                        return "error/404";
+                    } else {
+                        model.addAttribute("user", user);
+                        return "user-view";
+                    }
+                })
+                .exceptionally(e -> {
+                    log.error("Failed to fetch user.", e);
+                    model.addAttribute("error", "Failed to fetch user.");
+                    return "error/404";
+                });
     }
 
     @GetMapping("/user/{userId}/edit")
-    public String showUpdateUserForm(@PathVariable int userId, Model model) {
-        try {
-            CompletableFuture<User> userFuture = userService.findUserById(userId);
-            User user = userFuture.join();
-
-            if (user == null) {
-                model.addAttribute("error", "User not found.");
-                return "error/404";
-            } else {
-                model.addAttribute("user", user);
-                return "user-edit";
-            }
-        } catch (Exception e) {
-            log.error("Failed to fetch user.", e);
-            model.addAttribute("error", "Failed to fetch user.");
-            return "error/404";
-        }
+    public CompletableFuture<String> showUpdateUserForm(@PathVariable int userId, Model model) {
+        return userService.findUserById(userId)
+                .thenApply(user -> {
+                    if (user == null) {
+                        model.addAttribute("error", "User not found.");
+                        return "error/404";
+                    } else {
+                        model.addAttribute("user", user);
+                        return "user-edit";
+                    }
+                })
+                .exceptionally(e -> {
+                    log.error("Failed to fetch user.", e);
+                    model.addAttribute("error", "Failed to fetch user.");
+                    return "error/404";
+                });
     }
 
     @PostMapping("/user/update")
-    public String updateUser(@Valid @ModelAttribute("user") User user, BindingResult result, Model model) {
+    public CompletableFuture<String> updateUser(@Valid @ModelAttribute("user") User user, BindingResult result, Model model) {
         if (result.hasErrors()) {
             model.addAttribute("user", user);
-            return "user-edit";
+            return CompletableFuture.completedFuture("user-edit");
         }
 
-        extractedUpdateUser(user);
-
-        return "redirect:/admin/users";
+        return userService.findUserById(user.getId())
+                .thenApply(existingUser -> {
+                    if (existingUser != null) {
+                        existingUser.setDisplayName(user.getDisplayName());
+                        existingUser.setEmail(user.getEmail());
+                        userService.updateUser(existingUser);
+                        return "redirect:/admin/users";
+                    } else {
+                        model.addAttribute("error", "User not found.");
+                        return "error/404";
+                    }
+                })
+                .exceptionally(e -> {
+                    log.error("Failed to update user.", e);
+                    model.addAttribute("error", "Failed to update user.");
+                    return "error/404";
+                });
     }
-
-    private void extractedUpdateUser(User user) {
-        try {
-            CompletableFuture<User> existingUserFuture = userService.findUserById(user.getId());
-            User existingUser = existingUserFuture.join();
-
-            existingUser.setDisplayName(user.getDisplayName());
-            existingUser.setEmail(user.getEmail());
-
-            userService.updateUser(existingUser);
-        } catch (Exception e) {
-            log.error("Failed to update user.", e);
-        }
-    }
-
 
     @PostMapping("/user/{userId}/delete")
     public String deleteUser(@PathVariable int userId, RedirectAttributes redirectAttributes) {
@@ -147,11 +143,10 @@ public class AdminController {
         return "redirect:/admin/users";
     }
 
-
     @GetMapping("/user/new")
-    public String showCreateUserForm(Model model) {
+    public CompletableFuture<String> showCreateUserForm(Model model) {
         model.addAttribute("user", new User());
-        return "user-create";
+        return CompletableFuture.completedFuture("user-create");
     }
 
     @PostMapping("/user/new")
@@ -165,83 +160,84 @@ public class AdminController {
 
     @PostMapping("/user/{userId}/grantAuthority")
     @PreAuthorize("hasRole('ADMIN')")
-    public String grantAuthority(@PathVariable int userId, RedirectAttributes redirectAttributes) {
-        try {
-            User user = userService.findUserById(userId).join();
-            if (user == null) {
-                redirectAttributes.addFlashAttribute("errorMessage", "User not found.");
-                return "redirect:/admin/users";
-            } else {
-                user.setRole(ADMIN);
-                userService.updateUser(user);
-                redirectAttributes.addFlashAttribute("successMessage", "Authority granted successfully.");
-            }
-        } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Failed to grant authority.");
-        }
-        return "redirect:/admin/users";
+    public CompletableFuture<String> grantAuthority(@PathVariable int userId, RedirectAttributes redirectAttributes) {
+        return userService.findUserById(userId)
+                .thenApply(user -> {
+                    if (user == null) {
+                        redirectAttributes.addFlashAttribute("errorMessage", "User not found.");
+                    } else {
+                        user.setRole(ADMIN);
+                        userService.updateUser(user);
+                        redirectAttributes.addFlashAttribute("successMessage", "Authority granted successfully.");
+                    }
+                    return "redirect:/admin/users";
+                })
+                .exceptionally(_ -> {
+                    redirectAttributes.addFlashAttribute("errorMessage", "Failed to grant authority.");
+                    return "redirect:/admin/users";
+                });
     }
 
     @GetMapping({"", "/"})
-    public String showAdminProfile(Model model, Authentication authentication) {
+    public CompletableFuture<String> showAdminProfile(Model model, Authentication authentication) {
         if (authentication == null) {
-            return "redirect:/login";
+            return CompletableFuture.completedFuture("redirect:/login");
         }
 
-        CompletableFuture<User> userFuture = authenticationService.getAuthenticatedUser(authentication);
-        User user = userFuture.join();
+        return authenticationService.getAuthenticatedUser(authentication)
+                .thenCompose(user -> {
+                    if (user == null) {
+                        model.addAttribute("error", "User not found.");
+                        return CompletableFuture.completedFuture("error/404");
+                    }
 
-        if (user == null) {
-            model.addAttribute("error", "User not found.");
-            return "error/404";
-        }
+                    model.addAttribute("admin", user);
 
-        model.addAttribute("admin", user);
+                    CompletableFuture<Long> adminCountFuture = userService.countUsersByRole(ADMIN);
+                    CompletableFuture<Long> userCountFuture = userService.countAllUsers();
+                    CompletableFuture<Long> bookCountFuture = bookService.countAllBooks();
+                    CompletableFuture<Long> borrowCountFuture = borrowService.countAllBorrows();
 
-        CompletableFuture<Long> adminCountFuture = userService.countUsersByRole(ADMIN);
-        CompletableFuture<Long> userCountFuture = userService.countAllUsers();
-        CompletableFuture<Long> bookCountFuture = bookService.countAllBooks();
-        CompletableFuture<Long> borrowCountFuture = borrowService.countAllBorrows();
+                    List<CompletableFuture<Long>> borrowCountMonthFutures = IntStream.rangeClosed(1, 12)
+                            .mapToObj(borrowService::countBorrowsByMonth)
+                            .toList();
 
-        List<CompletableFuture<Long>> borrowCountMonthFutures = IntStream.rangeClosed(1, 12)
-                .mapToObj(borrowService::countBorrowsByMonth)
-                .toList();
+                    List<CompletableFuture<?>> futures = new ArrayList<>();
+                    futures.add(adminCountFuture);
+                    futures.add(userCountFuture);
+                    futures.add(bookCountFuture);
+                    futures.add(borrowCountFuture);
+                    futures.addAll(borrowCountMonthFutures);
 
-        List<CompletableFuture<?>> futures = new ArrayList<>();
-        futures.add(adminCountFuture);
-        futures.add(userCountFuture);
-        futures.add(bookCountFuture);
-        futures.add(borrowCountFuture);
-        futures.addAll(borrowCountMonthFutures);
+                    CompletableFuture<Void> allOfFutures = CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]));
 
-        CompletableFuture<Void> allOfFutures = CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]));
+                    return allOfFutures.thenApply(_ -> {
+                        try {
+                            model.addAttribute("adminCount", adminCountFuture.get());
+                            model.addAttribute("userCount", userCountFuture.get());
+                            model.addAttribute("bookCount", bookCountFuture.get());
+                            model.addAttribute("borrowCount", borrowCountFuture.get());
 
-        allOfFutures.join();
-
-        try {
-            model.addAttribute("adminCount", adminCountFuture.get());
-            model.addAttribute("userCount", userCountFuture.get());
-            model.addAttribute("bookCount", bookCountFuture.get());
-            model.addAttribute("borrowCount", borrowCountFuture.get());
-
-            for (int i = 1; i <= 12; i++) {
-                model.addAttribute("borrowCountMonth" + i, borrowCountMonthFutures.get(i - 1).get());
-            }
-        } catch (Exception e) {
-            log.error("Error fetching admin profile data", e);
-            model.addAttribute("error", "Failed to load admin profile data.");
-            return "error/500";
-        }
-
-        return "admin";
+                            for (int i = 1; i <= 12; i++) {
+                                model.addAttribute("borrowCountMonth" + i, borrowCountMonthFutures.get(i - 1).get());
+                            }
+                        } catch (Exception e) {
+                            log.error("Error fetching admin profile data", e);
+                            model.addAttribute("error", "Failed to load admin profile data.");
+                            return "error/500";
+                        }
+                        return "admin";
+                    });
+                });
     }
 
     @PostMapping("/profile/edit")
-    public String showEditAdminProfileForm(Authentication authentication, Model model) {
-        CompletableFuture<User> userFuture = authenticationService.getAuthenticatedUser(authentication);
-        User user = userFuture.join();
-        model.addAttribute("user", user);
-        return "admin-profile";
+    public CompletableFuture<String> showEditAdminProfileForm(Authentication authentication, Model model) {
+        return authenticationService.getAuthenticatedUser(authentication)
+                .thenApply(user -> {
+                    model.addAttribute("user", user);
+                    return "admin-profile";
+                });
     }
 
     @GetMapping("/notifications")
@@ -252,7 +248,6 @@ public class AdminController {
     @MessageMapping("/notificationDTO.sendNotification")
     @SendTo("/topic/notifications")
     public NotificationDTO sendNotification(@Payload NotificationDTO notificationDTO) {
-
         return notificationDTO;
     }
 }

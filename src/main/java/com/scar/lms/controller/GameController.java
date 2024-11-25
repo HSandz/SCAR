@@ -29,6 +29,7 @@ public class GameController {
     private final AuthenticationService authenticationService;
 
     private Book currentBook;
+    @SuppressWarnings("FieldCanBeLocal")
     private int maxGuesses;
     private int remainingGuesses;
     private long points;
@@ -60,39 +61,34 @@ public class GameController {
                 return "game";
             }
 
-            // Randomly pick a book
             Random random = new Random();
             currentBook = books.get(random.nextInt(books.size()));
 
-            // Set game parameters based on mode
             if (mode.equalsIgnoreCase("hard")) {
                 points = 15;
-                maxGuesses = 4;
+                maxGuesses = 3;
             } else {
                 points = 10;
-                maxGuesses = 7;
+                maxGuesses = 5;
             }
             remainingGuesses = maxGuesses;
 
-            // Initialize revealed title with underscores
             String title = currentBook.getTitle();
             if (title == null || title.isEmpty()) {
                 model.addAttribute("error", "The selected book has an invalid title.");
                 return "game";
             }
 
-            // Replace the initialization of revealedTitle
             revealedTitle = new StringBuilder();
             for (char c : title.toCharArray()) {
                 if (c == ' ') {
-                    revealedTitle.append(' '); // Keep spaces as spaces
+                    revealedTitle.append(' ');
                 } else {
-                    revealedTitle.append('_'); // Replace other characters with underscores
+                    revealedTitle.append('_');
                 }
             }
 
-            // Add initial model attributes
-            model.addAttribute("authors", currentBook.getAuthors());
+            model.addAttribute("author", currentBook.getAuthor());
             model.addAttribute("hint", revealedTitle.toString());
             model.addAttribute("points", points);
             model.addAttribute("remainingGuesses", remainingGuesses);
@@ -125,17 +121,14 @@ public class GameController {
         }
 
         try {
-            // If the user's guess matches the entire title
             if (guess.equalsIgnoreCase(correctTitle)) {
-                // Fetch user and update points
                 CompletableFuture<User> userFuture = authenticationService.getAuthenticatedUser(authentication);
-                User user = userFuture.join(); // Wait for the result
+                User user = userFuture.join();
                 if (user != null) {
                     long updatedPoints = user.getPoints() + points;
                     user.setPoints(updatedPoints);
                     userService.updateUser(user);
 
-                    // Add success attributes
                     model.addAttribute("isCorrect", true);
                     model.addAttribute("correctTitle", correctTitle);
                     model.addAttribute("pointsEarned", points);
@@ -146,7 +139,6 @@ public class GameController {
                 return "game-result";
             }
 
-            // Handle single-letter guesses
             if (guess.length() == 1) {
                 char guessedChar = guess.charAt(0);
                 boolean found = false;
@@ -154,7 +146,7 @@ public class GameController {
                 for (int i = 0; i < correctTitle.length(); i++) {
                     if (Character.toLowerCase(correctTitle.charAt(i)) == Character.toLowerCase(guessedChar) &&
                             revealedTitle.charAt(i) == '_') {
-                        revealedTitle.setCharAt(i, correctTitle.charAt(i)); // Reveal the letter
+                        revealedTitle.setCharAt(i, correctTitle.charAt(i));
                         found = true;
                     }
                 }
@@ -163,22 +155,20 @@ public class GameController {
                     model.addAttribute("message", "Good guess!");
                 } else {
                     remainingGuesses--;
-                    points = Math.max(0, points - 1); // Deduct points for incorrect guesses
+                    points = Math.max(0, points - 1);
                     model.addAttribute("error", "Incorrect guess.");
                 }
             } else {
                 remainingGuesses--;
-                points = Math.max(0, points - 1); // Deduct points for incorrect guesses
+                points = Math.max(0, points - 1);
                 model.addAttribute("error", "Invalid guess. Please guess a single letter or the full title.");
             }
 
-            // Update model attributes for the next guess
-            model.addAttribute("authors", currentBook.getAuthors());
+            model.addAttribute("author", currentBook.getAuthor());
             model.addAttribute("hint", revealedTitle.toString());
             model.addAttribute("remainingGuesses", remainingGuesses);
             model.addAttribute("points", points);
 
-            // Check if the game is over
             if (remainingGuesses == 0) {
                 model.addAttribute("gameOver", true);
                 model.addAttribute("correctTitle", correctTitle);
@@ -186,7 +176,6 @@ public class GameController {
                 return "game-result";
             }
 
-            // Check if the title is fully guessed
             if (revealedTitle.toString().equalsIgnoreCase(correctTitle)) {
                 model.addAttribute("isCorrect", true);
                 model.addAttribute("correctTitle", correctTitle);

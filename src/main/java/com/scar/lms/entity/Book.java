@@ -52,27 +52,6 @@ public class Book {
     @Column(name = "PUBLISHER")
     private String publisher;
 
-//    @ManyToMany(fetch = FetchType.EAGER,
-//            cascade = { CascadeType.PERSIST, CascadeType.MERGE })
-//    @JoinTable(name = "BOOK_AUTHOR",
-//            joinColumns = { @JoinColumn(name = "BOOK_ID") },
-//            inverseJoinColumns = { @JoinColumn(name = "AUTHOR_ID") })
-//    private Set<Author> authors = new HashSet<>();
-
-//    @ManyToMany(fetch = FetchType.EAGER,
-//            cascade = { CascadeType.PERSIST, CascadeType.MERGE })
-//    @JoinTable(name = "BOOK_GENRE",
-//            joinColumns = { @JoinColumn(name = "BOOK_ID") },
-//            inverseJoinColumns = { @JoinColumn(name = "GENRE_ID") })
-//    private Set<Genre> genres = new HashSet<>();
-
-//    @ManyToMany(fetch = FetchType.EAGER,
-//            cascade = { CascadeType.PERSIST, CascadeType.MERGE })
-//    @JoinTable(name = "BOOK_PUBLISHER",
-//            joinColumns = { @JoinColumn(name = "BOOK_ID") },
-//            inverseJoinColumns = { @JoinColumn(name = "PUBLISHER_ID") })
-//    private Set<Publisher> publishers = new HashSet<>();
-
     @ManyToMany(fetch = FetchType.EAGER,
             cascade = { CascadeType.PERSIST, CascadeType.MERGE },
             mappedBy = "favouriteBooks")
