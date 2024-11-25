@@ -60,7 +60,7 @@ public class BookController {
                               @RequestParam(value = "maxResults", defaultValue = "10") int maxResults,
                               Model model) {
         try {
-            CompletableFuture<List<Book>> booksFuture = googleBooksService.searchBooks(query, startIndex, maxResults);
+            CompletableFuture<List<Book>> booksFuture = googleBooksService.searchBooks(query, startIndex, 40);
             List<Book> books = booksFuture.get().stream()
                                           .filter(book -> book.getIsbn() != null)
                                           .collect(Collectors.toList());
