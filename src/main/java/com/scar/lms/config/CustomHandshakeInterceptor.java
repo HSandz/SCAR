@@ -30,10 +30,10 @@ public class CustomHandshakeInterceptor implements HandshakeInterceptor {
     }
 
     @Override
-    public boolean beforeHandshake(@NonNull ServerHttpRequest request,
-                                   @NonNull ServerHttpResponse response,
-                                   @NonNull WebSocketHandler wsHandler,
-                                   @NonNull Map<String, Object> attributes) {
+    public boolean beforeHandshake(ServerHttpRequest request,
+                                   ServerHttpResponse response,
+                                   WebSocketHandler wsHandler,
+                                   Map<String, Object> attributes) {
         if (request instanceof org.springframework.http.server.ServletServerHttpRequest servletRequest) {
             HttpSession session = servletRequest.getServletRequest().getSession(false);
             if (session != null) {
@@ -42,13 +42,21 @@ public class CustomHandshakeInterceptor implements HandshakeInterceptor {
                     System.out.println("UsernamePassword detected");
                     String username = authentication.getName();
                     attributes.put("username", username);
-                    attributes.put("profilePictureUrl",
-                            userService.findUserByUsername(username).join().getProfilePictureUrl());
+                    String profilePictureUrl = userService.findUserByUsername(username).join().getProfilePictureUrl();
+                    if (profilePictureUrl != null) {
+                        attributes.put("profilePictureUrl", profilePictureUrl);
+                    }
                 } else if (authentication instanceof OAuth2AuthenticationToken token) {
                     System.out.println("OAuth2 detected");
                     Map<String, Object> attribute = token.getPrincipal().getAttributes();
-                    attributes.put("username", attribute.get("login"));
-                    attributes.put("profilePictureUrl", attribute.get("avatar_url"));
+                    String username = (String) attribute.get("login");
+                    String profilePictureUrl = (String) attribute.get("avatar_url");
+                    if (username != null) {
+                        attributes.put("username", username);
+                    }
+                    if (profilePictureUrl != null) {
+                        attributes.put("profilePictureUrl", profilePictureUrl);
+                    }
                 } else {
                     attributes.put("username", "Anonymous");
                     attributes.put("profilePictureUrl", null);
@@ -59,12 +67,9 @@ public class CustomHandshakeInterceptor implements HandshakeInterceptor {
     }
 
     @Override
-    public void afterHandshake(@NonNull ServerHttpRequest request,
-                               @NonNull ServerHttpResponse response,
-                               @NonNull WebSocketHandler wsHandler,
+    public void afterHandshake(ServerHttpRequest request,
+                               ServerHttpResponse response,
+                               WebSocketHandler wsHandler,
                                Exception ex) {
-        if (ex != null) {
-            log.error("Websocket handshake failed.", ex);
-        }
     }
 }
