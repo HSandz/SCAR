@@ -26,13 +26,12 @@
         <li><a href="/books/search">HOME</a></li>
         <li><a href="#">GENRES<i class='bx bxs-down-arrow' style="transform: scale(0.7);"></i></a>
             <ul class="drop-down">
-                <li><a href="#">Computers</a></li>
-                <li><a href="#">Sciences</a></li>
-                <li><a href="#">Comics</a></li>
-                <li><a href="#">History</a></li>
-                <li><a href="#">Literature</a></li>
-                <li><a href="#">Technology</a></li>
-                <li><a href="#">Romantic</a></li>
+                <li><a href="#comics">Comics</a></li>
+                <li><a href="#romantic">Romantic</a></li>
+                <li><a href="#novels">Novels</a></li>
+                <li><a href="#action">Action</a></li>
+                <li><a href="#literature">Literature</a></li>
+                <li><a href="#technology">Technology</a></li>
             </ul>
         </li>
         <li><a href="/users/favourites">FAVORITE</a></li>
@@ -45,7 +44,7 @@
                 <span class="quantity">0</span>
             </i>
         </a></li>
-        <li><a href="#"><i class='bx bx-user-circle' style="transform: scale(1.5);"></i></a></li>
+        <li><a href="/users/profile"><i class='bx bx-user-circle' style="transform: scale(1.5);"></i></a></li>
     </ul>
 </header>
 <nav>
@@ -124,16 +123,16 @@
             <button class="scroll-btn right" onclick="scrollRight()">❯</button>
         </div>
         <div class="categories">
-            <button class="category">All</button>
-            <button class="category">Comic</button>
-            <button class="category">History</button>
-            <button class="category">Science</button>
-            <button class="category">Drama</button>
-            <button class="category">Geography</button>
+            <a href="#comics" class="category">Comics</a>
+            <a href="#romantic" class="category">Romantic</a>
+            <a href="#novels" class="category">Novels</a>
+            <a href="#action" class="category">Action</a>
+            <a href="#literature" class="category">Literature</a>
+            <a href="#technology" class="category">Technology</a>
         </div>
     </section>
-    <section class="display-main">
-        <h2>Computers</h2>
+    <section id="comics" class="display-main">
+        <h2>Comics</h2>
         <div class="book-list">
             <button class="scroll-btn left" onclick="scrollLeft()">❮</button>
             <div class="scroll-content">
@@ -154,8 +153,8 @@
         </div>
     </section>
 
-    <section class="display-main">
-        <h2>Sciences</h2>
+    <section id="romantic" class="display-main">
+        <h2>Romantic</h2>
         <div class="book-list">
             <button class="scroll-btn left" onclick="scrollLeft()">❮</button>
             <div class="scroll-content">
@@ -176,8 +175,8 @@
         </div>
     </section>
 
-    <section class="display-main">
-        <h2>Comics</h2>
+    <section id="novels" class="display-main">
+        <h2>Novels</h2>
         <div class="book-list">
             <button class="scroll-btn left" onclick="scrollLeft()">❮</button>
             <div class="scroll-content">
@@ -198,8 +197,8 @@
         </div>
     </section>
 
-    <section class="display-main">
-        <h2>History</h2>
+    <section id="action" class="display-main">
+        <h2>Action</h2>
         <div class="book-list">
             <button class="scroll-btn left" onclick="scrollLeft()">❮</button>
             <div class="scroll-content">
@@ -220,7 +219,7 @@
         </div>
     </section>
 
-    <section class="display-main">
+    <section id="literature" class="display-main">
         <h2>Literature</h2>
         <div class="book-list">
             <button class="scroll-btn left" onclick="scrollLeft()">❮</button>
@@ -242,7 +241,7 @@
         </div>
     </section>
 
-    <section class="display-main">
+    <section id="technology" class="display-main">
         <h2>Technology</h2>
         <div class="book-list">
             <button class="scroll-btn left" onclick="scrollLeft()">❮</button>
@@ -263,29 +262,6 @@
             <button class="scroll-btn right" onclick="scrollRight()">❯</button>
         </div>
     </section>
-
-    <section class="display-main">
-        <h2>Romantic</h2>
-        <div class="book-list">
-            <button class="scroll-btn left" onclick="scrollLeft()">❮</button>
-            <div class="scroll-content">
-                <div class="book-item" th:each="book : ${books}" th:if="${book.genre == 'Romantic'}">
-                    <div class="tile">
-                        <img th:src="${book.imageUrl}" th:alt="${book.title}" th:attr="data-book-id=${book.id}">
-                        <div class="details">
-                            <p class="info" th:text="${book.title}">Book Title</p>
-                        </div>
-                    </div>
-                    <div class="actions">
-                        <button class="borrow-btn">Borrow</button>
-                        <i class='bx bx-heart'></i>
-                    </div>
-                </div>
-            </div>
-            <button class="scroll-btn right" onclick="scrollRight()">❯</button>
-        </div>
-    </section>
-
 </div>
 
 <div th:if="${#lists.isEmpty(books)}" class="empty-message">
