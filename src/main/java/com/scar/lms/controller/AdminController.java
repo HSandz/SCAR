@@ -68,6 +68,25 @@ public class AdminController {
                 });
     }
 
+    @GetMapping("user/search")
+    public CompletableFuture<String> searchUsers(@RequestParam String keyword, Model model) {
+        return userService.searchUsers(keyword)
+                .thenApply(users -> {
+                    if (users.isEmpty()) {
+                        model.addAttribute("message", "No users found.");
+                    } else {
+                        model.addAttribute("users", users);
+                    }
+                    return "user-list";
+                })
+                .exceptionally(e -> {
+                    log.error("Failed to search users.", e);
+                    model.addAttribute("error", "Failed to search users.");
+                    return "error/404";
+                });
+    }
+
+
 //    @GetMapping("/user/{userId}")
 //    public CompletableFuture<String> showUserPage(@PathVariable int userId, Model model) {
 //        return userService.findUserById(userId)
@@ -152,7 +171,7 @@ public class AdminController {
     @PostMapping("/user/new")
     public String createUser(@Valid User user, BindingResult result) {
         if (result.hasErrors()) {
-            return "user-create";
+            return "user-list";
         }
         userService.createUser(user);
         return "redirect:/admin/users";
