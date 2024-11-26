@@ -27,6 +27,7 @@ header {
 }
 
 .navmenu {
+    all: unset;
     display: flex;
     position: relative;
 }
@@ -180,6 +181,23 @@ ul {
     list-style-type: none;
 }
 
+.chat-container {
+    position: fixed;
+    height: 100%;
+    right: -600px; /* Đẩy ra ngoài màn hình */
+    width: 350px;
+    background-color: #f9f9f9;
+    box-shadow: -2px 0 5px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+    overflow: hidden;
+    transition: right 0.3s ease-in-out; /* Hiệu ứng chuyển động */
+}
+
+.chat-container.active {
+    right: 0; /* Đưa vào màn hình */
+}
+
+
 li {
     float: left;
     display: inline;
@@ -196,13 +214,13 @@ a:hover {
     color: red;
 }
 
-.container {
+.container-main {
     display: grid;
     gap: 10px; /* Optional: Adds space between rows */
-    padding: 20px; /* Optional: Adds padding around the container */
-    background-color: #f5f5f5; /* Optional: Sets a background color */
-    border: 1px solid #ddd; /* Optional: Adds a border */
-    border-radius: 8px; /* Optional: Rounds the corners */
+    padding: 20px;
+    background-color: #f5f5f5;
+    border: 1px solid #ddd;
+    border-radius: 8px;
     margin: 10px 400px 10px 150px;
 }
 
