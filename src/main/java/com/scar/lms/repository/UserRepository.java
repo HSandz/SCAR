@@ -25,4 +25,7 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     List<User> findByRole(Role role);
 
     Long countByRole(Role role);
+
+    @Query("SELECT COUNT(b) FROM User u JOIN u.favouriteBooks b WHERE u.id = ?1")
+    Long countFavouritesByUserId(int userId);
 }

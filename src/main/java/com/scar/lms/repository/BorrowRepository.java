@@ -24,5 +24,7 @@ public interface BorrowRepository extends JpaRepository<Borrow, Integer> {
     @Query("SELECT COUNT(b) FROM Borrow b")
     Long countByBorrowDateMonth(int i);
 
+    Long countByUserId(int userId);
+
     long count();
 }

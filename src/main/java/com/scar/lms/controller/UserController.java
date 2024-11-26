@@ -102,6 +102,8 @@ public class UserController {
                     }
 
                     model.addAttribute("user", user);
+                    model.addAttribute("favouriteCount", userService.getFavouriteCount(user.getId()).join());
+                    model.addAttribute("borrowCount", borrowService.countBorrowsByUser(user.getId()).join());
                     return "profile";
                 });
     }
