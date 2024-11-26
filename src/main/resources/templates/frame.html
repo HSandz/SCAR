@@ -5,6 +5,7 @@
     <title>User Profile</title>
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/frame.css">
     <link rel="stylesheet" href="/css/favourites.css">
     <link rel="stylesheet" href="/css/book-list.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -21,7 +22,7 @@
 <header class="headpage">
     <ul class="navmenu">
         <li><a href="/books/search">HOME</a></li>
-        <li><a href="#">GENRES<i class='bx bxs-down-arrow' style="transform: scale(0.7);"></i></a>
+        <li><a href="#">GENRES&nbsp;<i class='bx bxs-down-arrow' style="transform: scale(0.7);"></i></a>
             <ul class="drop-down">
                 <li><a href="#">Computers</a></li>
                 <li><a href="#">Sciences</a></li>
@@ -34,8 +35,26 @@
         </li>
         <li><a href="/users/favourites">FAVORITE</a></li>
     </ul>
-    <ul class="navmenu">
-        <li><a href="#"><i class='bx bx-search' style="transform: scale(1.5);"></i></a></li>
+    <ul class="navmenu" style="display: flex; align-items: center; gap: 0; list-style: none; padding: 0; margin: 0;">
+        <!-- Thanh tìm kiếm -->
+        <li style="display: flex; align-items: center; gap: 2px;">
+            <input
+                    type="text"
+                    id="searchBook"
+                    placeholder="Search books..."
+                    style="
+                padding: 5px 10px;
+                font-size: 14px;
+                border: 1px solid #ccc;
+                border-radius: 5px;
+                width: 200px;
+                height: 40px;
+            "
+            >
+            <a href="#" style="display: flex; align-items: center;">
+                <i class='bx bx-search' style="transform: scale(1.5);"></i>
+            </a>
+        </li>
         <li>
             <i class='bx bx-bell' id="bellIcon" style="transform: scale(1.5); cursor: pointer;"></i>
             <span id="notificationCount">0</span>
@@ -51,7 +70,7 @@
         <li><a href="#"><i class='bx bx-user-circle' style="transform: scale(1.5);"></i></a></li>
     </ul>
 </header>
-<navbar>
+<nav>
     <ul class="nav__list">
         <li class="nav__item" data-tooltip="Home">
             <a href="/books/search">
@@ -87,6 +106,18 @@
             </a>
         </li>
     </ul>
-</navbar>
+    <div th:replace="chat :: body"></div>
+    <script>
+        // JavaScript code to handle toggle
+        const chatButton = document.querySelector('.nav__item[data-tooltip="Chat"]');
+        const chatContainer = document.querySelector('.chat-container');
+
+        chatButton.addEventListener('click', () => {
+            chatContainer.classList.toggle('active');
+        });
+    </script>
+
+</nav>
+<script src="/js/searchbook.js"></script>
 </body>
 </html>
