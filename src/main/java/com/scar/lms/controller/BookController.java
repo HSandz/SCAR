@@ -14,6 +14,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
@@ -49,9 +50,7 @@ public class BookController {
                                                  Model model) {
 
         CompletableFuture<List<Book>> booksFuture = googleBooksService.searchBooks(query, startIndex, maxResults)
-                .thenApply(result -> result.stream()
-                        .filter(book -> book.getIsbn() != null)
-                        .collect(Collectors.toList()));
+                .thenApply(ArrayList::new);
 
         return booksFuture.thenApply(books -> {
             model.addAttribute("books", books);

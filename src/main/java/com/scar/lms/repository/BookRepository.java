@@ -27,7 +27,7 @@ public interface BookRepository extends JpaRepository<Book, Integer>, JpaSpecifi
     @Query("SELECT b FROM Book b WHERE LOWER(b.title) LIKE LOWER(CONCAT('%', :keyword, '%'))")
     List<Book> searchBooks(String keyword);
 
-    @Query("SELECT b FROM Book b ORDER BY b.borrowCount DESC")
+    @Query("SELECT b FROM Book b ORDER BY b.borrowCount DESC LIMIT 10")
     List<Book> findTopBorrowedBooks();
 
     long count();

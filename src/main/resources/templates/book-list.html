@@ -21,8 +21,10 @@
     <link rel="stylesheet" href="https://unpkg.com/boxicons@latest/css/boxicons.min.css">
 </head>
 <body>
+
 <header th:replace="frame :: header"></header>
 <nav th:replace="frame :: nav"></nav>
+  
 <div class="container-main">
     <section class="display-main">
         <h2>Top 10</h2> <br>
@@ -46,64 +48,20 @@
             <button class="scroll-btn right" onclick="scrollRight()">❯</button>
         </div>
         <div class="categories">
-            <button class="category">All</button>
-            <button class="category">Comic</button>
-            <button class="category">History</button>
-            <button class="category">Science</button>
-            <button class="category">Drama</button>
-            <button class="category">Geography</button>
+            <a href="#comics" class="category">Comics</a>
+            <a href="#romantic" class="category">Romantic</a>
+            <a href="#novels" class="category">Novels</a>
+            <a href="#action" class="category">Action</a>
+            <a href="#literature" class="category">Literature</a>
+            <a href="#technology" class="category">Technology</a>
         </div>
     </section>
-    <section class="display-main">
-        <h2>Computers</h2>
-        <div class="book-list">
-            <button class="scroll-btn left" onclick="scrollLeft()">❮</button>
-            <div class="scroll-content">
-                <div class="book-item" th:each="book : ${books}" th:if="${book.genre == 'Computers'}">
-                    <div class="tile">
-                        <img th:src="${book.imageUrl}" th:alt="${book.title}" th:attr="data-book-id=${book.id}">
-                        <div class="details">
-                            <p class="info" th:text="${book.title}">Book Title</p>
-                        </div>
-                    </div>
-                    <div class="actions">
-                        <button class="borrow-btn">Borrow</button>
-                        <i class='bx bx-heart'></i>
-                    </div>
-                </div>
-            </div>
-            <button class="scroll-btn right" onclick="scrollRight()">❯</button>
-        </div>
-    </section>
-
-    <section class="display-main">
-        <h2>Sciences</h2>
-        <div class="book-list">
-            <button class="scroll-btn left" onclick="scrollLeft()">❮</button>
-            <div class="scroll-content">
-                <div class="book-item" th:each="book : ${books}" th:if="${book.genre == 'Sciences'}">
-                    <div class="tile">
-                        <img th:src="${book.imageUrl}" th:alt="${book.title}" th:attr="data-book-id=${book.id}">
-                        <div class="details">
-                            <p class="info" th:text="${book.title}">Book Title</p>
-                        </div>
-                    </div>
-                    <div class="actions">
-                        <button class="borrow-btn">Borrow</button>
-                        <i class='bx bx-heart'></i>
-                    </div>
-                </div>
-            </div>
-            <button class="scroll-btn right" onclick="scrollRight()">❯</button>
-        </div>
-    </section>
-
-    <section class="display-main">
+    <section id="comics" class="display-main">
         <h2>Comics</h2>
         <div class="book-list">
             <button class="scroll-btn left" onclick="scrollLeft()">❮</button>
             <div class="scroll-content">
-                <div class="book-item" th:each="book : ${books}" th:if="${book.genre == 'Comics'}">
+                <div class="book-item" th:each="book : ${books}" th:if="${book.genre == 'Comics'}" th:attr="data-book-id=${book.id}">
                     <div class="tile">
                         <img th:src="${book.imageUrl}" th:alt="${book.title}" th:attr="data-book-id=${book.id}">
                         <div class="details">
@@ -120,78 +78,12 @@
         </div>
     </section>
 
-    <section class="display-main">
-        <h2>History</h2>
-        <div class="book-list">
-            <button class="scroll-btn left" onclick="scrollLeft()">❮</button>
-            <div class="scroll-content">
-                <div class="book-item" th:each="book : ${books}" th:if="${book.genre == 'History'}">
-                    <div class="tile">
-                        <img th:src="${book.imageUrl}" th:alt="${book.title}" th:attr="data-book-id=${book.id}">
-                        <div class="details">
-                            <p class="info" th:text="${book.title}">Book Title</p>
-                        </div>
-                    </div>
-                    <div class="actions">
-                        <button class="borrow-btn">Borrow</button>
-                        <i class='bx bx-heart'></i>
-                    </div>
-                </div>
-            </div>
-            <button class="scroll-btn right" onclick="scrollRight()">❯</button>
-        </div>
-    </section>
-
-    <section class="display-main">
-        <h2>Literature</h2>
-        <div class="book-list">
-            <button class="scroll-btn left" onclick="scrollLeft()">❮</button>
-            <div class="scroll-content">
-                <div class="book-item" th:each="book : ${books}" th:if="${book.genre == 'Literature'}">
-                    <div class="tile">
-                        <img th:src="${book.imageUrl}" th:alt="${book.title}" th:attr="data-book-id=${book.id}">
-                        <div class="details">
-                            <p class="info" th:text="${book.title}">Book Title</p>
-                        </div>
-                    </div>
-                    <div class="actions">
-                        <button class="borrow-btn">Borrow</button>
-                        <i class='bx bx-heart'></i>
-                    </div>
-                </div>
-            </div>
-            <button class="scroll-btn right" onclick="scrollRight()">❯</button>
-        </div>
-    </section>
-
-    <section class="display-main">
-        <h2>Technology</h2>
-        <div class="book-list">
-            <button class="scroll-btn left" onclick="scrollLeft()">❮</button>
-            <div class="scroll-content">
-                <div class="book-item" th:each="book : ${books}" th:if="${book.genre == 'Technology'}">
-                    <div class="tile">
-                        <img th:src="${book.imageUrl}" th:alt="${book.title}" th:attr="data-book-id=${book.id}">
-                        <div class="details">
-                            <p class="info" th:text="${book.title}">Book Title</p>
-                        </div>
-                    </div>
-                    <div class="actions">
-                        <button class="borrow-btn">Borrow</button>
-                        <i class='bx bx-heart'></i>
-                    </div>
-                </div>
-            </div>
-            <button class="scroll-btn right" onclick="scrollRight()">❯</button>
-        </div>
-    </section>
-
-    <section class="display-main">
+    <section id="romantic" class="display-main">
         <h2>Romantic</h2>
         <div class="book-list">
             <button class="scroll-btn left" onclick="scrollLeft()">❮</button>
             <div class="scroll-content">
-                <div class="book-item" th:each="book : ${books}" th:if="${book.genre == 'Romantic'}">
+                <div class="book-item" th:each="book : ${books}" th:if="${book.genre == 'Romantic'}" th:attr="data-book-id=${book.id}">
                     <div class="tile">
                         <img th:src="${book.imageUrl}" th:alt="${book.title}" th:attr="data-book-id=${book.id}">
                         <div class="details">
@@ -208,6 +100,93 @@
         </div>
     </section>
 
+    <section id="novels" class="display-main">
+        <h2>Novels</h2>
+        <div class="book-list">
+            <button class="scroll-btn left" onclick="scrollLeft()">❮</button>
+            <div class="scroll-content">
+                <div class="book-item" th:each="book : ${books}" th:if="${book.genre == 'Novels'}" th:attr="data-book-id=${book.id}">
+                    <div class="tile">
+                        <img th:src="${book.imageUrl}" th:alt="${book.title}" th:attr="data-book-id=${book.id}">
+                        <div class="details">
+                            <p class="info" th:text="${book.title}">Book Title</p>
+                        </div>
+                    </div>
+                    <div class="actions">
+                        <button class="borrow-btn">Borrow</button>
+                        <i class='bx bx-heart'></i>
+                    </div>
+                </div>
+            </div>
+            <button class="scroll-btn right" onclick="scrollRight()">❯</button>
+        </div>
+    </section>
+
+    <section id="action" class="display-main">
+        <h2>Action</h2>
+        <div class="book-list">
+            <button class="scroll-btn left" onclick="scrollLeft()">❮</button>
+            <div class="scroll-content">
+                <div class="book-item" th:each="book : ${books}" th:if="${book.genre == 'Action'}" th:attr="data-book-id=${book.id}">
+                    <div class="tile">
+                        <img th:src="${book.imageUrl}" th:alt="${book.title}" th:attr="data-book-id=${book.id}">
+                        <div class="details">
+                            <p class="info" th:text="${book.title}">Book Title</p>
+                        </div>
+                    </div>
+                    <div class="actions">
+                        <button class="borrow-btn">Borrow</button>
+                        <i class='bx bx-heart'></i>
+                    </div>
+                </div>
+            </div>
+            <button class="scroll-btn right" onclick="scrollRight()">❯</button>
+        </div>
+    </section>
+
+    <section id="literature" class="display-main">
+        <h2>Literature</h2>
+        <div class="book-list">
+            <button class="scroll-btn left" onclick="scrollLeft()">❮</button>
+            <div class="scroll-content">
+                <div class="book-item" th:each="book : ${books}" th:if="${book.genre == 'Literature'}" th:attr="data-book-id=${book.id}">
+                    <div class="tile">
+                        <img th:src="${book.imageUrl}" th:alt="${book.title}" th:attr="data-book-id=${book.id}">
+                        <div class="details">
+                            <p class="info" th:text="${book.title}">Book Title</p>
+                        </div>
+                    </div>
+                    <div class="actions">
+                        <button class="borrow-btn">Borrow</button>
+                        <i class='bx bx-heart'></i>
+                    </div>
+                </div>
+            </div>
+            <button class="scroll-btn right" onclick="scrollRight()">❯</button>
+        </div>
+    </section>
+
+    <section id="technology" class="display-main">
+        <h2>Technology</h2>
+        <div class="book-list">
+            <button class="scroll-btn left" onclick="scrollLeft()">❮</button>
+            <div class="scroll-content">
+                <div class="book-item" th:each="book : ${books}" th:if="${book.genre == 'Technology'}" th:attr="data-book-id=${book.id}">
+                    <div class="tile">
+                        <img th:src="${book.imageUrl}" th:alt="${book.title}" th:attr="data-book-id=${book.id}">
+                        <div class="details">
+                            <p class="info" th:text="${book.title}">Book Title</p>
+                        </div>
+                    </div>
+                    <div class="actions">
+                        <button class="borrow-btn">Borrow</button>
+                        <i class='bx bx-heart'></i>
+                    </div>
+                </div>
+            </div>
+            <button class="scroll-btn right" onclick="scrollRight()">❯</button>
+        </div>
+    </section>
 </div>
 
 <div th:if="${#lists.isEmpty(books)}" class="empty-message">

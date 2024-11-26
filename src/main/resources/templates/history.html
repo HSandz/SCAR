@@ -35,7 +35,7 @@
             <tbody>
             <tr th:each="borrow : ${borrowHistory}">
                 <td th:text="${borrow.id}"></td>
-                <td th:text="${borrow.book.title}"></td>
+                <td th:text="${borrow.book != null ? borrow.book.title : 'Unknown'}"></td>
                 <td th:text="${borrow.borrowDate}"></td>
                 <td th:text="${borrow.returnDate}"></td>
                 <td th:style="${borrow.returnDate == null ? 'color: red;' : 'color: green;'}"
