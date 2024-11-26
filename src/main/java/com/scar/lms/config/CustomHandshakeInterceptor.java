@@ -39,6 +39,7 @@ public class CustomHandshakeInterceptor implements HandshakeInterceptor {
             if (session != null) {
                 Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
                 if (authentication instanceof UsernamePasswordAuthenticationToken) {
+
                     System.out.println("UsernamePassword detected");
                     String username = authentication.getName();
                     attributes.put("username", username);
@@ -47,6 +48,7 @@ public class CustomHandshakeInterceptor implements HandshakeInterceptor {
                         attributes.put("profilePictureUrl", profilePictureUrl);
                     }
                 } else if (authentication instanceof OAuth2AuthenticationToken token) {
+
                     System.out.println("OAuth2 detected");
                     Map<String, Object> attribute = token.getPrincipal().getAttributes();
                     String username = (String) attribute.get("login");
