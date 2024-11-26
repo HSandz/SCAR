@@ -217,21 +217,48 @@ a:hover {
 
 .book-list {
     display: flex;
+    overflow: hidden;
     flex-wrap: nowrap;
-    overflow-x: auto;
+    /*overflow-x: auto;*/
     /*box-sizing: border-box;*/
-    max-width: 1000px;
+    max-width: 1050px;
     height: auto;
+}
+.scroll-content {
+    display: flex; /* Sắp xếp các phần tử con theo hàng ngang */
+    overflow-x: scroll; /* Cho phép cuộn ngang */
+    overflow-y: hidden; /* Ẩn thanh cuộn dọc */
+    flex-wrap: nowrap; /* Không cho phép xuống dòng */
+    max-width: 100%; /* Đặt chiều rộng tối đa để danh sách co giãn */
+    gap: 20px; /* Khoảng cách giữa các sách */
+    padding: 10px; /* Thêm padding cho vùng hiển thị */
+    box-sizing: border-box; /* Bao gồm padding trong kích thước tổng */
+    scroll-behavior: smooth; /* Hiệu ứng cuộn mượt */
+}
+
+.scroll-content::-webkit-scrollbar {
+    display: none; /* Ẩn thanh cuộn ngang trên Chrome, Safari */
+}
+
+.scroll-content {
+    -ms-overflow-style: none; /* Ẩn thanh cuộn trên IE và Edge */
+    scrollbar-width: none; /* Ẩn thanh cuộn trên Firefox */
 }
 
 .book-item {
+    display: flex;
+    flex-direction: column; /* Stack image and actions vertically */
+    align-items: center; /* Center-align contents horizontally */
+    justify-content: flex-start;
     flex: 0 0 auto;
-    margin-right: 20px; /* Khoảng cách giữa các item */
+    /*margin-right: 20px; !* Khoảng cách giữa các item *!*/
     min-width: 150px; /* Đặt kích thước tối đa phù hợp */
     /*box-sizing: border-box;*/
     word-wrap: break-word;
     border: none;
     border-radius: 0;
+    overflow: hidden;
+    scroll-behavior: smooth;
 }
 
 .tile {
@@ -243,26 +270,23 @@ a:hover {
     flex-shrink: 0;
     margin:0 0 20px 0;
     display: flex;
-    flex-wrap: nowrap; /* Không cho phép cuộn xuống dòng */
-    gap: 20px; /* Khoảng cách giữa các sách */
-    overflow-x: auto; /* Hiển thị thanh cuộn ngang nếu cần */
+    flex-wrap: nowrap;
+    gap: 20px;
+    overflow-x: auto;
 }
 
 .tile img {
     display: block;
     width: 100%;
-    height: 100%;
+    min-height: 230px;
     object-fit: cover;
     backface-visibility: hidden;
     -webkit-backface-visibility: hidden;
 }
 
 .tile .details {
-    font-size: 12px;
     color: #fff;
     position: absolute;
-    bottom: 0;
-    left: 0;
     width: 100%;
     height: 100%;
     background: linear-gradient(to top, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0));
@@ -279,43 +303,111 @@ a:hover {
 }
 
 .tile .details .info {
-    font-size: 12px;
+    font-size: 17px;
     color: #fff;
     text-align: left;
     word-wrap: break-word;
-    padding: 10px 5px 8px 10px;
+    padding: 5px 5px 8px 10px;
 }
 
-/*.scroll-button {*/
-/*    width: 50px;*/
-/*    height: 50px;*/
-/*    border: none;*/
-/*    background-color: rgba(0, 0, 0, 0.5);*/
-/*    color: white;*/
-/*    font-size: 20px;*/
-/*    border-radius: 50%;*/
-/*    cursor: pointer;*/
-/*    display: flex;*/
-/*    align-items: center;*/
-/*    justify-content: center;*/
-/*    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);*/
-/*    transition: background-color 0.3s ease;*/
-/*}*/
+.book-number {
+    position: absolute;
+    top: -10px;
+    left: 0;
+    font-size: 50px;
+    font-weight: bold;
+    color: white;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.9);
+    padding: 0;
+    border-radius: 5px;
+    z-index: 5;
+    -webkit-text-stroke: 2px black;
+}
+.actions {
+    display: flex;
+    justify-content: space-between; /* Space the buttons evenly */
+    align-items: center;
+    width: 100%; /* Ensure buttons span full width */
+    margin-top: 10px;
+    gap: 10px; /* Add spacing between buttons */
+}
 
-/*.scroll-button:hover {*/
-/*    background-color: rgba(0, 0, 0, 0.8);*/
-/*}*/
+.borrow-btn {
+    background-color: #8f9bf5;
+    color: white;
+    border: none;
+    padding: 4px 5px;
+    border-radius: 4px;
+    font-size: 15px;
+    cursor: pointer;
+    flex-grow: 1; /* Ensure buttons resize evenly */
+    text-align: center;
+}
 
-/*.scroll-button.left {*/
-/*    position: absolute;*/
-/*    left: 10px;*/
-/*}*/
+.borrow-btn:hover {
+    background-color: #818fff;
+}
 
-/*.scroll-button.right {*/
-/*    position: absolute;*/
-/*    right: 10px;*/
-/*}*/
 
+.actions > i {
+    color: #333;
+    transform: scale(1.3);
+    display: inline-block;
+    margin-top: 0;
+    cursor: pointer;
+}
+
+.scroll-btn {
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 20px;
+    cursor: pointer;
+    padding: 10px;
+    z-index: 1;
+}
+
+.scroll-btn.left {
+    margin-right: 10px;
+}
+
+.scroll-btn.right {
+    margin-left: 10px;
+}
+
+.scroll-btn:hover {
+    color: #ccc;
+}
+
+.categories {
+    display: flex; /* Sử dụng flexbox để căn chỉnh */
+    justify-content: center; /* Căn giữa theo chiều ngang */
+    align-items: center; /* Căn giữa theo chiều dọc */
+    gap: 50px; /* Khoảng cách giữa các nút */
+    padding: 10px;
+    margin: 0 auto; /* Đảm bảo danh sách nằm giữa trang */
+    width: 100%; /* Đặt chiều rộng của container */
+}
+
+.category {
+    display: flex; /* Đảm bảo nội dung nút căn giữa */
+    justify-content: center; /* Căn giữa nội dung bên trong nút */
+    align-items: center; /* Căn giữa nội dung bên trong nút */
+    background-color: #f5f5f5; /* Màu nền ban đầu */
+    padding: 10px 20px; /* Khoảng cách bên trong nút */
+    border-radius: 8px; /* Bo góc nút */
+    cursor: pointer; /* Thêm con trỏ khi hover */
+    transition: all 0.3s ease; /* Hiệu ứng hover mượt mà */
+    font-size: 16px; /* Kích thước chữ */
+    border: 1px solid #ccc; /* Đường viền nút */
+}
+
+/* Hiệu ứng hover */
+.category:hover {
+    background-color: #d3d3d3; /* Thay đổi màu nền khi hover */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Thêm đổ bóng */
+    transform: scale(1.05); /* Phóng to nhẹ */
+}
 .container-book {
     position: fixed;
     right: 0;

@@ -1,4 +1,4 @@
-span {
+i > span {
     background: red;
     border-radius: 50%;
     display: flex;
