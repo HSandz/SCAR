@@ -79,49 +79,20 @@ public class AuthenticationServiceImpl implements AuthenticationService, UserDet
 
     private boolean validateUsername(String username) {
         String usernameRegex = "^[A-Za-z][A-Za-z0-9_@#]{" + (MIN_USERNAME_LENGTH - 1) + "," + (MAX_USERNAME_LENGTH - 1) + "}$";
-        if (!username.matches(usernameRegex)) {
-            throw new InvalidDataException("Invalid username format: " + username);
-        }
-
-        if (userRepository.findByUsername(username).isPresent()) {
-            throw new OperationNotAllowedException("Username already exists: " + username);
-        }
-
-        return true;
+        return username.matches(usernameRegex) && userRepository.findByUsername(username).isEmpty();
     }
 
     private boolean validatePassword(String password) {
-        if (password.length() < MIN_PASSWORD_LENGTH || password.length() > MAX_PASSWORD_LENGTH) {
-            throw new InvalidDataException(
-                    String.format("Password length should be between %d and %d characters.",
-                            MIN_PASSWORD_LENGTH, MAX_PASSWORD_LENGTH)
-            );
-        }
-
-        return true;
+        return password.length() >= MIN_PASSWORD_LENGTH && password.length() <= MAX_PASSWORD_LENGTH;
     }
 
     private boolean validateEmail(String email) {
         String emailRegex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,6}$";
-        if (!email.matches(emailRegex)) {
-            throw new InvalidDataException("Invalid email format: " + email);
-        }
-
-        if (userRepository.findByEmail(email).isPresent()) {
-            throw new OperationNotAllowedException("Email already exists: " + email);
-        }
-
-        return true;
+        return email.matches(emailRegex) && userRepository.findByEmail(email).isEmpty();
     }
 
     private boolean validateDisplayName(String displayName) {
-        if (displayName.length() < (MIN_USERNAME_LENGTH - 2) || displayName.length() > MAX_USERNAME_LENGTH) {
-            throw new InvalidDataException(
-                    String.format("Display name length should be between %d and %d characters.",
-                            MIN_USERNAME_LENGTH - 2, MAX_USERNAME_LENGTH)
-            );
-        }
-        return true;
+        return MAX_USERNAME_LENGTH >= displayName.length() && displayName.length() >= MIN_USERNAME_LENGTH;
     }
 
     @Override
