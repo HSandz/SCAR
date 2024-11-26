@@ -46,7 +46,7 @@ public class BookController {
     }
 
     @GetMapping("/api")
-    public CompletableFuture<String> searchBooks(@RequestParam(value = "query", defaultValue = "") String query,
+    public CompletableFuture<String> searchBooksAPI(@RequestParam(value = "query", defaultValue = "") String query,
                                                  @RequestParam(value = "startIndex", defaultValue = "0") int startIndex,
                                                  @RequestParam(value = "maxResults", defaultValue = "10") int maxResults,
                                                  Model model) {
