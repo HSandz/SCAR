@@ -493,6 +493,10 @@ button[type="submit"]:hover {
     background-color: #4cae4c;
 }
 
+.bx-heart.favorited {
+    color: red;
+}
+
 /* Book list */
 ul {
     list-style-type: none;

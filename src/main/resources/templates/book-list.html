@@ -62,25 +62,25 @@
         </li>
 
         <li class="nav__item" data-tooltip="History">
-            <a href="#">
+            <a href="/users/borrow-history">
                 <i class='bx bx-history'></i>
             </a>
         </li>
 
         <li class="nav__item" data-tooltip="Chatbot">
-            <a href="#">
+            <a href="/chat/bot">
                 <i class='bx bx-bot'></i>
             </a>
         </li>
 
         <li class="nav__item" data-tooltip="Chat">
-            <a href="#">
+            <a href="/chat">
                 <i class='bx bx-chat'></i>
             </a>
         </li>
 
         <li class="nav__item" data-tooltip="Account">
-            <a href="#">
+            <a href="/logout">
                 <i class='bx bx-user-circle'></i>
                 <br></br>
                 <br></br>
@@ -90,7 +90,6 @@
     </ul>
     <div th:replace="chat :: body"></div>
     <script>
-        // JavaScript code to handle toggle
         const chatButton = document.querySelector('.nav__item[data-tooltip="Chat"]');
         const chatContainer = document.querySelector('.chat-container');
 
@@ -136,7 +135,7 @@
         <div class="book-list">
             <button class="scroll-btn left" onclick="scrollLeft()">❮</button>
             <div class="scroll-content">
-                <div class="book-item" th:each="book : ${books}" th:if="${book.genre == 'Computers'}">
+                <div class="book-item" th:each="book : ${books}" th:if="${book.genre == 'Comics'}" th:attr="data-book-id=${book.id}">
                     <div class="tile">
                         <img th:src="${book.imageUrl}" th:alt="${book.title}" th:attr="data-book-id=${book.id}">
                         <div class="details">
@@ -158,7 +157,7 @@
         <div class="book-list">
             <button class="scroll-btn left" onclick="scrollLeft()">❮</button>
             <div class="scroll-content">
-                <div class="book-item" th:each="book : ${books}" th:if="${book.genre == 'Sciences'}">
+                <div class="book-item" th:each="book : ${books}" th:if="${book.genre == 'Romantic'}" th:attr="data-book-id=${book.id}">
                     <div class="tile">
                         <img th:src="${book.imageUrl}" th:alt="${book.title}" th:attr="data-book-id=${book.id}">
                         <div class="details">
@@ -180,7 +179,7 @@
         <div class="book-list">
             <button class="scroll-btn left" onclick="scrollLeft()">❮</button>
             <div class="scroll-content">
-                <div class="book-item" th:each="book : ${books}" th:if="${book.genre == 'Comics'}">
+                <div class="book-item" th:each="book : ${books}" th:if="${book.genre == 'Novels'}" th:attr="data-book-id=${book.id}">
                     <div class="tile">
                         <img th:src="${book.imageUrl}" th:alt="${book.title}" th:attr="data-book-id=${book.id}">
                         <div class="details">
@@ -202,7 +201,7 @@
         <div class="book-list">
             <button class="scroll-btn left" onclick="scrollLeft()">❮</button>
             <div class="scroll-content">
-                <div class="book-item" th:each="book : ${books}" th:if="${book.genre == 'History'}">
+                <div class="book-item" th:each="book : ${books}" th:if="${book.genre == 'Action'}" th:attr="data-book-id=${book.id}">
                     <div class="tile">
                         <img th:src="${book.imageUrl}" th:alt="${book.title}" th:attr="data-book-id=${book.id}">
                         <div class="details">
@@ -224,7 +223,7 @@
         <div class="book-list">
             <button class="scroll-btn left" onclick="scrollLeft()">❮</button>
             <div class="scroll-content">
-                <div class="book-item" th:each="book : ${books}" th:if="${book.genre == 'Literature'}">
+                <div class="book-item" th:each="book : ${books}" th:if="${book.genre == 'Literature'}" th:attr="data-book-id=${book.id}">
                     <div class="tile">
                         <img th:src="${book.imageUrl}" th:alt="${book.title}" th:attr="data-book-id=${book.id}">
                         <div class="details">
@@ -246,7 +245,7 @@
         <div class="book-list">
             <button class="scroll-btn left" onclick="scrollLeft()">❮</button>
             <div class="scroll-content">
-                <div class="book-item" th:each="book : ${books}" th:if="${book.genre == 'Technology'}">
+                <div class="book-item" th:each="book : ${books}" th:if="${book.genre == 'Technology'}" th:attr="data-book-id=${book.id}">
                     <div class="tile">
                         <img th:src="${book.imageUrl}" th:alt="${book.title}" th:attr="data-book-id=${book.id}">
                         <div class="details">

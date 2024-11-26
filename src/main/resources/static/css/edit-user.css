@@ -64,9 +64,8 @@
 }
 
 .form-group input.form-control {
-    width: 100%;
+    width: 500px;
 }
-
 
 .container {
     max-width: 50%;
@@ -96,4 +95,16 @@
     background-color: #ffeeba;
     border-color: #ffeeba;
     color: #856404;
+}
+
+form > button {
+    padding: 10px 20px;
+    margin: 5px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.img-fluid {
+    border-radius: 50%;
 }
