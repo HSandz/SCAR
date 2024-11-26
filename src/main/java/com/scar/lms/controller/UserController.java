@@ -146,14 +146,14 @@ public class UserController {
             String username = authenticationService.extractUsernameFromAuthentication(authentication).join();
             if (!authenticationService.updatePassword(username, oldPassword, newPassword)) {
                 model.addAttribute("error", "Password update failed. Please check your old password and try again.");
-                return "update-password";
+                return "profile";
             }
             model.addAttribute("success", "Password updated successfully.");
             return "redirect:/login";
         } catch (Exception e) {
             log.error("Failed to update password.", e);
             model.addAttribute("error", "Failed to update password.");
-            return "update-password";
+            return "profile";
         }
     }
 
@@ -175,16 +175,14 @@ public class UserController {
     @PostMapping("/return/{bookId}")
     public CompletableFuture<String> returnBook(@PathVariable int bookId, Authentication authentication) {
         return getUser(authentication)
-                .thenCompose(user -> {
-                    return borrowService.findBorrow(user.getId(), bookId)
-                            .thenAccept(borrowOptional -> {
-                                borrowOptional.ifPresent(borrow -> {
-                                    borrow.setReturnDate(LocalDate.now());
-                                    borrowService.updateBorrow(borrow);
-                                });
-                            })
-                            .thenApply(v -> "redirect:/users/borrowed-books");
-                });
+                .thenCompose(user -> borrowService.findBorrow(user.getId(), bookId)
+                        .thenAccept(borrowOptional -> {
+                            borrowOptional.ifPresent(borrow -> {
+                                borrow.setReturnDate(LocalDate.now());
+                                borrowService.updateBorrow(borrow);
+                            });
+                        })
+                        .thenApply(v -> "redirect:/users/borrowed-books"));
     }
 
     @GetMapping("/borrowed-books")
