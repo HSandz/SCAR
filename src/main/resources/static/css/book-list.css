@@ -78,7 +78,7 @@ header {
 
 i {
     color: lightslategrey;
-    transform: scale(2.5);
+    transform: scale(250%);
     transform-origin: center; /* Giữ icon cân bằng */
 }
 
@@ -206,7 +206,6 @@ li {
 
 li a {
     color: black;
-    padding: 8px;
     transition: all .42s ease;
 }
 
