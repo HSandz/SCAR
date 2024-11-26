@@ -23,6 +23,7 @@ public class Book {
     private String isbn;
 
     @Column(name = "TITLE", length = 100, nullable = false)
+    @NonNull
     private String title;
 
     @Column(name = "LANGUAGE", length = 50)
@@ -31,7 +32,7 @@ public class Book {
     @Column(name = "RATING", length = 10)
     private Double rating = 0D;
 
-    @Column(name = "PUBLICATION_YEAR", length = 10, nullable = false)
+    @Column(name = "PUBLICATION_YEAR", length = 10)
     private Integer publicationYear;
 
     @Column(name = "DESCRIPTION", columnDefinition = "LONGTEXT")

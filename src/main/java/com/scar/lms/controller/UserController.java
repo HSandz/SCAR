@@ -35,15 +35,6 @@ public class UserController {
         this.cloudStorageService = cloudStorageService;
     }
 
-    @GetMapping("/upload")
-    public CompletableFuture<String> showUploadForm(Authentication authentication, Model model) {
-        return getUser(authentication)
-                .thenApply(user -> {
-                    model.addAttribute("user", user);
-                    return "upload";
-                });
-    }
-
     @PostMapping("/upload")
     public CompletableFuture<String> uploadProfileImage(
             Authentication authentication,
@@ -53,11 +44,11 @@ public class UserController {
                 .thenCompose(user -> {
                     try {
                         return extractedUploadProfileImage(user.getId(), file, model)
-                                .thenApply(_ -> "profile");
+                                .thenApply(_ -> "redirect:/users/profile/edit");
                     } catch (IOException e) {
                         log.error("Error uploading profile image.", e);
                         model.addAttribute("message", "Error uploading profile image: " + e.getMessage());
-                        return CompletableFuture.completedFuture("profile");
+                        return CompletableFuture.completedFuture("redirect:/users/profile/edit");
                     }
                 });
     }
@@ -126,21 +117,21 @@ public class UserController {
                                 @RequestParam("username") String updatedUsername,
                                 @RequestParam("displayName") String updatedDisplayName,
                                 @RequestParam("email") String updatedEmail,
+                                @RequestParam("aboutMe") String aboutMe,
                                 Model model) {
         CompletableFuture<User> userFuture = getUser(authentication);
         User currentUser = userFuture.join();
         if (!authenticationService.validateEditProfile(currentUser, updatedUsername, updatedDisplayName, updatedEmail)) {
             model.addAttribute("failure", "Profile not updated.");
+        } else {
+            currentUser.setUsername(updatedUsername);
+            currentUser.setDisplayName(updatedDisplayName);
+            currentUser.setEmail(updatedEmail);
+            currentUser.setAboutMe(aboutMe);
+            userService.updateUser(currentUser);
+            model.addAttribute("success", "Profile updated successfully.");
         }
-        userService.updateUser(currentUser);
-        model.addAttribute("success", "Profile updated successfully.");
         return "redirect:/users/profile/edit";
-    }
-
-    @GetMapping("/updatePassword")
-    public CompletableFuture<String> showUpdatePasswordForm(Model model) {
-        model.addAttribute("user", new User());
-        return CompletableFuture.completedFuture("update-password");
     }
 
     @PostMapping("/updatePassword")
@@ -152,15 +143,14 @@ public class UserController {
             String username = authenticationService.extractUsernameFromAuthentication(authentication).join();
             if (!authenticationService.updatePassword(username, oldPassword, newPassword)) {
                 model.addAttribute("error", "Password update failed. Please check your old password and try again.");
-                return "update-password";
+            } else {
+                model.addAttribute("success", "Password updated successfully.");
             }
-            model.addAttribute("success", "Password updated successfully.");
-            return "redirect:/login";
         } catch (Exception e) {
             log.error("Failed to update password.", e);
             model.addAttribute("error", "Failed to update password.");
-            return "update-password";
         }
+        return "redirect:/users/profile/edit";
     }
 
     @GetMapping("/profile/delete")
