@@ -58,29 +58,25 @@ public class BookServiceImpl implements BookService {
     @Async
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     @Override
-    public CompletableFuture<Page<Book>> findPaginated(Pageable pageable) {
-        return CompletableFuture.supplyAsync(() -> bookRepository.findAll(pageable));
-    }
-
-    @Async
-    @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
-    @Override
-    public CompletableFuture<Page<Book>> findFilteredAndPaginated(String title,
-                                                                  String authorName,
-                                                                  String genreName,
-                                                                  String publisherName,
-                                                                  Integer year,
-                                                                  Pageable pageable) {
+    public CompletableFuture<List<Book>> findFiltered(String title,
+                                                      String authorName,
+                                                      String genreName,
+                                                      String publisherName,
+                                                      Integer year) {
 
         Specification<Book> spec = Specification.where(null);
 
         spec = getSpecification(title, authorName, genreName, publisherName, year, spec);
 
         Specification<Book> finalSpec = spec;
-        return CompletableFuture.supplyAsync(() -> bookRepository.findAll(finalSpec, pageable));
+        return CompletableFuture.supplyAsync(() -> bookRepository.findAll(finalSpec));
     }
 
-    private Specification<Book> getSpecification(String title, String authorName, String genreName, String publisherName, Integer year, Specification<Book> spec) {
+    private Specification<Book> getSpecification(String title,
+                                                 String authorName,
+                                                 String genreName,
+                                                 String publisherName,
+                                                 Integer year, Specification<Book> spec) {
         if (title != null) {
             spec = spec.and(BookSpecification.hasTitle(title));
         }

@@ -24,28 +24,28 @@
         <div class="card-container">
             <div class="card">
                 <div class="content">
-                    <p class="number">30</p>
+                    <p class="number" th:text="${bookCount}">30</p>
                     <p class="label">Total books</p>
                 </div>
                 <button class="btn">Click</button>
             </div>
             <div class="card">
                 <div class="content">
-                    <p class="number">30</p>
+                    <p class="number" th:text="${userCount}">30</p>
                     <p class="label">Total users</p>
                 </div>
                 <button class="btn">Click</button>
             </div>
             <div class="card">
                 <div class="content">
-                    <p class="number">30</p>
+                    <p class="number" th:text="${adminCount}">30</p>
                     <p class="label">Total admin</p>
                 </div>
                 <button class="btn">Click</button>
             </div>
             <div class="card">
                 <div class="content">
-                    <p class="number">30</p>
+                    <p class="number" th:text="${borrowCount}">30</p>
                     <p class="label">Total borrow</p>
                 </div>
                 <button class="btn">Click</button>
@@ -63,32 +63,30 @@
     </section>
     <section style="display:grid; grid-template-columns: 1fr 1fr 2.5fr;" class="display-main">
         <div>
-            <img src="/avatar/${admin.username}" alt="Admin Avatar">
+            <img th:src="${admin.profilePictureUrl}" alt="Admin Avatar">
         </div>
         <div>
-            <p><i>Username:</i><br> ${admin.username}</p>
-            <p><i>Email:</i><br> ${admin.email}</p>
-            <p><i>Phone:</i><br> ${admin.phone}</p>
-            <p><i>Address:</i><br> ${admin.address}</p>
+            <p><i>Username: </i><br> <span th:text="${admin.username}"></span></p>
+            <p><i>Display name: </i><br> <span th:text="${admin.displayName}"></span></p>
+            <p><i>Email: </i><br> <span th:text="${admin.email}"></span></p>
+            <p><i>Role: </i><br> <span th:text="${admin.role}"></span></p>
         </div>
         <div class="chart-container" style="width: 80%; margin: auto; text-align: center;">
             <h1>Books Borrowed Per Month</h1>
             <canvas id="borrowChart" width="400" height="200"></canvas>
         </div>
         <script>
-            // Dữ liệu từ Thymeleaf
             const labels = /*[[${months}]]*/ ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
             const data = /*[[${borrowCounts}]]*/ [70, 50, 90, 60, 80, 40, 100, 65, 75, 85, 95, 60];
 
-            // Tạo biểu đồ bằng Chart.js
             const ctx = document.getElementById('borrowChart').getContext('2d');
             const borrowChart = new Chart(ctx, {
-                type: 'bar', // Loại biểu đồ
+                type: 'bar',
                 data: {
-                    labels: labels, // Tháng
+                    labels: labels,
                     datasets: [{
                         label: 'Number of Books Borrowed',
-                        data: data, // Số liệu
+                        data: data,
                         backgroundColor: 'rgba(75, 192, 192, 0.2)',
                         borderColor: 'rgba(75, 192, 192, 1)',
                         borderWidth: 1

@@ -96,6 +96,11 @@ public class BorrowServiceImpl implements BorrowService {
         return CompletableFuture.supplyAsync(borrowRepository::count);
     }
 
+    @Override
+    public CompletableFuture<Long> countBorrowsByUser(int userId) {
+        return CompletableFuture.supplyAsync(() -> borrowRepository.countByUserId(userId));
+    }
+
     @Async
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     @Override

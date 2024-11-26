@@ -6,9 +6,7 @@ import com.scar.lms.service.*;
 import jakarta.validation.Valid;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -19,7 +17,6 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 @SuppressWarnings("SameReturnValue")
 @Slf4j
@@ -46,9 +43,9 @@ public class BookController {
     }
 
     @GetMapping("/api")
-    public CompletableFuture<String> searchBooksAPI(@RequestParam(value = "query", defaultValue = "") String query,
+    public CompletableFuture<String> searchAPI(@RequestParam(value = "query", defaultValue = "") String query,
                                                  @RequestParam(value = "startIndex", defaultValue = "0") int startIndex,
-                                                 @RequestParam(value = "maxResults", defaultValue = "10") int maxResults,
+                                                 @RequestParam(value = "maxResults", defaultValue = "40") int maxResults,
                                                  Model model) {
 
         CompletableFuture<List<Book>> booksFuture = googleBooksService.searchBooks(query, startIndex, maxResults)
@@ -67,37 +64,28 @@ public class BookController {
         });
     }
 
-    @GetMapping({ "", "/" })
-    public CompletableFuture<String> findAllBooks(Model model,
+    @GetMapping("/search")
+    public CompletableFuture<String> searchBooks(Model model,
                                                   @RequestParam(required = false) String title,
                                                   @RequestParam(required = false) String authorName,
                                                   @RequestParam(required = false) String genreName,
                                                   @RequestParam(required = false) String publisherName,
-                                                  @RequestParam(required = false) Integer year,
-                                                  @RequestParam(defaultValue = "1") int page,
-                                                  @RequestParam(defaultValue = "10") int size) {
+                                                  @RequestParam(required = false) Integer year) {
 
-        Pageable pageable = PageRequest.of(page - 1, size);
-
-        CompletableFuture<Page<Book>> bookPageFuture = bookService.findFilteredAndPaginated(
-                title, authorName, genreName, publisherName, year, pageable);
+        CompletableFuture<List<Book>> booksFuture = bookService.findFiltered(
+                title, authorName, genreName, publisherName, year);
 
         CompletableFuture<List<Book>> topBorrowedBooksFuture = bookService.findTopBorrowedBooks();
         CompletableFuture<Long> totalBooksFuture = bookService.countAllBooks();
 
-        return CompletableFuture.allOf(bookPageFuture, topBorrowedBooksFuture, totalBooksFuture)
+        return CompletableFuture.allOf(booksFuture, topBorrowedBooksFuture, totalBooksFuture)
                 .thenApply(_ -> {
                     try {
-                        var bookPage = bookPageFuture.get();
+                        var bookPage = booksFuture.get();
                         model.addAttribute("books", bookPage);
                         model.addAttribute("top", topBorrowedBooksFuture.get());
                         model.addAttribute("count", totalBooksFuture.get());
 
-                        int totalPages = bookPage.getTotalPages();
-                        if (totalPages > 0) {
-                            var pageNumbers = IntStream.rangeClosed(1, totalPages).boxed().collect(Collectors.toList());
-                            model.addAttribute("pageNumbers", pageNumbers);
-                        }
                     } catch (Exception e) {
                         log.error("Failed to load data: {}", e.getMessage());
                         model.addAttribute("error", "Failed to load data");
@@ -106,8 +94,8 @@ public class BookController {
                 });
     }
 
-    @GetMapping("/search")
-    public CompletableFuture<String> searchBooks(Model model) {
+    @GetMapping({ "", "/" })
+    public CompletableFuture<String> findAllBooks(Model model) {
         CompletableFuture<List<Book>> futureBooks = bookService.findAllBooks();
         CompletableFuture<List<Book>> futureTops = bookService.findTopBorrowedBooks();
 
@@ -118,7 +106,8 @@ public class BookController {
                         model.addAttribute("tops", futureTops.get());
                     } catch (Exception ex) {
                         log.error("Error occurred while fetching books: {}", ex.getMessage());
-                        model.addAttribute("error", "Failed to fetch books. Please try again later.");
+                        model.addAttribute("error",
+                                "Failed to fetch books. Please try again later.");
                     }
                     return "book-list";
                 });
@@ -175,7 +164,9 @@ public class BookController {
     }
 
     @PostMapping("/update/{id}")
-    public CompletableFuture<String> updateBook(@PathVariable("id") int id, @Valid @ModelAttribute Book book, BindingResult result, Model model) {
+    public CompletableFuture<String> updateBook(@PathVariable("id") int id,
+                                                @Valid @ModelAttribute Book book,
+                                                BindingResult result) {
         if (result.hasErrors()) {
             return CompletableFuture.completedFuture("update-book");
         }
@@ -184,27 +175,10 @@ public class BookController {
                 .thenApply(_ -> "redirect:/books");
     }
 
-    @GetMapping("/remove/{id}")
+    @DeleteMapping("/remove/{id}")
     public CompletableFuture<String> deleteBook(@PathVariable("id") int id) {
         return CompletableFuture.runAsync(() -> bookService.deleteBook(id))
                 .thenApply(_ -> "redirect:/books");
-    }
-
-    @PostMapping("/borrow/{bookId}")
-    public CompletableFuture<String> borrowBook(@PathVariable int bookId, Authentication authentication) {
-        CompletableFuture<User> userFuture = authenticationService.getAuthenticatedUser(authentication);
-        CompletableFuture<Book> bookFuture = bookService.findBookById(bookId);
-
-        return CompletableFuture.allOf(userFuture, bookFuture)
-                .thenApply(_ -> {
-                    try {
-                        extractedBorrowBook(userFuture.get(), bookFuture.get());
-                    } catch (Exception e) {
-                        log.error("Failed to borrow book", e);
-                        return "redirect:/error?message=Failed+to+borrow+book";
-                    }
-                    return "redirect:/book-list";
-                });
     }
 
     private void extractedBorrowBook(User user, Book book) {
@@ -219,9 +193,100 @@ public class BookController {
     }
 
     @PostMapping("/add/db")
-    public CompletableFuture<String> addBookToDatabase(@Valid @ModelAttribute Book book) {
-        book.setDescription(null);
+    public CompletableFuture<ResponseEntity<String>> addBookToDatabase(@Valid @ModelAttribute Book book) {
         return CompletableFuture.runAsync(() -> bookService.addBook(book))
-                .thenApply(_ -> "api");
+                .thenApply(_ -> ResponseEntity.ok("Book added successfully"))
+                .exceptionally(e -> {
+                    log.error("Failed to add book", e);
+                    return ResponseEntity.badRequest().body("Failed to add book");
+                });
+    }
+
+    @PostMapping("/borrow/{bookId}")
+    public CompletableFuture<ResponseEntity<String>> borrowBook(@PathVariable int bookId, Authentication authentication) {
+        CompletableFuture<User> userFuture = authenticationService.getAuthenticatedUser(authentication);
+        CompletableFuture<Book> bookFuture = bookService.findBookById(bookId);
+
+        return CompletableFuture.allOf(userFuture, bookFuture)
+                .thenApply(_ -> {
+                    User user = userFuture.join();
+                    Book book = bookFuture.join();
+
+                    extractedBorrowBook(user, book);
+                    return ResponseEntity.ok("Book borrowed successfully");
+                })
+                .exceptionally(e -> {
+                    log.error("Failed to borrow book", e);
+                    return ResponseEntity.badRequest().body("Failed to borrow book");
+                });
+    }
+
+    @DeleteMapping("/return/{bookId}")
+    public CompletableFuture<ResponseEntity<String>> returnBook(@PathVariable int bookId, Authentication authentication) {
+        CompletableFuture<User> userFuture = authenticationService.getAuthenticatedUser(authentication);
+        CompletableFuture<Book> bookFuture = bookService.findBookById(bookId);
+
+        return CompletableFuture.allOf(userFuture, bookFuture)
+                .thenApply(_ -> {
+                    User user = userFuture.join();
+                    Book book = bookFuture.join();
+
+                    user.getBorrows().stream()
+                            .filter(borrow -> borrow.getBook().getId() == book.getId())
+                            .findFirst()
+                            .ifPresent(borrow -> {
+                                borrow.setReturnDate(LocalDate.now());
+                                borrowService.updateBorrow(borrow);
+
+                                user.setPoints(user.getPoints() - 1);
+                                userService.updateUser(user);
+                            });
+
+                    return ResponseEntity.ok("Book returned successfully");
+                })
+                .exceptionally(e -> {
+                    log.error("Failed to return book", e);
+                    return ResponseEntity.badRequest().body("Failed to return book");
+                });
+    }
+
+    @PostMapping("/add-favourite/{bookId}")
+    public CompletableFuture<ResponseEntity<String>> addFavourite(@PathVariable int bookId, Authentication authentication) {
+        CompletableFuture<User> userFuture = authenticationService.getAuthenticatedUser(authentication);
+        CompletableFuture<Book> bookFuture = bookService.findBookById(bookId);
+
+        return CompletableFuture.allOf(userFuture, bookFuture)
+                .thenApply(_ -> {
+                    User user = userFuture.join();
+                    Book book = bookFuture.join();
+
+                    user.getFavouriteBooks().add(book);
+                    userService.updateUser(user);
+                    return ResponseEntity.ok("Book added to favourites");
+                })
+                .exceptionally(e -> {
+                    log.error("Failed to add favourite", e);
+                    return ResponseEntity.badRequest().body("Failed to add favourite");
+                });
+    }
+
+    @DeleteMapping("/remove-favourite/{bookId}")
+    public CompletableFuture<ResponseEntity<String>> removeFavourite(@PathVariable int bookId, Authentication authentication) {
+        CompletableFuture<User> userFuture = authenticationService.getAuthenticatedUser(authentication);
+        CompletableFuture<Book> bookFuture = bookService.findBookById(bookId);
+
+        return CompletableFuture.allOf(userFuture, bookFuture)
+                .thenApply(_ -> {
+                    User user = userFuture.join();
+                    Book book = bookFuture.join();
+
+                    user.getFavouriteBooks().remove(book);
+                    userService.updateUser(user);
+                    return ResponseEntity.ok("Book removed from favourites");
+                })
+                .exceptionally(e -> {
+                    log.error("Failed to remove favourite", e);
+                    return ResponseEntity.badRequest().body("Failed to remove favourite");
+                });
     }
 }

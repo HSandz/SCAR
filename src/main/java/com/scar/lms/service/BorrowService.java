@@ -26,5 +26,7 @@ public interface BorrowService {
     
     CompletableFuture<Long> countAllBorrows();
 
+    CompletableFuture<Long> countBorrowsByUser(int userId);
+
     CompletableFuture<Long> countBorrowsByMonth(int i);
 }

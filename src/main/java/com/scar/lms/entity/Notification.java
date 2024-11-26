@@ -30,7 +30,6 @@ public class Notification {
     private LocalDateTime sendTime;
 
     @OneToMany(fetch = FetchType.EAGER,
-            cascade = { CascadeType.PERSIST, CascadeType.MERGE },
             mappedBy = "notification")
     private Set<Notify> notifies = new HashSet<>();
 

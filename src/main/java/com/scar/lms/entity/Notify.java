@@ -24,13 +24,11 @@ public class Notify {
     @Column(name = "IS_READ")
     private boolean isRead;
 
-    @ManyToOne(fetch = FetchType.EAGER,
-            cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "USER_ID")
     private User user;
 
-    @ManyToOne(fetch = FetchType.EAGER,
-            cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "NOTIFICATION_ID")
     private Notification notification;
 

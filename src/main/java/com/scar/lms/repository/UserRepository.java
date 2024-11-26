@@ -20,9 +20,12 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     Optional<User> findByEmail(String email);
 
     @Query("SELECT u FROM User u WHERE u.email LIKE CONCAT('%', ?1, '@gmail.com')")
-    Optional<User> findByGoogleEmail(String gmail);
+    Optional<User> findByGmail(String gmail);
 
     List<User> findByRole(Role role);
 
     Long countByRole(Role role);
+
+    @Query("SELECT COUNT(b) FROM User u JOIN u.favouriteBooks b WHERE u.id = ?1")
+    Long countFavouritesByUserId(int userId);
 }

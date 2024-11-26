@@ -9,6 +9,8 @@
 
     <link rel="stylesheet" href="/css/favourites.css">
     <link rel="stylesheet" href="/css/book-list.css">
+    <link rel="stylesheet" href="/css/chat.css">
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Jost:ital,wght@0,100..900;1,100..900&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900&display=swap"
@@ -87,14 +89,25 @@
             </a>
         </li>
     </ul>
+    <div th:replace="chat :: body"></div>
+    <script>
+        // JavaScript code to handle toggle
+        const chatButton = document.querySelector('.nav__item[data-tooltip="Chat"]');
+        const chatContainer = document.querySelector('.chat-container');
+
+        chatButton.addEventListener('click', () => {
+            chatContainer.classList.toggle('active');
+        });
+    </script>
+
 </nav>
-<div class="container">
+<div class="container-main">
     <section class="display-main">
         <h2>Top 10</h2> <br>
         <div class="book-list">
             <button class="scroll-btn left" onclick="scrollLeft()">❮</button>
-                <div class="scroll-content">
-                <div class="book-item" th:each="book : ${tops}">
+            <div class="scroll-content">
+                <div class="book-item" th:each="book : ${tops}" th:attr="data-book-id=${book.id}">
                     <div class="tile">
                         <span class="book-number"></span>
                         <img th:src="${book.imageUrl}" th:alt="${book.title}">
@@ -107,7 +120,7 @@
                         <i class='bx bx-heart'></i>
                     </div>
                 </div>
-                </div>
+            </div>
             <button class="scroll-btn right" onclick="scrollRight()">❯</button>
         </div>
         <div class="categories">
@@ -126,7 +139,7 @@
             <div class="scroll-content">
                 <div class="book-item" th:each="book : ${books}" th:if="${book.genre == 'Computers'}">
                     <div class="tile">
-                        <img th:src="${book.imageUrl}" th:alt="${book.title}">
+                        <img th:src="${book.imageUrl}" th:alt="${book.title}" th:attr="data-book-id=${book.id}">
                         <div class="details">
                             <p class="info" th:text="${book.title}">Book Title</p>
                         </div>
@@ -148,7 +161,7 @@
             <div class="scroll-content">
                 <div class="book-item" th:each="book : ${books}" th:if="${book.genre == 'Sciences'}">
                     <div class="tile">
-                        <img th:src="${book.imageUrl}" th:alt="${book.title}">
+                        <img th:src="${book.imageUrl}" th:alt="${book.title}" th:attr="data-book-id=${book.id}">
                         <div class="details">
                             <p class="info" th:text="${book.title}">Book Title</p>
                         </div>
@@ -170,7 +183,7 @@
             <div class="scroll-content">
                 <div class="book-item" th:each="book : ${books}" th:if="${book.genre == 'Comics'}">
                     <div class="tile">
-                        <img th:src="${book.imageUrl}" th:alt="${book.title}">
+                        <img th:src="${book.imageUrl}" th:alt="${book.title}" th:attr="data-book-id=${book.id}">
                         <div class="details">
                             <p class="info" th:text="${book.title}">Book Title</p>
                         </div>
@@ -192,7 +205,7 @@
             <div class="scroll-content">
                 <div class="book-item" th:each="book : ${books}" th:if="${book.genre == 'History'}">
                     <div class="tile">
-                        <img th:src="${book.imageUrl}" th:alt="${book.title}">
+                        <img th:src="${book.imageUrl}" th:alt="${book.title}" th:attr="data-book-id=${book.id}">
                         <div class="details">
                             <p class="info" th:text="${book.title}">Book Title</p>
                         </div>
@@ -214,7 +227,7 @@
             <div class="scroll-content">
                 <div class="book-item" th:each="book : ${books}" th:if="${book.genre == 'Literature'}">
                     <div class="tile">
-                        <img th:src="${book.imageUrl}" th:alt="${book.title}">
+                        <img th:src="${book.imageUrl}" th:alt="${book.title}" th:attr="data-book-id=${book.id}">
                         <div class="details">
                             <p class="info" th:text="${book.title}">Book Title</p>
                         </div>
@@ -236,7 +249,7 @@
             <div class="scroll-content">
                 <div class="book-item" th:each="book : ${books}" th:if="${book.genre == 'Technology'}">
                     <div class="tile">
-                        <img th:src="${book.imageUrl}" th:alt="${book.title}">
+                        <img th:src="${book.imageUrl}" th:alt="${book.title}" th:attr="data-book-id=${book.id}">
                         <div class="details">
                             <p class="info" th:text="${book.title}">Book Title</p>
                         </div>
@@ -258,7 +271,7 @@
             <div class="scroll-content">
                 <div class="book-item" th:each="book : ${books}" th:if="${book.genre == 'Romantic'}">
                     <div class="tile">
-                        <img th:src="${book.imageUrl}" th:alt="${book.title}">
+                        <img th:src="${book.imageUrl}" th:alt="${book.title}" th:attr="data-book-id=${book.id}">
                         <div class="details">
                             <p class="info" th:text="${book.title}">Book Title</p>
                         </div>
@@ -274,25 +287,14 @@
     </section>
 
 </div>
-<div class="container-book">
-    <div class="book-display">
-        <img src="https://bom.so/TU7t6r" alt="Book Cover" class="book-image">
-        <div class="book-info">
-            <h3 class="book-title">Tên sách</h3>
-            <p class="book-author">Tác giả: Tên tác giả</p>
-            <p class="book-description">Mô tả: Đây là phần mô tả sách...</p>
-        </div>
-    </div>
-</div>
-<!-- Book results -->
 
-<!-- Message for no books found -->
 <div th:if="${#lists.isEmpty(books)}" class="empty-message">
     <p>No books found. Please try a different query.</p>
 </div>
 <script>
     document.addEventListener("DOMContentLoaded", function () {
         const bookItems = document.querySelectorAll(".book-item");
+
         bookItems.forEach((item, index) => {
             const numberSpan = item.querySelector(".book-number");
             if (numberSpan) {
@@ -305,11 +307,64 @@
         const scrollButtonRight = document.querySelector('.scroll-btn.right');
 
         scrollButtonLeft.addEventListener('click', () => {
-            scrollContainer.scrollBy({ left: -200, behavior: 'smooth' });
+            scrollContainer.scrollBy({left: -200, behavior: 'smooth'});
         });
 
         scrollButtonRight.addEventListener('click', () => {
-            scrollContainer.scrollBy({ left: 200, behavior: 'smooth' });
+            scrollContainer.scrollBy({left: 200, behavior: 'smooth'});
+        });
+
+        const borrowButtons = document.querySelectorAll(".borrow-btn");
+        const favouriteButtons = document.querySelectorAll(".bx-heart");
+
+        borrowButtons.forEach(button => {
+            button.addEventListener("click", function () {
+                const bookId = this.closest(".book-item").getAttribute("data-book-id");
+
+                fetch(`/books/borrow/${bookId}`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    }
+                })
+                    .then(response => response.text())
+                    .then(data => {
+                        if (data === "Book borrowed successfully") {
+                            alert("Book borrowed successfully");
+                        } else {
+                            alert("Failed to borrow book");
+                        }
+                    })
+                    .catch(error => {
+                        console.error("Error:", error);
+                        alert("An error occurred while borrowing the book");
+                    });
+            });
+        });
+
+        favouriteButtons.forEach(button => {
+            button.addEventListener("click", function () {
+                const bookId = this.closest(".book-item").getAttribute("data-book-id");
+
+                fetch(`/books/add-favourite/${bookId}`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    }
+                })
+                    .then(response => response.text())
+                    .then(data => {
+                        if (data === "Book added to favourites") {
+                            alert("Book added to favourites");
+                        } else {
+                            alert("Failed to add favourite");
+                        }
+                    })
+                    .catch(error => {
+                        console.error("Error:", error);
+                        alert("An error occurred while adding the book to favourites");
+                    });
+            });
         });
     });
 </script>

@@ -29,17 +29,62 @@
 
 <section>
     <div class="left-section">
-        <!-- Slideshow code remains unchanged -->
+        <div class="slideshow-container">
+
+            <div class="mySlides fade">
+                <img src="/media/image/login1.png">
+            </div>
+
+            <div class="mySlides fade">
+                <img src="/media/image/login2.png">
+            </div>
+
+            <div class="mySlides fade">
+                <img src="/media/image/login3.png">
+            </div>
+
+        </div>
+        <br>
+
+        <div class="dots-container">
+            <span class="dot"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+        </div>
+
+        <script>
+            let slideIndex = 0;
+            showSlides();
+
+            function showSlides() {
+                let i;
+                let slides = document.getElementsByClassName("mySlides");
+                let dots = document.getElementsByClassName("dot");
+                for (i = 0; i < slides.length; i++) {
+                    slides[i].style.display = "none";
+                }
+                slideIndex++;
+                if (slideIndex > slides.length) {
+                    slideIndex = 1
+                }
+                for (i = 0; i < dots.length; i++) {
+                    dots[i].className = dots[i].className.replace(" active", "");
+                }
+                slides[slideIndex - 1].style.display = "block";
+                dots[slideIndex - 1].className += " active";
+                setTimeout(showSlides, 3000);
+            }
+        </script>
     </div>
     <div class="right-section">
         <div class="login-form">
             <h2>Join millions of readers with library management system</h2>
             <form action="/login" method="post">
                 <label>Username*
-                    <input type="text" name="username" placeholder="tngoxinggai" required>
+                    <input type="text" name="username" placeholder="Enter username..." required>
                 </label>
                 <label>Password*
-                    <input type="password" name="password" placeholder="with8char" required>
+                    <input type="password" name="password" placeholder="Enter password..." required>
                 </label>
 
                 <!-- Display error message if authentication fails -->

@@ -166,4 +166,11 @@ public class UserServiceImpl implements UserService {
     public CompletableFuture<Long> countUsersByRole(Role role) {
         return CompletableFuture.supplyAsync(() -> userRepository.countByRole(role));
     }
+
+    @Async
+    @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
+    @Override
+    public CompletableFuture<Long> getFavouriteCount(int userId) {
+        return CompletableFuture.supplyAsync(() -> userRepository.countFavouritesByUserId(userId));
+    }
 }

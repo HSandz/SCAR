@@ -8,6 +8,7 @@
     <title>Library Management System</title>
 
     <link rel="stylesheet" href="/css/book-list.css">
+    <link rel="stylesheet" href="/css/admin.css">
     <link rel="stylesheet" href="/css/profile.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -38,43 +39,43 @@
     <ul class="navmenu">
         <li><a href="#"><i class='bx bx-search' style="transform: scale(1.5);"></i></a></li>
         <li><a href="#"><i class='bx bx-bell' style="transform: scale(1.5);"></i></a></li>
-        <li><a href="#"><i class='bx bx-user-circle' style="transform: scale(1.5);"></i></a></li>
+        <li><a href="/users/profile"><i class='bx bx-user-circle' style="transform: scale(1.5);"></i></a></li>
     </ul>
 </header>
 <navbar>
     <ul class="nav__list">
         <li class="nav__item" data-tooltip="Home">
-            <a href="#">
-                <i class='bx bx-home-alt' ></i>
+            <a href="/home">
+                <i class='bx bx-home-alt'></i>
             </a>
         </li>
 
         <li class="nav__item" data-tooltip="Favorite">
-            <a href="#">
-                <i class='bx bx-book-heart' ></i>
+            <a href="/users/favourites">
+                <i class='bx bx-book-heart'></i>
             </a>
         </li>
 
         <li class="nav__item" data-tooltip="History">
-            <a href="#">
-                <i class='bx bx-history' ></i>
+            <a href="/users/borrow-history">
+                <i class='bx bx-history'></i>
             </a>
         </li>
 
         <li class="nav__item" data-tooltip="Chat bot">
-            <a href="#">
+            <a href="/chat/bot">
                 <i class='bx bx-bot'></i>
             </a>
         </li>
 
         <li class="nav__item" data-tooltip="Chat">
-            <a href="#">
-                <i class='bx bx-chat' ></i>
+            <a href="/chat">
+                <i class='bx bx-chat'></i>
             </a>
         </li>
 
         <li class="nav__item" data-tooltip="Account">
-            <a href="#">
+            <a href="/users/profile">
                 <i class='bx bx-user-circle'></i>
                 <br></br>
                 <br></br>
@@ -145,7 +146,8 @@
                 <div class="container_image">
                     <!-- Display current profile picture -->
                     <div class="profile-picture">
-                        <img th:src="${user.profilePictureUrl}" alt="Profile Picture" th:if="${user.profilePictureUrl != null}">
+                        <img th:src="${user.profilePictureUrl}" alt="Profile Picture"
+                             th:if="${user.profilePictureUrl != null}">
                     </div>
                     <p th:if="${user.profilePictureUrl == null}">No profile picture uploaded yet.</p>
 
@@ -158,33 +160,34 @@
             </section>
 
             <section style="padding-top: 40px;">
-                <h>UserName: </h> <br></br>
-                <h>Age: </h> <br></br>
-                <h>Quantity my book: </h><br></br>
-
+                <h><strong>Username: </strong><span th:text="${user.username}"></span></h>
+                <br></br>
+                <h><strong>Display name: </strong><span th:text="${user.displayName}"></span></h>
+                <br></br>
+                <h><strong>Email: </strong><span th:text="${user.email}"></span></h>
+                <br></br>
             </section>
 
-            <section class="box">
-                <p>1</p>
+            <section class="card" style="margin: auto">
+                <div class="content">
+                    <p class="number" th:text="${borrowCount}">30</p>
+                    <p class="label">Total borrowed books</p>
+                </div>
+                <button class="btn">Click</button>
             </section>
 
-            <section class="box">
-                <p>1</p>
+            <section class="card" style="margin: auto">
+                <div class="content">
+                    <p class="number" th:text="${favouriteCount}">30</p>
+                    <p class="label">Total favourite books</p>
+                </div>
+                <button class="btn">Click</button>
             </section>
         </div>
     </section>
 </div>
 
 <script src="/js/profile_calendar.js"></script>
-<!--<h1>User Profile</h1>-->
-<!--<div>-->
-<!--    <p><strong>Username:</strong> <span th:text="${user.username}">Username</span></p>-->
-<!--    <p><strong>Display Name:</strong><span th:text="${user.displayName}">Display name</span></p>-->
-<!--    <p><strong>Email:</strong><span th:text="${user.email}">Email</span></p>-->
-<!--    <p><strong>Points:</strong><span th:text="${user.points}">Points</span></p>-->
-<!--</div>-->
-<!--<a href="/users/profile/edit">Edit Profile</a>-->
-<!--<a href="/users/updatePassword">Update Password</a>-->
-<!--<a href="/users/profile/delete">Delete Account</a>-->
+
 </body>
 </html>

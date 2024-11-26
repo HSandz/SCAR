@@ -45,35 +45,39 @@ public class UserController {
 //    }
 
     @PostMapping("/upload")
-    public String uploadProfileImage(
+    public CompletableFuture<String> uploadProfileImage(
             Authentication authentication,
             @RequestParam("file") MultipartFile file,
             Model model) {
-        try {
-            int userId = getUser(authentication).join().getId();
-            extractedUploadProfileImage(userId, file, model);
-
-        } catch (Exception e) {
-            log.error("Error uploading profile image.", e);
-            model.addAttribute("message", "Error uploading profile image: " + e.getMessage());
-        }
-
-        return "profile";
+        return getUser(authentication)
+                .thenCompose(user -> {
+                    try {
+                        return extractedUploadProfileImage(user.getId(), file, model)
+                                .thenApply(_ -> "profile");
+                    } catch (IOException e) {
+                        log.error("Error uploading profile image.", e);
+                        model.addAttribute("message", "Error uploading profile image: " + e.getMessage());
+                        return CompletableFuture.completedFuture("profile");
+                    }
+                });
     }
 
-    private void extractedUploadProfileImage(int userId, MultipartFile file, Model model) throws IOException {
+    private CompletableFuture<Void> extractedUploadProfileImage(int userId, MultipartFile file, Model model) throws IOException {
         if (file.isEmpty()) {
             throw new IOException("File is empty.");
         } else {
-            userService.findUserById(userId).thenAccept(user -> {
+            return userService.findUserById(userId).thenCompose(user -> {
                 try {
-                    user.setProfilePictureUrl(cloudStorageService.uploadImage(file));
+                    String url = cloudStorageService.uploadImage(file);
+                    user.setProfilePictureUrl(url);
                     userService.updateUser(user);
                     model.addAttribute("message", "Image uploaded successfully!");
                     model.addAttribute("user", user);
+                    return CompletableFuture.completedFuture(null);
                 } catch (IOException e) {
                     log.error("Error uploading profile image.", e);
                     model.addAttribute("message", "Error uploading profile image: " + e.getMessage());
+                    return CompletableFuture.completedFuture(null);
                 }
             });
         }
@@ -98,6 +102,8 @@ public class UserController {
                     }
 
                     model.addAttribute("user", user);
+                    model.addAttribute("favouriteCount", userService.getFavouriteCount(user.getId()).join());
+                    model.addAttribute("borrowCount", borrowService.countBorrowsByUser(user.getId()).join());
                     return "profile";
                 });
     }
@@ -194,15 +200,6 @@ public class UserController {
                             return "borrowed-books";
                         })
                 );
-    }
-
-    @PostMapping("/add-favourite/{bookId}")
-    public CompletableFuture<String> addFavourite(@PathVariable int bookId, Authentication authentication) {
-        return getUser(authentication)
-                .thenCompose(user -> {
-                    userService.addFavouriteFor(user, bookId);
-                    return CompletableFuture.completedFuture("redirect:/book-list/" + bookId);
-                });
     }
 
     @GetMapping("/favourites")

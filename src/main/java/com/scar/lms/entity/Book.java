@@ -37,7 +37,7 @@ public class Book {
     @Column(name = "PUBLICATION_YEAR", length = 10, nullable = false)
     private Integer publicationYear;
 
-    @Column(name = "DESCRIPTION")
+    @Column(name = "DESCRIPTION", columnDefinition = "LONGTEXT")
     private String description;
 
     @Column(name = "IMAGE_URL")
@@ -56,12 +56,10 @@ public class Book {
     private String publisher;
 
     @ManyToMany(fetch = FetchType.EAGER,
-            cascade = { CascadeType.PERSIST, CascadeType.MERGE },
             mappedBy = "favouriteBooks")
     private Set<User> favouriteUsers = new HashSet<>();
 
     @OneToMany(fetch = FetchType.EAGER,
-            cascade = { CascadeType.PERSIST, CascadeType.MERGE },
             mappedBy = "book")
     private Set<Borrow> borrows = new HashSet<>();
 
