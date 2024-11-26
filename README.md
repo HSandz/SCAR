@@ -43,7 +43,6 @@ ___
   * Tìm kiếm người dùng
   * Xem danh sách người dùng
   * Thống kê dữ liệu người dùng
-  * Báo cáo số lượt mượn sách của người dùng
 ### Dành cho người dùng:
   * Mượn sách
   * Trả sách
@@ -60,16 +59,16 @@ ___
   * Thống kê sách theo nhà xuất bản
   * Thống kê sách theo năm xuất bản
   * Thống kê sách theo số lượng
-  * Thống kê sách theo giá
   * Thống kê sách theo số lượt mượn
   * Thống kê người dùng theo số lượt mượn
 ### Các tính năng nổi bật khác:
-  * Game: Game đoán tên sách theo gợi ý
+  * **Game**: Game đoán tên sách theo gợi ý
   * **Google Books API**: Tìm kiếm sách với Google Books API
   * **Spring Security**: Bảo mật ứng dụng
   * **OAuth2 Authentication**: Đăng nhập với Google / Github
   * **Spring Websocket**: cho phép người dùng chat với nhau
   * **Spring Async**: tích hợp multi-threading giúp trải nghiệm mượt mà hơn
+  * **Google Cloud Storage API**: Lưu trữ dữ liệu ảnh trên Google Cloud Storage và lưu đường dẫn vào database
 
 # UML Diagram
 ___
