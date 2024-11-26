@@ -188,10 +188,31 @@ public class BookController {
                 .thenApply(_ -> "redirect:/books");
     }
 
-    @GetMapping("/remove/{id}")
+    @DeleteMapping("/remove/{id}")
     public CompletableFuture<String> deleteBook(@PathVariable("id") int id) {
         return CompletableFuture.runAsync(() -> bookService.deleteBook(id))
                 .thenApply(_ -> "redirect:/books");
+    }
+
+    private void extractedBorrowBook(User user, Book book) {
+        Borrow borrow = new Borrow();
+        borrow.setUser(user);
+        borrow.setBook(book);
+        borrow.setBorrowDate(LocalDate.now());
+        borrowService.addBorrow(borrow);
+
+        user.setPoints(user.getPoints() + 1);
+        userService.updateUser(user);
+    }
+
+    @PostMapping("/add/db")
+    public CompletableFuture<ResponseEntity<String>> addBookToDatabase(@Valid @ModelAttribute Book book) {
+        return CompletableFuture.runAsync(() -> bookService.addBook(book))
+                .thenApply(_ -> ResponseEntity.ok("Book added successfully"))
+                .exceptionally(e -> {
+                    log.error("Failed to add book", e);
+                    return ResponseEntity.badRequest().body("Failed to add book");
+                });
     }
 
     @PostMapping("/borrow/{bookId}")
@@ -213,25 +234,72 @@ public class BookController {
                 });
     }
 
-    private void extractedBorrowBook(User user, Book book) {
-        Borrow borrow = new Borrow();
-        borrow.setUser(user);
-        borrow.setBook(book);
-        borrow.setBorrowDate(LocalDate.now());
-        borrowService.addBorrow(borrow);
+    @DeleteMapping("/return/{bookId}")
+    public CompletableFuture<ResponseEntity<String>> returnBook(@PathVariable int bookId, Authentication authentication) {
+        CompletableFuture<User> userFuture = authenticationService.getAuthenticatedUser(authentication);
+        CompletableFuture<Book> bookFuture = bookService.findBookById(bookId);
 
-        user.setPoints(user.getPoints() + 1);
-        userService.updateUser(user);
+        return CompletableFuture.allOf(userFuture, bookFuture)
+                .thenApply(_ -> {
+                    User user = userFuture.join();
+                    Book book = bookFuture.join();
+
+                    user.getBorrows().stream()
+                            .filter(borrow -> borrow.getBook().getId() == book.getId())
+                            .findFirst()
+                            .ifPresent(borrow -> {
+                                borrow.setReturnDate(LocalDate.now());
+                                borrowService.updateBorrow(borrow);
+
+                                user.setPoints(user.getPoints() - 1);
+                                userService.updateUser(user);
+                            });
+
+                    return ResponseEntity.ok("Book returned successfully");
+                })
+                .exceptionally(e -> {
+                    log.error("Failed to return book", e);
+                    return ResponseEntity.badRequest().body("Failed to return book");
+                });
     }
 
-    @PostMapping("/add/db")
-    public CompletableFuture<ResponseEntity<String>> addBookToDatabase(@Valid @ModelAttribute Book book) {
-        book.setDescription(null);
-        return CompletableFuture.runAsync(() -> bookService.addBook(book))
-                .thenApply(_ -> ResponseEntity.ok("Book added successfully"))
+    @PostMapping("/add-favourite/{bookId}")
+    public CompletableFuture<ResponseEntity<String>> addFavourite(@PathVariable int bookId, Authentication authentication) {
+        CompletableFuture<User> userFuture = authenticationService.getAuthenticatedUser(authentication);
+        CompletableFuture<Book> bookFuture = bookService.findBookById(bookId);
+
+        return CompletableFuture.allOf(userFuture, bookFuture)
+                .thenApply(_ -> {
+                    User user = userFuture.join();
+                    Book book = bookFuture.join();
+
+                    user.getFavouriteBooks().add(book);
+                    userService.updateUser(user);
+                    return ResponseEntity.ok("Book added to favourites");
+                })
                 .exceptionally(e -> {
-                    log.error("Failed to add book", e);
-                    return ResponseEntity.badRequest().body("Failed to add book");
+                    log.error("Failed to add favourite", e);
+                    return ResponseEntity.badRequest().body("Failed to add favourite");
+                });
+    }
+
+    @DeleteMapping("/remove-favourite/{bookId}")
+    public CompletableFuture<ResponseEntity<String>> removeFavourite(@PathVariable int bookId, Authentication authentication) {
+        CompletableFuture<User> userFuture = authenticationService.getAuthenticatedUser(authentication);
+        CompletableFuture<Book> bookFuture = bookService.findBookById(bookId);
+
+        return CompletableFuture.allOf(userFuture, bookFuture)
+                .thenApply(_ -> {
+                    User user = userFuture.join();
+                    Book book = bookFuture.join();
+
+                    user.getFavouriteBooks().remove(book);
+                    userService.updateUser(user);
+                    return ResponseEntity.ok("Book removed from favourites");
+                })
+                .exceptionally(e -> {
+                    log.error("Failed to remove favourite", e);
+                    return ResponseEntity.badRequest().body("Failed to remove favourite");
                 });
     }
 }

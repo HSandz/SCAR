@@ -29,7 +29,6 @@ public class Notification {
     private LocalDateTime sendTime;
 
     @OneToMany(fetch = FetchType.EAGER,
-            cascade = { CascadeType.MERGE },
             mappedBy = "notification")
     private Set<Notify> notifies = new HashSet<>();
 }

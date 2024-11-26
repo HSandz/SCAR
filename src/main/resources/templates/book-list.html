@@ -274,25 +274,14 @@
     </section>
 
 </div>
-<div class="container-book">
-    <div class="book-display">
-        <img src="https://bom.so/TU7t6r" alt="Book Cover" class="book-image">
-        <div class="book-info">
-            <h3 class="book-title">Tên sách</h3>
-            <p class="book-author">Tác giả: Tên tác giả</p>
-            <p class="book-description">Mô tả: Đây là phần mô tả sách...</p>
-        </div>
-    </div>
-</div>
-<!-- Book results -->
 
-<!-- Message for no books found -->
 <div th:if="${#lists.isEmpty(books)}" class="empty-message">
     <p>No books found. Please try a different query.</p>
 </div>
 <script>
     document.addEventListener("DOMContentLoaded", function () {
         const bookItems = document.querySelectorAll(".book-item");
+
         bookItems.forEach((item, index) => {
             const numberSpan = item.querySelector(".book-number");
             if (numberSpan) {
@@ -311,10 +300,9 @@
         scrollButtonRight.addEventListener('click', () => {
             scrollContainer.scrollBy({ left: 200, behavior: 'smooth' });
         });
-    });
 
-    document.addEventListener("DOMContentLoaded", function () {
         const borrowButtons = document.querySelectorAll(".borrow-btn");
+        const favouriteButtons = document.querySelectorAll(".bx-heart");
 
         borrowButtons.forEach(button => {
             button.addEventListener("click", function () {
@@ -337,6 +325,31 @@
                     .catch(error => {
                         console.error("Error:", error);
                         alert("An error occurred while borrowing the book");
+                    });
+            });
+        });
+
+        favouriteButtons.forEach(button => {
+            button.addEventListener("click", function () {
+                const bookId = this.closest(".book-item").getAttribute("data-book-id");
+
+                fetch(`/books/add-favourite/${bookId}`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    }
+                })
+                    .then(response => response.text())
+                    .then(data => {
+                        if (data === "Book added to favourites") {
+                            alert("Book added to favourites");
+                        } else {
+                            alert("Failed to add favourite");
+                        }
+                    })
+                    .catch(error => {
+                        console.error("Error:", error);
+                        alert("An error occurred while adding the book to favourites");
                     });
             });
         });
