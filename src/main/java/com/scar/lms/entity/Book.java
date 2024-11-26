@@ -34,7 +34,7 @@ public class Book {
     @Column(name = "PUBLICATION_YEAR", length = 10, nullable = false)
     private Integer publicationYear;
 
-    @Column(name = "DESCRIPTION")
+    @Column(name = "DESCRIPTION", columnDefinition = "LONGTEXT")
     private String description;
 
     @Column(name = "IMAGE_URL")

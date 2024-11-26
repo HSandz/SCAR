@@ -198,15 +198,6 @@ public class UserController {
                 );
     }
 
-    @PostMapping("/add-favourite/{bookId}")
-    public CompletableFuture<String> addFavourite(@PathVariable int bookId, Authentication authentication) {
-        return getUser(authentication)
-                .thenCompose(user -> {
-                    userService.addFavouriteFor(user, bookId);
-                    return CompletableFuture.completedFuture("redirect:/book-list/" + bookId);
-                });
-    }
-
     @GetMapping("/favourites")
     public CompletableFuture<String> showFavouriteBooks(Authentication authentication, Model model) {
         return getUser(authentication)

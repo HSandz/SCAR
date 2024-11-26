@@ -80,7 +80,11 @@ public class BookServiceImpl implements BookService {
         return CompletableFuture.supplyAsync(() -> bookRepository.findAll(finalSpec, pageable));
     }
 
-    private Specification<Book> getSpecification(String title, String authorName, String genreName, String publisherName, Integer year, Specification<Book> spec) {
+    private Specification<Book> getSpecification(String title,
+                                                 String authorName,
+                                                 String genreName,
+                                                 String publisherName,
+                                                 Integer year, Specification<Book> spec) {
         if (title != null) {
             spec = spec.and(BookSpecification.hasTitle(title));
         }
