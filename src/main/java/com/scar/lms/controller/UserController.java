@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.util.concurrent.CompletableFuture;
 
+@SuppressWarnings("SameReturnValue")
 @Slf4j
 @Controller
 @RequestMapping("/users")

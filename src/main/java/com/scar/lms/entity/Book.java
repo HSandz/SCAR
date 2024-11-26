@@ -1,11 +1,7 @@
 package com.scar.lms.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.NonNull;
+import lombok.*;
 import org.hibernate.proxy.HibernateProxy;
 
 import java.util.HashSet;
