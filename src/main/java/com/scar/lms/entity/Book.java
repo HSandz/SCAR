@@ -53,12 +53,10 @@ public class Book {
     private String publisher;
 
     @ManyToMany(fetch = FetchType.EAGER,
-            cascade = { CascadeType.MERGE },
             mappedBy = "favouriteBooks")
     private Set<User> favouriteUsers = new HashSet<>();
 
     @OneToMany(fetch = FetchType.EAGER,
-            cascade = { CascadeType.MERGE },
             mappedBy = "book")
     private Set<Borrow> borrows = new HashSet<>();
 }
