@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -129,7 +130,8 @@ public class BookController {
                         model.addAttribute("tops", futureTops.get());
                     } catch (Exception ex) {
                         log.error("Error occurred while fetching books: {}", ex.getMessage());
-                        model.addAttribute("error", "Failed to fetch books. Please try again later.");
+                        model.addAttribute("error",
+                                "Failed to fetch books. Please try again later.");
                     }
                     return "book-list";
                 });
@@ -185,7 +187,9 @@ public class BookController {
     }
 
     @PostMapping("/update/{id}")
-    public CompletableFuture<String> updateBook(@PathVariable("id") int id, @Valid @ModelAttribute Book book, BindingResult result, Model model) {
+    public CompletableFuture<String> updateBook(@PathVariable("id") int id,
+                                                @Valid @ModelAttribute Book book,
+                                                BindingResult result, Model model) {
         if (result.hasErrors()) {
             return addCommonAttributes(model).thenApply(_ -> "update-book");
         }
@@ -201,19 +205,21 @@ public class BookController {
     }
 
     @PostMapping("/borrow/{bookId}")
-    public CompletableFuture<String> borrowBook(@PathVariable int bookId, Authentication authentication) {
+    public CompletableFuture<ResponseEntity<String>> borrowBook(@PathVariable int bookId, Authentication authentication) {
         CompletableFuture<User> userFuture = authenticationService.getAuthenticatedUser(authentication);
         CompletableFuture<Book> bookFuture = bookService.findBookById(bookId);
 
         return CompletableFuture.allOf(userFuture, bookFuture)
                 .thenApply(_ -> {
-                    try {
-                        extractedBorrowBook(userFuture.get(), bookFuture.get());
-                    } catch (Exception e) {
-                        log.error("Failed to borrow book", e);
-                        return "redirect:/error?message=Failed+to+borrow+book";
-                    }
-                    return "redirect:/book-list";
+                    User user = userFuture.join();
+                    Book book = bookFuture.join();
+
+                    extractedBorrowBook(user, book);
+                    return ResponseEntity.ok("Book borrowed successfully");
+                })
+                .exceptionally(e -> {
+                    log.error("Failed to borrow book", e);
+                    return ResponseEntity.badRequest().body("Failed to borrow book");
                 });
     }
 
@@ -229,10 +235,14 @@ public class BookController {
     }
 
     @PostMapping("/add/db")
-    public CompletableFuture<String> addBookToDatabase(@Valid @ModelAttribute Book book) {
+    public CompletableFuture<ResponseEntity<String>> addBookToDatabase(@Valid @ModelAttribute Book book) {
         book.setDescription(null);
         return CompletableFuture.runAsync(() -> bookService.addBook(book))
-                .thenApply(_ -> "api");
+                .thenApply(_ -> ResponseEntity.ok("Book added successfully"))
+                .exceptionally(e -> {
+                    log.error("Failed to add book", e);
+                    return ResponseEntity.badRequest().body("Failed to add book");
+                });
     }
 
     private CompletableFuture<Void> addCommonAttributes(Model model) {
