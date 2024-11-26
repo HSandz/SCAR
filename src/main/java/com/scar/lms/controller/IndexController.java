@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import static com.scar.lms.entity.Role.USER;
 
+@SuppressWarnings("SameReturnValue")
 @Controller
 @RequestMapping
 public class IndexController {
@@ -46,11 +47,11 @@ public class IndexController {
             model.addAttribute("error", "Invalid registration details.");
             return "register";
         }
-        extracted(user);
+        extractedRegisterUser(user);
         return "redirect:/login";
     }
 
-    private void extracted(User user) {
+    private void extractedRegisterUser(User user) {
         user.setPassword(authenticationService.encryptPassword(user.getPassword()));
         user.setPoints(DEFAULT_USER_POINT);
         user.setRole(USER);

@@ -12,17 +12,17 @@ public interface BookService {
 
     CompletableFuture<List<Book>> findAllBooks();
 
-    List<Book> findBooksByTitle(String title);
+    CompletableFuture<List<Book>> findBooksByTitle(String title);
 
-    List<Book> findBooksByPublicationYear(Integer year);
+    CompletableFuture<List<Book>> findBooksByPublicationYear(Integer year);
 
-    List<Book> findBooksByAuthor(int authorId);
+    CompletableFuture<List<Book>> findBooksByAuthor(int authorId);
 
-    List<Book> findBooksByGenre(int genreId);
+    CompletableFuture<List<Book>> findBooksByGenre(int genreId);
 
-    List<Book> findBooksByPublisher(int publisherId);
+    CompletableFuture<List<Book>> findBooksByPublisher(int publisherId);
 
-    List<Book> searchBooks(String keyword);
+    CompletableFuture<List<Book>> searchBooks(String keyword);
 
     CompletableFuture<Page<Book>> findPaginated(Pageable pageable);
 
@@ -33,9 +33,9 @@ public interface BookService {
                                                            Integer year,
                                                            Pageable pageable);
 
-    Book findBookById(int id);
+    CompletableFuture<Book> findBookById(int id);
 
-    Book findBookByIsbn(String isbn);
+    CompletableFuture<Book> findBookByIsbn(String isbn);
 
     void addBook(Book book);
 

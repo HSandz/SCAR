@@ -33,9 +33,4 @@ public class Author {
 
     @Column(name = "DESCRIPTION", length = 500)
     private String description;
-
-//    @ManyToMany(fetch = FetchType.EAGER,
-//            cascade = { CascadeType.PERSIST, CascadeType.MERGE },
-//            mappedBy = "authors")
-//    private Set<Book> books = new HashSet<>();
 }

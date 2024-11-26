@@ -27,55 +27,64 @@ public class BookServiceImpl implements BookService {
         this.bookRepository = bookRepository;
     }
 
+    @Async
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     @Override
     public CompletableFuture<List<Book>> findAllBooks() {
         return CompletableFuture.supplyAsync(bookRepository::findAll);
     }
 
+    @Async
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     @Override
-    public List<Book> findBooksByTitle(String title) {
-        return bookRepository.findByTitle(title);
+    public CompletableFuture<List<Book>> findBooksByTitle(String title) {
+        return CompletableFuture.supplyAsync(() -> bookRepository.findByTitle(title));
     }
 
+    @Async
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     @Override
-    public List<Book> findBooksByPublicationYear(Integer year) {
-        return bookRepository.findByPublicationYear(year);
+    public CompletableFuture<List<Book>> findBooksByPublicationYear(Integer year) {
+        return CompletableFuture.supplyAsync(() -> bookRepository.findByPublicationYear(year));
     }
 
+    @Async
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     @Override
-    public List<Book> searchBooks(String keyword) {
-        return bookRepository.searchBooks(keyword);
+    public CompletableFuture<List<Book>> searchBooks(String keyword) {
+        return CompletableFuture.supplyAsync(() -> bookRepository.searchBooks(keyword));
     }
 
+    @Async
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     @Override
-    public List<Book> findBooksByAuthor(int authorId) {
-        return bookRepository.findByAuthor(authorId);
+    public CompletableFuture<List<Book>> findBooksByAuthor(int authorId) {
+        return CompletableFuture.supplyAsync(() -> bookRepository.findByAuthor(authorId));
     }
 
+    @Async
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     @Override
-    public List<Book> findBooksByGenre(int genreId) {
-        return bookRepository.findByGenre(genreId);
+    public CompletableFuture<List<Book>> findBooksByGenre(int genreId) {
+        return CompletableFuture.supplyAsync(() -> bookRepository.findByGenre(genreId));
     }
 
+    @Async
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     @Override
-    public List<Book> findBooksByPublisher(int publisherId) {
-        return bookRepository.findByPublisher(publisherId);
+    public CompletableFuture<List<Book>> findBooksByPublisher(int publisherId) {
+        return CompletableFuture.supplyAsync(() -> bookRepository.findByPublisher(publisherId));
     }
 
+    @Async
+    @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     @Override
     public CompletableFuture<Page<Book>> findPaginated(Pageable pageable) {
         return CompletableFuture.supplyAsync(() -> bookRepository.findAll(pageable));
     }
 
-    @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     @Async
+    @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     @Override
     public CompletableFuture<Page<Book>> findFilteredAndPaginated(String title,
                                                                   String authorName,
@@ -86,6 +95,13 @@ public class BookServiceImpl implements BookService {
 
         Specification<Book> spec = Specification.where(null);
 
+        spec = getSpecification(title, authorName, genreName, publisherName, year, spec);
+
+        Specification<Book> finalSpec = spec;
+        return CompletableFuture.supplyAsync(() -> bookRepository.findAll(finalSpec, pageable));
+    }
+
+    private Specification<Book> getSpecification(String title, String authorName, String genreName, String publisherName, Integer year, Specification<Book> spec) {
         if (title != null) {
             spec = spec.and(BookSpecification.hasTitle(title));
         }
@@ -101,26 +117,29 @@ public class BookServiceImpl implements BookService {
         if (year != null) {
             spec = spec.and(BookSpecification.hasYear(year));
         }
-
-        Specification<Book> finalSpec = spec;
-        return CompletableFuture.supplyAsync(() -> bookRepository.findAll(finalSpec, pageable));
+        return spec;
     }
 
-
+    @Async
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     @Override
-    public Book findBookById(int id) {
+    public CompletableFuture<Book> findBookById(int id) {
         return bookRepository
                 .findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Book with id not found: " + id));
+                .map(CompletableFuture::completedFuture)
+                .orElse(CompletableFuture.failedFuture(new ResourceNotFoundException("Book with id not found: " + id)));
     }
 
+    @Async
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     @Override
-    public Book findBookByIsbn(String isbn) {
+    public CompletableFuture<Book> findBookByIsbn(String isbn) {
         return bookRepository
                 .findByIsbn(isbn)
-                .orElseThrow(() -> new ResourceNotFoundException("Book with isbn not found: " + isbn));
+                .map(CompletableFuture::completedFuture)
+                .orElse(CompletableFuture.failedFuture(
+                        new ResourceNotFoundException("Book with ISBN not found: " + isbn))
+                );
     }
 
     @Async
@@ -153,12 +172,14 @@ public class BookServiceImpl implements BookService {
     }
 
     @Async
+    @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     @Override
     public CompletableFuture<List<Book>> findTopBorrowedBooks() {
         return CompletableFuture.supplyAsync(bookRepository::findTopBorrowedBooks);
     }
 
     @Async
+    @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     @Override
     public CompletableFuture<Long> countAllBooks() {
         return CompletableFuture.supplyAsync(bookRepository::count);

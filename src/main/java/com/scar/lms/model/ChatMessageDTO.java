@@ -16,6 +16,7 @@ public class ChatMessageDTO {
     private String profilePictureUrl;
     private MessageType type;
 
+    @SuppressWarnings("unused")
     public enum MessageType {
         CHAT, JOIN, LEAVE
     }

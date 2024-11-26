@@ -23,8 +23,7 @@ public class Borrow {
     @NonNull
     private LocalDate borrowDate;
 
-    @Column(name = "RETURN_DATE", nullable = false)
-    @NonNull
+    @Column(name = "RETURN_DATE")
     private LocalDate returnDate;
 
     @ManyToOne(fetch = FetchType.EAGER,

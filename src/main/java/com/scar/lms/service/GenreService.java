@@ -9,7 +9,7 @@ public interface GenreService {
 
     CompletableFuture<List<Genre>> findAllGenres();
 
-    Genre findGenreById(int id);
+    CompletableFuture<Genre> findGenreById(int id);
 
     void createGenre(Genre genre);
 

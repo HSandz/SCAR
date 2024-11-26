@@ -9,7 +9,7 @@ public interface PublisherService {
 
     CompletableFuture<List<Publisher>> findAllPublishers();
 
-    Publisher findPublisherById(int id);
+    CompletableFuture<Publisher> findPublisherById(int id);
 
     void createPublisher(Publisher publisher);
 
