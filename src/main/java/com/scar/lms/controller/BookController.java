@@ -115,7 +115,6 @@ public class BookController {
         return "view-books";
     }
 
-
     @GetMapping("/search")
     public String searchBooks(Model model) {
         try {
@@ -133,7 +132,6 @@ public class BookController {
 
         return "book-list";
     }
-
 
     @GetMapping("/{id}")
     public String findBookById(@PathVariable("id") int id, Model model) {
@@ -207,7 +205,7 @@ public class BookController {
         user.setPoints(user.getPoints() + 1);
         userService.updateUser(user);
 
-        return "redirect:/book-list";
+        return "book-list";
     }
 
     @PostMapping("/add/db")
