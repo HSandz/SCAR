@@ -2,9 +2,6 @@ package com.scar.lms.service;
 
 import com.scar.lms.entity.Book;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 

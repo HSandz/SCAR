@@ -68,6 +68,25 @@ public class AdminController {
                 });
     }
 
+    @GetMapping("books")
+    public CompletableFuture<String> listAllBooks(Model model) {
+        return bookService.findAllBooks()
+                .thenApply(books -> {
+                    if (books == null) {
+                        model.addAttribute("error", "Books not found.");
+                        return "error/404";
+                    } else {
+                        model.addAttribute("books", books);
+                        return "book-list";
+                    }
+                })
+                .exceptionally(e -> {
+                    log.error("Failed to fetch books.", e);
+                    model.addAttribute("error", "Failed to fetch books.");
+                    return "error/404";
+                });
+    }
+
     @GetMapping("user/search")
     public CompletableFuture<String> searchUsers(@RequestParam String keyword, Model model) {
         return userService.searchUsers(keyword)

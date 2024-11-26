@@ -37,10 +37,10 @@ public class GitHubOAuth2ServiceImpl implements GitHubOAuth2Service {
             displayName = username;
         }
 
-        return getUser(userId, username, displayName, userRepository, bCryptPasswordEncoder);
+        return getUser(username, displayName, userRepository, bCryptPasswordEncoder);
     }
 
-    private User getUser(String userId, String username, String displayName, UserRepository userRepository, BCryptPasswordEncoder bCryptPasswordEncoder) {
+    private User getUser(String username, String displayName, UserRepository userRepository, BCryptPasswordEncoder bCryptPasswordEncoder) {
         Optional<User> existingUser = userRepository.findByUsername(username);
         if (existingUser.isPresent()) {
             return existingUser.get();
