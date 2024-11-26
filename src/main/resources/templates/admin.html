@@ -32,7 +32,7 @@
         </li>
         <li class="nav__item" data-tooltip="Total-borrow">
             <a href="/admin/total-borrow">
-                <i class='bx bx-book-add' ></i>
+                <i class='bx bx-book-alt'></i>
             </a>
         </li>
         <li class="nav__item" data-tooltip="Total-user">
@@ -40,7 +40,11 @@
                 <i class='bx bxs-user-rectangle' ></i>
             </a>
         </li>
-       <br><br><br>
+        <li class="nav__item" id="addBookIcon" data-tooltip="Add-book">
+            <a href="/admin">
+                <i class='bx bx-book-add' ></i>
+            </a>
+        </li>
         <li class="nav__item" data-tooltip="Account">
             <a href="/users/profile">
                 <i class='bx bx-user-circle'></i>
@@ -52,16 +56,29 @@
             </a>
         </li>
     </ul>
-    <div th:replace="chat :: body"></div>
-    <script>
-        // JavaScript code to handle toggle
-        const chatButton = document.querySelector('.nav__item[data-tooltip="Chat"]');
-        const chatContainer = document.querySelector('.chat-container');
+    <div class="modal-overlay" id="addBookModal">
+        <div class="modal-box">
+            <h3>Add New Book</h3>
+            <form id="addBookForm">
+                <label for="bookId">Book ID:</label><br>
+                <input type="text" id="bookId" name="bookId" required /><br>
 
-        chatButton.addEventListener('click', () => {
-            chatContainer.classList.toggle('active');
-        });
-    </script>
+                <label for="bookTitle">Title:</label><br>
+                <input type="text" id="bookTitle" name="bookTitle" required /><br>
+
+                <label for="bookGenres">Genres:</label><br>
+                <input type="text" id="bookGenres" name="bookGenres" required /><br>
+
+                <label for="bookImage">Image:</label><br>
+                <input type="file" id="bookImage" name="bookImage" accept="image/*" /><br>
+
+                <button type="submit">Add to List</button>
+                <button type="button" id="closeModal">Cancel</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="/js/addbook.js"></script>
 
 </nav>
 <div class="main-content">
