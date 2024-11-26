@@ -8,8 +8,9 @@
     <title>Library Management System</title>
 
     <link rel="stylesheet" href="/css/favourites.css">
-    <link rel="stylesheet" href="/css/chat.css">
     <link rel="stylesheet" href="/css/book-list.css">
+    <link rel="stylesheet" href="/css/chat.css">
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Jost:ital,wght@0,100..900;1,100..900&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900&display=swap"
@@ -88,6 +89,16 @@
             </a>
         </li>
     </ul>
+    <div th:replace="chat :: body"></div>
+    <script>
+        // JavaScript code to handle toggle
+        const chatButton = document.querySelector('.nav__item[data-tooltip="Chat"]');
+        const chatContainer = document.querySelector('.chat-container');
+
+        chatButton.addEventListener('click', () => {
+            chatContainer.classList.toggle('active');
+        });
+    </script>
 
 </nav>
 <div class="container-main">
@@ -95,7 +106,7 @@
         <h2>Top 10</h2> <br>
         <div class="book-list">
             <button class="scroll-btn left" onclick="scrollLeft()">❮</button>
-                <div class="scroll-content">
+            <div class="scroll-content">
                 <div class="book-item" th:each="book : ${tops}" th:attr="data-book-id=${book.id}">
                     <div class="tile">
                         <span class="book-number"></span>
@@ -109,7 +120,7 @@
                         <i class='bx bx-heart'></i>
                     </div>
                 </div>
-                </div>
+            </div>
             <button class="scroll-btn right" onclick="scrollRight()">❯</button>
         </div>
         <div class="categories">
@@ -296,11 +307,11 @@
         const scrollButtonRight = document.querySelector('.scroll-btn.right');
 
         scrollButtonLeft.addEventListener('click', () => {
-            scrollContainer.scrollBy({ left: -200, behavior: 'smooth' });
+            scrollContainer.scrollBy({left: -200, behavior: 'smooth'});
         });
 
         scrollButtonRight.addEventListener('click', () => {
-            scrollContainer.scrollBy({ left: 200, behavior: 'smooth' });
+            scrollContainer.scrollBy({left: 200, behavior: 'smooth'});
         });
 
         const borrowButtons = document.querySelectorAll(".borrow-btn");
