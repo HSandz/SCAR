@@ -48,6 +48,10 @@ public class IndexControllerTest {
     public void testShowRegisterForm() {
         Model model = new BindingAwareModelMap();
         String viewName = indexController.showRegisterForm(model);
+
+        System.out.println("View Name: " + viewName);
+        System.out.println("Model: " + model);
+
         assertEquals("register", viewName);
         assertEquals(new User(), model.getAttribute("user"));
     }

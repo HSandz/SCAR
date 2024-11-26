@@ -2,6 +2,7 @@ package com.scar.lms.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.proxy.HibernateProxy;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -61,4 +62,21 @@ public class User {
             cascade = { CascadeType.PERSIST, CascadeType.MERGE },
             mappedBy = "user")
     private Set<Notify> notifies = new HashSet<>();
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        User user = (User) o;
+        return id == user.id &&
+                username.equals(user.username) &&
+                email.equals(user.email);
+    }
+
+    @Override
+    public final int hashCode() {
+        return this instanceof HibernateProxy
+                ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass().hashCode()
+                : getClass().hashCode();
+    }
 }
