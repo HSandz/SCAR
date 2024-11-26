@@ -14,6 +14,7 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 
@@ -76,7 +77,16 @@ public class SecurityConfiguration {
         return http.build();
     }
 
-    private LogoutSuccessHandler userLogoutSuccessHandler() {
+    @Bean
+    public AuthenticationFailureHandler loginFailureHandler() {
+        return (request, response, _) -> {
+            request.getSession().setAttribute("error", "Incorrect username or password");
+            response.sendRedirect("/login?error=true");
+        };
+    }
+
+    @Bean
+    public LogoutSuccessHandler userLogoutSuccessHandler() {
         return (_, response, authentication) -> {
             response.sendRedirect("/login?logout=true");
             if (authentication != null) {

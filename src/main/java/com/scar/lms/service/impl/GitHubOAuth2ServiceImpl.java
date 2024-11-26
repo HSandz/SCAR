@@ -13,6 +13,7 @@ import java.util.Optional;
 
 import static com.scar.lms.entity.Role.USER;
 
+@SuppressWarnings("DuplicatedCode")
 @Service
 public class GitHubOAuth2ServiceImpl implements GitHubOAuth2Service {
 
@@ -41,7 +42,6 @@ public class GitHubOAuth2ServiceImpl implements GitHubOAuth2Service {
 
     private User getUser(String userId, String username, String displayName, UserRepository userRepository, BCryptPasswordEncoder bCryptPasswordEncoder) {
         Optional<User> existingUser = userRepository.findByUsername(username);
-        //noinspection DuplicatedCode
         if (existingUser.isPresent()) {
             return existingUser.get();
         }

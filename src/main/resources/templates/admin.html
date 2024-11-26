@@ -18,7 +18,69 @@
 </head>
 <body>
 <header th:replace="frame :: header"></header>
-<navbar th:replace="frame :: navbar"></navbar>
+<nav>
+    <ul class="nav__list">
+        <li class="nav__item" data-tooltip="Home">
+            <a href="/books/search">
+                <i class='bx bx-home-alt'></i>
+            </a>
+        </li>
+        <li class="nav__item" data-tooltip="Total-book">
+            <a href="/admin/total-book">
+                <i class='bx bx-book'></i>
+            </a>
+        </li>
+        <li class="nav__item" data-tooltip="Total-borrow">
+            <a href="/admin/total-borrow">
+                <i class='bx bx-book-alt'></i>
+            </a>
+        </li>
+        <li class="nav__item" data-tooltip="Total-user">
+            <a href="/admin/total-user">
+                <i class='bx bxs-user-rectangle' ></i>
+            </a>
+        </li>
+        <li class="nav__item" id="addBookIcon" data-tooltip="Add-book">
+            <a href="/admin">
+                <i class='bx bx-book-add' ></i>
+            </a>
+        </li>
+        <li class="nav__item" data-tooltip="Account">
+            <a href="/users/profile">
+                <i class='bx bx-user-circle'></i>
+            </a>
+        </li>
+        <li class="nav__item" data-tooltip="Logout">
+            <a href="/logout">
+                <i class='bx bx-log-out'></i>
+            </a>
+        </li>
+    </ul>
+    <div class="modal-overlay" id="addBookModal">
+        <div class="modal-box">
+            <h3>Add New Book</h3>
+            <form id="addBookForm">
+                <label for="bookId">Book ID:</label><br>
+                <input type="text" id="bookId" name="bookId" required /><br>
+
+                <label for="bookTitle">Title:</label><br>
+                <input type="text" id="bookTitle" name="bookTitle" required /><br>
+
+                <label for="bookGenres">Genres:</label><br>
+                <input type="text" id="bookGenres" name="bookGenres" required /><br>
+
+                <label for="bookImage">Image:</label><br>
+                <input type="file" id="bookImage" name="bookImage" accept="image/*" /><br>
+
+                <button type="submit">Add to List</button>
+                <button type="button" id="closeModal">Cancel</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="/js/addbook.js"></script>
+
+</nav>
 <div class="main-content">
     <section>
         <div class="card-container">

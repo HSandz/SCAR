@@ -35,6 +35,15 @@ public class UserController {
         this.cloudStorageService = cloudStorageService;
     }
 
+    @GetMapping("/upload")
+    public CompletableFuture<String> showUploadForm(Authentication authentication, Model model) {
+        return getUser(authentication)
+                .thenApply(user -> {
+                    model.addAttribute("user", user);
+                    return "upload";
+                });
+    }
+  
     @PostMapping("/upload")
     public CompletableFuture<String> uploadProfileImage(
             Authentication authentication,
@@ -153,11 +162,6 @@ public class UserController {
         return "redirect:/users/profile/edit";
     }
 
-    @GetMapping("/profile/delete")
-    public CompletableFuture<String> showDeleteAccountForm() {
-        return CompletableFuture.completedFuture("delete-account");
-    }
-
     @PostMapping("/profile/delete")
     public CompletableFuture<String> deleteAccount(Authentication authentication, Model model) {
         return getUser(authentication)
@@ -171,16 +175,14 @@ public class UserController {
     @PostMapping("/return/{bookId}")
     public CompletableFuture<String> returnBook(@PathVariable int bookId, Authentication authentication) {
         return getUser(authentication)
-                .thenCompose(user -> {
-                    return borrowService.findBorrow(user.getId(), bookId)
-                            .thenAccept(borrowOptional -> {
-                                borrowOptional.ifPresent(borrow -> {
-                                    borrow.setReturnDate(LocalDate.now());
-                                    borrowService.updateBorrow(borrow);
-                                });
-                            })
-                            .thenApply(v -> "redirect:/users/borrowed-books");
-                });
+                .thenCompose(user -> borrowService.findBorrow(user.getId(), bookId)
+                        .thenAccept(borrowOptional -> {
+                            borrowOptional.ifPresent(borrow -> {
+                                borrow.setReturnDate(LocalDate.now());
+                                borrowService.updateBorrow(borrow);
+                            });
+                        })
+                        .thenApply(v -> "redirect:/users/borrowed-books"));
     }
 
     @GetMapping("/borrowed-books")

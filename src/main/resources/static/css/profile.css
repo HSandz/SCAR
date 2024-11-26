@@ -1,13 +1,18 @@
 .container {
     display: grid;
     grid-template-rows: auto auto;
-    gap: 15px;
+    gap: 30px;
     margin: 30px 100px 10px 150px;
 
     section {
         background-color: #c5c5dd;
         border: white;
     }
+}
+
+.container-intro {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
 
     h1 {
         text-align: -webkit-left;
@@ -19,19 +24,13 @@
     p {
         text-align: -webkit-left;
         font-size: 20px;
-        padding: 0px 40px;
+        padding: 0 40px;
     }
 
     h2 {
         font-size: 19px;
         margin-top: 10px;
     }
-}
-
-.container-intro {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-
     section {
         background-color: white;
         border: gray;
