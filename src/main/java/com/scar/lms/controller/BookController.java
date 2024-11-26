@@ -29,26 +29,17 @@ public class BookController {
 
     private final UserService userService;
     private final BookService bookService;
-    private final AuthorService authorService;
-    private final GenreService genreService;
-    private final PublisherService publisherService;
     private final GoogleBooksService googleBooksService;
     private final AuthenticationService authenticationService;
     private final BorrowService borrowService;
 
     public BookController(final UserService userService,
                           final BookService bookService,
-                          final AuthorService authorService,
-                          final GenreService genreService,
-                          final PublisherService publisherService,
                           final GoogleBooksService googleBooksService,
                           final AuthenticationService authenticationService,
                           final BorrowService borrowService) {
         this.userService = userService;
         this.bookService = bookService;
-        this.authorService = authorService;
-        this.genreService = genreService;
-        this.publisherService = publisherService;
         this.googleBooksService = googleBooksService;
         this.authenticationService = authenticationService;
         this.borrowService = borrowService;
@@ -93,16 +84,14 @@ public class BookController {
 
         CompletableFuture<List<Book>> topBorrowedBooksFuture = bookService.findTopBorrowedBooks();
         CompletableFuture<Long> totalBooksFuture = bookService.countAllBooks();
-        CompletableFuture<List<Genre>> genresFuture = genreService.findAllGenres();
 
-        return CompletableFuture.allOf(bookPageFuture, topBorrowedBooksFuture, totalBooksFuture, genresFuture)
+        return CompletableFuture.allOf(bookPageFuture, topBorrowedBooksFuture, totalBooksFuture)
                 .thenApply(_ -> {
                     try {
                         var bookPage = bookPageFuture.get();
                         model.addAttribute("books", bookPage);
                         model.addAttribute("top", topBorrowedBooksFuture.get());
                         model.addAttribute("count", totalBooksFuture.get());
-                        model.addAttribute("genres", genresFuture.get());
 
                         int totalPages = bookPage.getTotalPages();
                         if (totalPages > 0) {
@@ -155,13 +144,14 @@ public class BookController {
     @GetMapping("/add")
     public CompletableFuture<String> showCreateForm(Model model) {
         model.addAttribute("book", new Book());
-        return addCommonAttributes(model).thenApply(_ -> "add-book");
+        return CompletableFuture.completedFuture("add-book");
     }
 
     @PostMapping("/add")
     public CompletableFuture<String> createBook(@Valid @ModelAttribute Book book, BindingResult result, Model model) {
         if (result.hasErrors()) {
-            return addCommonAttributes(model).thenApply(_ -> "add-book");
+            model.addAttribute("book", "error");
+            return CompletableFuture.completedFuture("add-book");
         }
         return CompletableFuture.runAsync(() -> bookService.addBook(book))
                 .thenApply(_ -> "redirect:/books");
@@ -187,7 +177,7 @@ public class BookController {
     @PostMapping("/update/{id}")
     public CompletableFuture<String> updateBook(@PathVariable("id") int id, @Valid @ModelAttribute Book book, BindingResult result, Model model) {
         if (result.hasErrors()) {
-            return addCommonAttributes(model).thenApply(_ -> "update-book");
+            return CompletableFuture.completedFuture("update-book");
         }
         book.setId(id);
         return CompletableFuture.runAsync(() -> bookService.updateBook(book))
@@ -233,23 +223,5 @@ public class BookController {
         book.setDescription(null);
         return CompletableFuture.runAsync(() -> bookService.addBook(book))
                 .thenApply(_ -> "api");
-    }
-
-    private CompletableFuture<Void> addCommonAttributes(Model model) {
-        CompletableFuture<List<Genre>> genresFuture = genreService.findAllGenres();
-        CompletableFuture<List<Author>> authorsFuture = authorService.findAllAuthors();
-        CompletableFuture<List<Publisher>> publishersFuture = publisherService.findAllPublishers();
-
-        return CompletableFuture.allOf(genresFuture, authorsFuture, publishersFuture)
-                .thenAccept(_ -> {
-                    try {
-                        model.addAttribute("genre", genresFuture.get());
-                        model.addAttribute("authors", authorsFuture.get());
-                        model.addAttribute("publishers", publishersFuture.get());
-                    } catch (Exception e) {
-                        log.error("Failed to load common attributes", e);
-                        model.addAttribute("error", "Failed to load common attributes");
-                    }
-                });
     }
 }

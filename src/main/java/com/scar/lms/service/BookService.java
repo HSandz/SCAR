@@ -16,12 +16,6 @@ public interface BookService {
 
     CompletableFuture<List<Book>> findBooksByPublicationYear(Integer year);
 
-    CompletableFuture<List<Book>> findBooksByAuthor(int authorId);
-
-    CompletableFuture<List<Book>> findBooksByGenre(int genreId);
-
-    CompletableFuture<List<Book>> findBooksByPublisher(int publisherId);
-
     CompletableFuture<List<Book>> searchBooks(String keyword);
 
     CompletableFuture<Page<Book>> findPaginated(Pageable pageable);

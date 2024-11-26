@@ -58,27 +58,6 @@ public class BookServiceImpl implements BookService {
     @Async
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     @Override
-    public CompletableFuture<List<Book>> findBooksByAuthor(int authorId) {
-        return CompletableFuture.supplyAsync(() -> bookRepository.findByAuthor(authorId));
-    }
-
-    @Async
-    @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
-    @Override
-    public CompletableFuture<List<Book>> findBooksByGenre(int genreId) {
-        return CompletableFuture.supplyAsync(() -> bookRepository.findByGenre(genreId));
-    }
-
-    @Async
-    @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
-    @Override
-    public CompletableFuture<List<Book>> findBooksByPublisher(int publisherId) {
-        return CompletableFuture.supplyAsync(() -> bookRepository.findByPublisher(publisherId));
-    }
-
-    @Async
-    @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
-    @Override
     public CompletableFuture<Page<Book>> findPaginated(Pageable pageable) {
         return CompletableFuture.supplyAsync(() -> bookRepository.findAll(pageable));
     }

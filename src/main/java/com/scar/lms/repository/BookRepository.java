@@ -1,7 +1,6 @@
 package com.scar.lms.repository;
 
 import com.scar.lms.entity.Book;
-
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
@@ -25,18 +24,9 @@ public interface BookRepository extends JpaRepository<Book, Integer>, JpaSpecifi
 
     Optional<Book> findByIsbn(String isbn);
 
-    @Query("SELECT b FROM Book b WHERE b.title LIKE %?1%")
+    @Query("SELECT b FROM Book b WHERE LOWER(b.title) LIKE LOWER(CONCAT('%', :keyword, '%'))")
     List<Book> searchBooks(String keyword);
 
-    @Query("SELECT b FROM Book b JOIN Author a WHERE a.id = ?1")
-    List<Book> findByAuthor(int authorId);
-
-    @Query("SELECT b FROM Book b JOIN Genre g WHERE g.id = ?1")
-    List<Book> findByGenre(int genreId);
-
-    @Query("SELECT b FROM Book b JOIN Publisher p WHERE p.id = ?1")
-    List<Book> findByPublisher(int publisherId);
-
-    @Query("SELECT b FROM Book b ORDER BY b.borrowCount DESC LIMIT 10")
+    @Query("SELECT b FROM Book b ORDER BY b.borrowCount DESC")
     List<Book> findTopBorrowedBooks();
 }
