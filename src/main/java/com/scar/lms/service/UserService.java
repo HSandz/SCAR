@@ -36,4 +36,6 @@ public interface UserService {
     CompletableFuture<Long> countAllUsers();
 
     CompletableFuture<Long> countUsersByRole(Role role);
+
+    CompletableFuture<Long> getFavouriteCount(int userId);
 }

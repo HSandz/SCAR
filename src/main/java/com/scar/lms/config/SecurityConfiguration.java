@@ -116,7 +116,7 @@ public class SecurityConfiguration {
             if (roles.contains("ROLE_ADMIN")) {
                 response.sendRedirect("/admin");
             } else if (roles.contains("ROLE_USER")) {
-                response.sendRedirect("/books/search");
+                response.sendRedirect("/books");
             } else {
                 response.sendRedirect("/");
             }

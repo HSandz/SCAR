@@ -6,9 +6,6 @@ import com.scar.lms.service.*;
 import jakarta.validation.Valid;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
@@ -20,7 +17,6 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 @SuppressWarnings("SameReturnValue")
 @Slf4j
@@ -47,9 +43,9 @@ public class BookController {
     }
 
     @GetMapping("/api")
-    public CompletableFuture<String> searchBooks(@RequestParam(value = "query", defaultValue = "") String query,
+    public CompletableFuture<String> searchAPI(@RequestParam(value = "query", defaultValue = "") String query,
                                                  @RequestParam(value = "startIndex", defaultValue = "0") int startIndex,
-                                                 @RequestParam(value = "maxResults", defaultValue = "10") int maxResults,
+                                                 @RequestParam(value = "maxResults", defaultValue = "40") int maxResults,
                                                  Model model) {
 
         CompletableFuture<List<Book>> booksFuture = googleBooksService.searchBooks(query, startIndex, maxResults)
@@ -68,37 +64,28 @@ public class BookController {
         });
     }
 
-    @GetMapping({ "", "/" })
-    public CompletableFuture<String> findAllBooks(Model model,
+    @GetMapping("/search")
+    public CompletableFuture<String> searchBooks(Model model,
                                                   @RequestParam(required = false) String title,
                                                   @RequestParam(required = false) String authorName,
                                                   @RequestParam(required = false) String genreName,
                                                   @RequestParam(required = false) String publisherName,
-                                                  @RequestParam(required = false) Integer year,
-                                                  @RequestParam(defaultValue = "1") int page,
-                                                  @RequestParam(defaultValue = "10") int size) {
+                                                  @RequestParam(required = false) Integer year) {
 
-        Pageable pageable = PageRequest.of(page - 1, size);
-
-        CompletableFuture<Page<Book>> bookPageFuture = bookService.findFilteredAndPaginated(
-                title, authorName, genreName, publisherName, year, pageable);
+        CompletableFuture<List<Book>> booksFuture = bookService.findFiltered(
+                title, authorName, genreName, publisherName, year);
 
         CompletableFuture<List<Book>> topBorrowedBooksFuture = bookService.findTopBorrowedBooks();
         CompletableFuture<Long> totalBooksFuture = bookService.countAllBooks();
 
-        return CompletableFuture.allOf(bookPageFuture, topBorrowedBooksFuture, totalBooksFuture)
+        return CompletableFuture.allOf(booksFuture, topBorrowedBooksFuture, totalBooksFuture)
                 .thenApply(_ -> {
                     try {
-                        var bookPage = bookPageFuture.get();
+                        var bookPage = booksFuture.get();
                         model.addAttribute("books", bookPage);
                         model.addAttribute("top", topBorrowedBooksFuture.get());
                         model.addAttribute("count", totalBooksFuture.get());
 
-                        int totalPages = bookPage.getTotalPages();
-                        if (totalPages > 0) {
-                            var pageNumbers = IntStream.rangeClosed(1, totalPages).boxed().collect(Collectors.toList());
-                            model.addAttribute("pageNumbers", pageNumbers);
-                        }
                     } catch (Exception e) {
                         log.error("Failed to load data: {}", e.getMessage());
                         model.addAttribute("error", "Failed to load data");
@@ -107,8 +94,8 @@ public class BookController {
                 });
     }
 
-    @GetMapping("/search")
-    public CompletableFuture<String> searchBooks(Model model) {
+    @GetMapping({ "", "/" })
+    public CompletableFuture<String> findAllBooks(Model model) {
         CompletableFuture<List<Book>> futureBooks = bookService.findAllBooks();
         CompletableFuture<List<Book>> futureTops = bookService.findTopBorrowedBooks();
 
@@ -179,7 +166,7 @@ public class BookController {
     @PostMapping("/update/{id}")
     public CompletableFuture<String> updateBook(@PathVariable("id") int id,
                                                 @Valid @ModelAttribute Book book,
-                                                BindingResult result, Model model) {
+                                                BindingResult result) {
         if (result.hasErrors()) {
             return CompletableFuture.completedFuture("update-book");
         }

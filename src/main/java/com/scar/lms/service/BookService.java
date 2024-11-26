@@ -18,14 +18,11 @@ public interface BookService {
 
     CompletableFuture<List<Book>> searchBooks(String keyword);
 
-    CompletableFuture<Page<Book>> findPaginated(Pageable pageable);
-
-    CompletableFuture<Page<Book>> findFilteredAndPaginated(String title,
+    CompletableFuture<List<Book>> findFiltered(String title,
                                                            String authorName,
                                                            String genreName,
                                                            String publisherName,
-                                                           Integer year,
-                                                           Pageable pageable);
+                                                           Integer year);
 
     CompletableFuture<Book> findBookById(int id);
 
