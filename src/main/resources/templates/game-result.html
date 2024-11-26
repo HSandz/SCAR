@@ -2,23 +2,27 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
     <title>Game Result</title>
-    <!-- Link to the CSS file -->
     <link rel="stylesheet" th:href="@{/css/game.css}" />
 </head>
 <body>
 <h1>Game Result</h1>
 
 <div th:if="${isCorrect}">
-    <p style="color: green;">Correct! The book title is <strong th:text="${correctTitle}"></strong>.</p>
-    <p>You earned <strong th:text="${pointsEarned}"></strong> points!</p>
-    <p>You now have <strong th:text="${userPoints}"></strong> points!</p>
-</div>
-<div th:if="${!isCorrect}">
-    <p style="color: red;">Game Over! The correct title was <strong th:text="${correctTitle}"></strong>.</p>
-    <p>You earned <strong th:text="${pointsEarned}"></strong> points!</p>
+    <p style="color: green;">Correct! The book title is <strong th:text="${correctTitle != null ? correctTitle : 'Unknown'}"></strong>.</p>
+    <p>You earned <strong th:text="${pointsEarned ?: 0}"></strong> points!</p>
+    <p>You now have <strong th:text="${userPoints ?: 0}"></strong> points!</p>
 </div>
 
-<a href="/game?mode=easy">Play Again (Easy)</a>
-<a href="/game?mode=hard">Play Again (Hard)</a>
+<div th:if="${gameOver}">
+    <p style="color: red;">Game Over! The correct title was <strong th:text="${correctTitle == null ? correctTitle : 'Unknown'}"></strong>.</p>
+    <p>You earned <strong th:text="${pointsEarned ?: 0}"></strong> points!</p>
+</div>
+
+<div th:if="${!isCorrect and !gameOver}">
+    <p>An unexpected error occurred. Please try again.</p>
+</div>
+
+<a th:href="@{/game?mode=easy}">Play Again (Easy)</a>
+<a th:href="@{/game?mode=hard}">Play Again (Hard)</a>
 </body>
 </html>

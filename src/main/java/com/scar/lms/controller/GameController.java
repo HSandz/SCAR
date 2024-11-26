@@ -121,9 +121,11 @@ public class GameController {
         }
 
         try {
+
             if (guess.equalsIgnoreCase(correctTitle)) {
                 CompletableFuture<User> userFuture = authenticationService.getAuthenticatedUser(authentication);
                 User user = userFuture.join();
+
                 if (user != null) {
                     long updatedPoints = user.getPoints() + points;
                     user.setPoints(updatedPoints);
@@ -155,10 +157,11 @@ public class GameController {
                     model.addAttribute("message", "Good guess!");
                 } else {
                     remainingGuesses--;
-                    points = Math.max(0, points - 1);
+                    points = Math.max(0, points - 1); // Deduct 0.5 points for incorrect guess
                     model.addAttribute("error", "Incorrect guess.");
                 }
             } else {
+
                 remainingGuesses--;
                 points = Math.max(0, points - 1);
                 model.addAttribute("error", "Invalid guess. Please guess a single letter or the full title.");
@@ -180,15 +183,21 @@ public class GameController {
                 model.addAttribute("isCorrect", true);
                 model.addAttribute("correctTitle", correctTitle);
                 model.addAttribute("pointsEarned", points);
+
                 return "game-result";
+            } else {
+                model.addAttribute("isCorrect", false);
+                model.addAttribute("correctTitle", correctTitle);
+                model.addAttribute("pointsEarned", 0);
             }
 
         } catch (Exception e) {
-            log.error("An unexpected error occurred.", e);
-            model.addAttribute("error", "An unexpected error occurred: " + e.getMessage());
+            log.error("An unexpected error occurred while handling the guess.", e);
+            model.addAttribute("error", "An unexpected error occurred. Please try again.");
         }
 
         return "game";
     }
+
 
 }
