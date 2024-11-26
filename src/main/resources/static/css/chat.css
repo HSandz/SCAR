@@ -1,14 +1,24 @@
 .chat-container {
-    max-width: 600px;
-    margin: 0 auto;
-    padding: 20px;
-    border: 1px solid #ccc;
-    border-radius: 10px;
+    position: fixed;
+    right: -600px; /* Đẩy ra ngoài màn hình */
+    width: 21%;
+    top: 11%;
+    height: 100%;
     background-color: #f9f9f9;
+    box-shadow: -2px 0 5px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+    overflow: hidden;
+    transition: right 0.3s ease-in-out; /* Hiệu ứng chuyển động */
+    border-radius: 1rem;
+    padding: 2rem;
+}
+
+.chat-container.active {
+    right: 0; /* Đưa vào màn hình */
 }
 
 .chat-box {
-    max-height: 400px;
+    max-height: 33rem;
     overflow-y: auto;
     margin-bottom: 20px;
     padding: 10px;
@@ -36,6 +46,18 @@
 
 .bot-message {
     justify-content: flex-start;
+}
+
+form {
+    position: absolute;
+    bottom: 10%; /* Sát đáy */
+    left: 0;
+    right: 0;
+    display: flex;
+    gap: 10px; /* Khoảng cách giữa input và button */
+    padding: 10px;
+    background-color: #fff;
+    border-top: 1px solid #ccc; /* Viền phân cách phía trên form */
 }
 
 .input-form {

@@ -8,6 +8,7 @@
     <title>Library Management System</title>
 
     <link rel="stylesheet" href="/css/book-list.css">
+    <link rel="stylesheet" href="/css/admin.css">
     <link rel="stylesheet" href="/css/profile.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -164,27 +165,26 @@
 
             </section>
 
-            <section class="box">
-                <p>1</p>
+            <section class="card" style="margin: auto">
+                    <div class="content">
+                        <p class="number">30</p>
+                        <p class="label">Total borrowed books</p>
+                    </div>
+                    <button class="btn">Click</button>
             </section>
 
-            <section class="box">
-                <p>1</p>
+            <section class="card" style="margin: auto">
+                <div class="content">
+                    <p class="number">30</p>
+                    <p class="label">Total favourite books</p>
+                </div>
+                <button class="btn">Click</button>
             </section>
         </div>
     </section>
 </div>
 
 <script src="/js/profile_calendar.js"></script>
-<!--<h1>User Profile</h1>-->
-<!--<div>-->
-<!--    <p><strong>Username:</strong> <span th:text="${user.username}">Username</span></p>-->
-<!--    <p><strong>Display Name:</strong><span th:text="${user.displayName}">Display name</span></p>-->
-<!--    <p><strong>Email:</strong><span th:text="${user.email}">Email</span></p>-->
-<!--    <p><strong>Points:</strong><span th:text="${user.points}">Points</span></p>-->
-<!--</div>-->
-<!--<a href="/users/profile/edit">Edit Profile</a>-->
-<!--<a href="/users/updatePassword">Update Password</a>-->
-<!--<a href="/users/profile/delete">Delete Account</a>-->
+
 </body>
 </html>
