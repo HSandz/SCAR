@@ -89,7 +89,7 @@ ___
 ### Cài đặt:
   * Clone project từ Github:
     ```angular2html
-        git clone
+        git clone https://github.com/HSandz/SCAR
     ```
     hoặc sử dụng `GitHub Desktop`
   * Mở project bằng IDE

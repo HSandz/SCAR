@@ -1,8 +1,11 @@
 package com.scar.lms.entity;
 
 import jakarta.persistence.*;
-
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.hibernate.proxy.HibernateProxy;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -59,4 +62,21 @@ public class Book {
     @OneToMany(fetch = FetchType.EAGER,
             mappedBy = "book")
     private Set<Borrow> borrows = new HashSet<>();
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Book book = (Book) o;
+        return id == book.id &&
+                isbn.equals(book.isbn) &&
+                title.equals(book.title);
+    }
+
+    @Override
+    public final int hashCode() {
+        return this instanceof HibernateProxy
+                ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass().hashCode()
+                : getClass().hashCode();
+    }
 }

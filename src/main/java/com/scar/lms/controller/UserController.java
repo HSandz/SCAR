@@ -35,14 +35,14 @@ public class UserController {
         this.cloudStorageService = cloudStorageService;
     }
 
-    @GetMapping("/upload")
-    public CompletableFuture<String> showUploadForm(Authentication authentication, Model model) {
-        return getUser(authentication)
-                .thenApply(user -> {
-                    model.addAttribute("user", user);
-                    return "upload";
-                });
-    }
+//    @GetMapping("/upload")
+//    public CompletableFuture<String> showUploadForm(Authentication authentication, Model model) {
+//        return getUser(authentication)
+//                .thenApply(user -> {
+//                    model.addAttribute("user", user);
+//                    return "upload";
+//                });
+//    }
 
     @PostMapping("/upload")
     public CompletableFuture<String> uploadProfileImage(
@@ -108,18 +108,18 @@ public class UserController {
                 });
     }
 
-    @GetMapping("/profile/edit")
-    public CompletableFuture<String> showEditProfileForm(Authentication authentication, Model model) {
-        return authenticationService.getAuthenticatedUser(authentication)
-                .thenApply(user -> {
-                    model.addAttribute("user", user);
-                    return "edit-user";
-                })
-                .exceptionally(ex -> {
-                    model.addAttribute("error", "Could not retrieve user information. Please try again later.");
-                    return "edit-user";
-                });
-    }
+//    @GetMapping("/profile/edit")
+//    public CompletableFuture<String> showEditProfileForm(Authentication authentication, Model model) {
+//        return authenticationService.getAuthenticatedUser(authentication)
+//                .thenApply(user -> {
+//                    model.addAttribute("user", user);
+//                    return "edit-user";
+//                })
+//                .exceptionally(ex -> {
+//                    model.addAttribute("error", "Could not retrieve user information. Please try again later.");
+//                    return "edit-user";
+//                });
+//    }
 
     @PostMapping("/profile/edit")
     public String updateProfile(Authentication authentication,
@@ -137,11 +137,11 @@ public class UserController {
         return "redirect:/users/profile/edit";
     }
 
-    @GetMapping("/updatePassword")
-    public CompletableFuture<String> showUpdatePasswordForm(Model model) {
-        model.addAttribute("user", new User());
-        return CompletableFuture.completedFuture("update-password");
-    }
+//    @GetMapping("/updatePassword")
+//    public CompletableFuture<String> showUpdatePasswordForm(Model model) {
+//        model.addAttribute("user", new User());
+//        return CompletableFuture.completedFuture("update-password");
+//    }
 
     @PostMapping("/updatePassword")
     public String updatePassword(Authentication authentication,
@@ -152,21 +152,21 @@ public class UserController {
             String username = authenticationService.extractUsernameFromAuthentication(authentication).join();
             if (!authenticationService.updatePassword(username, oldPassword, newPassword)) {
                 model.addAttribute("error", "Password update failed. Please check your old password and try again.");
-                return "update-password";
+                return "profile";
             }
             model.addAttribute("success", "Password updated successfully.");
             return "redirect:/login";
         } catch (Exception e) {
             log.error("Failed to update password.", e);
             model.addAttribute("error", "Failed to update password.");
-            return "update-password";
+            return "profile";
         }
     }
 
-    @GetMapping("/profile/delete")
-    public CompletableFuture<String> showDeleteAccountForm() {
-        return CompletableFuture.completedFuture("delete-account");
-    }
+//    @GetMapping("/profile/delete")
+//    public CompletableFuture<String> showDeleteAccountForm() {
+//        return CompletableFuture.completedFuture("delete-account");
+//    }
 
     @PostMapping("/profile/delete")
     public CompletableFuture<String> deleteAccount(Authentication authentication, Model model) {
@@ -181,16 +181,14 @@ public class UserController {
     @PostMapping("/return/{bookId}")
     public CompletableFuture<String> returnBook(@PathVariable int bookId, Authentication authentication) {
         return getUser(authentication)
-                .thenCompose(user -> {
-                    return borrowService.findBorrow(user.getId(), bookId)
-                            .thenAccept(borrowOptional -> {
-                                borrowOptional.ifPresent(borrow -> {
-                                    borrow.setReturnDate(LocalDate.now());
-                                    borrowService.updateBorrow(borrow);
-                                });
-                            })
-                            .thenApply(v -> "redirect:/users/borrowed-books");
-                });
+                .thenCompose(user -> borrowService.findBorrow(user.getId(), bookId)
+                        .thenAccept(borrowOptional -> {
+                            borrowOptional.ifPresent(borrow -> {
+                                borrow.setReturnDate(LocalDate.now());
+                                borrowService.updateBorrow(borrow);
+                            });
+                        })
+                        .thenApply(v -> "redirect:/users/borrowed-books"));
     }
 
     @GetMapping("/borrowed-books")

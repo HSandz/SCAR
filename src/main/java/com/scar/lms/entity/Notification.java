@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.proxy.HibernateProxy;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
@@ -31,4 +32,19 @@ public class Notification {
     @OneToMany(fetch = FetchType.EAGER,
             mappedBy = "notification")
     private Set<Notify> notifies = new HashSet<>();
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Notification notification = (Notification) o;
+        return id == notification.id &&
+                content.equals(notification.content) &&
+                sendTime.equals(notification.sendTime);
+    }
+
+    @Override
+    public final int hashCode() {
+        return this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass().hashCode() : getClass().hashCode();
+    }
 }
