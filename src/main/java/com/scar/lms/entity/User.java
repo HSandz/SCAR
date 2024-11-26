@@ -46,19 +46,19 @@ public class User {
     private String aboutMe;
 
     @OneToMany(fetch = FetchType.EAGER,
-            cascade = { CascadeType.PERSIST, CascadeType.MERGE },
+            cascade = { CascadeType.MERGE },
             mappedBy = "user")
     private Set<Borrow> borrows = new HashSet<>();
 
     @ManyToMany(fetch = FetchType.EAGER,
-            cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+            cascade = { CascadeType.MERGE })
     @JoinTable(name = "FAVOURITES",
             joinColumns = { @JoinColumn(name = "USER_ID") },
             inverseJoinColumns = { @JoinColumn(name = "BOOK_ID") })
     private Set<Book> favouriteBooks = new HashSet<>();
 
     @OneToMany(fetch = FetchType.EAGER,
-            cascade = { CascadeType.PERSIST, CascadeType.MERGE },
+            cascade = { CascadeType.MERGE },
             mappedBy = "user")
     private Set<Notify> notifies = new HashSet<>();
 }

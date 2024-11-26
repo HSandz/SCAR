@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="/css/history.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Jost:ital,wght@0,100..900;1,100..900&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap"
+    <link href="https://fonts.googleapis.com/css2?family=Jost:ital,wght@0,100..900;1,100..900&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900&display=swap"
           rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
           integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg=="
@@ -33,19 +33,13 @@
             </tr>
             </thead>
             <tbody>
-            <tr>
-                <td>1</td>
-                <td>Book 1</td>
-                <td>2022-01-01</td>
-                <td>2022-01-10</td>
-                <td>Returned</td>
-            </tr>
-            <tr>
-                <td>2</td>
-                <td>Book 2</td>
-                <td>2022-01-01</td>
-                <td> </td>
-                <td>Not returned</td>
+            <tr th:each="borrow : ${borrowHistory}">
+                <td th:text="${borrow.id}"></td>
+                <td th:text="${borrow.book.title}"></td>
+                <td th:text="${borrow.borrowDate}"></td>
+                <td th:text="${borrow.returnDate}"></td>
+                <td th:style="${borrow.returnDate == null ? 'color: red;' : 'color: green;'}"
+                    th:text="${borrow.returnDate == null ? 'Not Returned' : 'Returned'}"></td>
             </tr>
             </tbody>
         </table>

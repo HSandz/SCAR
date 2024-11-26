@@ -27,12 +27,12 @@ public class Borrow {
     private LocalDate returnDate;
 
     @ManyToOne(fetch = FetchType.EAGER,
-            cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+            cascade = { CascadeType.MERGE })
     @JoinColumn(name = "USER_ID")
     private User user;
 
     @ManyToOne(fetch = FetchType.EAGER,
-            cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+            cascade = { CascadeType.MERGE })
     @JoinColumn(name = "BOOK_ID")
     private Book book;
 }
