@@ -1,7 +1,5 @@
 package com.scar.lms.controller;
 
-import com.scar.lms.entity.Book;
-import com.scar.lms.entity.Borrow;
 import com.scar.lms.entity.User;
 import com.scar.lms.service.*;
 
@@ -13,9 +11,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.LocalDate;
-import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 @Slf4j
@@ -39,13 +36,12 @@ public class UserController {
     }
 
     @GetMapping("/upload")
-    public String showUploadForm(
-            Authentication authentication,
-            Model model) {
-        int userId = userService.findUserByUsername(
-                authenticationService.extractUsernameFromAuthentication(authentication)).getId();
-        model.addAttribute("user", userService.findUserById(userId));
-        return "upload";
+    public CompletableFuture<String> showUploadForm(Authentication authentication, Model model) {
+        return getUser(authentication)
+                .thenApply(user -> {
+                    model.addAttribute("user", user);
+                    return "upload";
+                });
     }
 
     @PostMapping("/upload")
@@ -53,15 +49,9 @@ public class UserController {
             Authentication authentication,
             @RequestParam("file") MultipartFile file,
             Model model) {
-        int userId = userService.findUserByUsername(
-                authenticationService.extractUsernameFromAuthentication(authentication)).getId();
         try {
-            User user = userService.findUserById(userId);
-            user.setProfilePictureUrl(cloudStorageService.uploadImage(file));
-            userService.updateUser(user);
-
-            model.addAttribute("message", "Image uploaded successfully!");
-            model.addAttribute("user", user);
+            int userId = getUser(authentication).join().getId();
+            extractedUploadProfileImage(userId, file, model);
 
         } catch (Exception e) {
             log.error("Error uploading profile image.", e);
@@ -71,33 +61,58 @@ public class UserController {
         return "profile";
     }
 
+    private void extractedUploadProfileImage(int userId, MultipartFile file, Model model) throws IOException {
+        if (file.isEmpty()) {
+            throw new IOException("File is empty.");
+        } else {
+            userService.findUserById(userId).thenAccept(user -> {
+                try {
+                    user.setProfilePictureUrl(cloudStorageService.uploadImage(file));
+                    userService.updateUser(user);
+                    model.addAttribute("message", "Image uploaded successfully!");
+                    model.addAttribute("user", user);
+                } catch (IOException e) {
+                    log.error("Error uploading profile image.", e);
+                    model.addAttribute("message", "Error uploading profile image: " + e.getMessage());
+                }
+            });
+        }
+    }
+
     @GetMapping({"/", ""})
     public String defaultUserPage() {
         return "redirect:/user/profile";
     }
 
     @GetMapping("/profile")
-    public String showProfilePage(Model model, Authentication authentication) {
+    public CompletableFuture<String> showProfilePage(Model model, Authentication authentication) {
         if (authentication == null) {
-            return "redirect:/login";
+            return CompletableFuture.completedFuture("redirect:/login");
         }
 
-        User user = authenticationService.getAuthenticatedUser(authentication);
+        return authenticationService.getAuthenticatedUser(authentication)
+                .thenApply(user -> {
+                    if (user == null) {
+                        model.addAttribute("error", "User not found.");
+                        return "error/404";
+                    }
 
-        if (user == null) {
-            model.addAttribute("error", "User not found.");
-            return "error/404";
-        }
-
-        model.addAttribute("user", user);
-        return "profile";
+                    model.addAttribute("user", user);
+                    return "profile";
+                });
     }
 
     @GetMapping("/profile/edit")
-    public String showEditProfileForm(Authentication authentication, Model model) {
-        User user = authenticationService.getAuthenticatedUser(authentication);
-        model.addAttribute("user", user);
-        return "edit-user";
+    public CompletableFuture<String> showEditProfileForm(Authentication authentication, Model model) {
+        return authenticationService.getAuthenticatedUser(authentication)
+                .thenApply(user -> {
+                    model.addAttribute("user", user);
+                    return "edit-user";
+                })
+                .exceptionally(ex -> {
+                    model.addAttribute("error", "Could not retrieve user information. Please try again later.");
+                    return "edit-user";
+                });
     }
 
     @PostMapping("/profile/edit")
@@ -106,7 +121,8 @@ public class UserController {
                                 @RequestParam("displayName") String updatedDisplayName,
                                 @RequestParam("email") String updatedEmail,
                                 Model model) {
-        User currentUser = authenticationService.getAuthenticatedUser(authentication);
+        CompletableFuture<User> userFuture = getUser(authentication);
+        User currentUser = userFuture.join();
         if (!authenticationService.validateEditProfile(currentUser, updatedUsername, updatedDisplayName, updatedEmail)) {
             model.addAttribute("failure", "Profile not updated.");
         }
@@ -116,9 +132,9 @@ public class UserController {
     }
 
     @GetMapping("/updatePassword")
-    public String showUpdatePasswordForm(Model model) {
+    public CompletableFuture<String> showUpdatePasswordForm(Model model) {
         model.addAttribute("user", new User());
-        return "update-password";
+        return CompletableFuture.completedFuture("update-password");
     }
 
     @PostMapping("/updatePassword")
@@ -126,101 +142,107 @@ public class UserController {
                                  @RequestParam("oldPassword") String oldPassword,
                                  @RequestParam("newPassword") String newPassword,
                                  Model model) {
-        String username = authenticationService.extractUsernameFromAuthentication(authentication);
-        if (!authenticationService.updatePassword(username, oldPassword, newPassword)) {
-            model.addAttribute("error", "Password update failed. Please check your old password and try again.");
+        try {
+            String username = authenticationService.extractUsernameFromAuthentication(authentication).join();
+            if (!authenticationService.updatePassword(username, oldPassword, newPassword)) {
+                model.addAttribute("error", "Password update failed. Please check your old password and try again.");
+                return "update-password";
+            }
+            model.addAttribute("success", "Password updated successfully.");
+            return "redirect:/login";
+        } catch (Exception e) {
+            log.error("Failed to update password.", e);
+            model.addAttribute("error", "Failed to update password.");
             return "update-password";
         }
-        model.addAttribute("success", "Password updated successfully.");
-        return "redirect:/login";
     }
 
     @GetMapping("/profile/delete")
-    public String showDeleteAccountForm() {
-        return "delete-account";
+    public CompletableFuture<String> showDeleteAccountForm() {
+        return CompletableFuture.completedFuture("delete-account");
     }
 
     @PostMapping("/profile/delete")
-    public String deleteAccount(Authentication authentication, Model model) {
-        User user = authenticationService.getAuthenticatedUser(authentication);
-        userService.deleteUser(user.getId());
-        model.addAttribute("success", "Account deleted successfully.");
-        return "redirect:/logout";
+    public CompletableFuture<String> deleteAccount(Authentication authentication, Model model) {
+        return getUser(authentication)
+                .thenCompose(user -> {
+                    userService.deleteUser(user.getId());
+                    model.addAttribute("success", "Account deleted successfully.");
+                    return CompletableFuture.completedFuture("redirect:/logout");
+                });
     }
 
     @PostMapping("/return/{bookId}")
-    public String returnBook(@PathVariable int bookId, Authentication authentication) {
-        User user = authenticationService.getAuthenticatedUser(authentication);
-
-        try {
-            CompletableFuture<Optional<Borrow>> borrowOptionalFuture = borrowService.findBorrow(user.getId(), bookId);
-            Optional<Borrow> borrowOptional = borrowOptionalFuture.join();
-
-            if (borrowOptional.isPresent()) {
-                Borrow borrow = borrowOptional.get();
-                borrow.setReturnDate(LocalDate.now());
-                borrowService.updateBorrow(borrow);
-            }
-            return "redirect:/users/borrowed-books";
-        } catch (Exception e) {
-            log.error("Failed to return book.", e);
-            return "redirect:/users/borrowed-books";
-        }
+    public CompletableFuture<String> returnBook(@PathVariable int bookId, Authentication authentication) {
+        return getUser(authentication)
+                .thenCompose(user -> {
+                    return borrowService.findBorrow(user.getId(), bookId)
+                            .thenAccept(borrowOptional -> {
+                                borrowOptional.ifPresent(borrow -> {
+                                    borrow.setReturnDate(LocalDate.now());
+                                    borrowService.updateBorrow(borrow);
+                                });
+                            })
+                            .thenApply(v -> "redirect:/users/borrowed-books");
+                });
     }
 
     @GetMapping("/borrowed-books")
-    public String showBorrowedBooks(Authentication authentication, Model model) {
-        User user = authenticationService.getAuthenticatedUser(authentication);
-        List<Borrow> borrowedBooks = getBorrowList(user);
-        model.addAttribute("borrowedBooks", borrowedBooks);
-        return "borrowed-books";
+    public CompletableFuture<String> showBorrowedBooks(Authentication authentication, Model model) {
+        return getUser(authentication)
+                .thenCompose(user -> borrowService.findBorrowsOfUser(user.getId())
+                        .thenApply(borrowedBooks -> {
+                            model.addAttribute("borrowedBooks", borrowedBooks);
+                            return "borrowed-books";
+                        })
+                );
     }
 
     @PostMapping("/add-favourite/{bookId}")
-    public String addFavourite(@PathVariable int bookId, Authentication authentication) {
-        User user = authenticationService.getAuthenticatedUser(authentication);
-        userService.addFavouriteFor(user, bookId);
-        return "redirect:/book-list/" + bookId;
+    public CompletableFuture<String> addFavourite(@PathVariable int bookId, Authentication authentication) {
+        return getUser(authentication)
+                .thenCompose(user -> {
+                    userService.addFavouriteFor(user, bookId);
+                    return CompletableFuture.completedFuture("redirect:/book-list/" + bookId);
+                });
     }
 
     @GetMapping("/favourites")
-    public String showFavouriteBooks(Authentication authentication, Model model) {
-        User user = authenticationService.getAuthenticatedUser(authentication);
-        try {
-            CompletableFuture<List<Book>> favouriteBooksFuture = userService.findFavouriteBooks(user.getId());
-            List<Book> favouriteBooks = favouriteBooksFuture.join();
-            if (favouriteBooks == null) {
-                model.addAttribute("error", "Failed to fetch favourite books.");
-                return "error/404";
-            } else {
-                model.addAttribute("favouriteBooks", favouriteBooks);
-                return "favourites";
-            }
-        } catch (Exception e) {
-            log.error("Failed to fetch favourite books.", e);
-            model.addAttribute("error", "Failed to fetch favourite books.");
-            return "error/404";
-        }
+    public CompletableFuture<String> showFavouriteBooks(Authentication authentication, Model model) {
+        return getUser(authentication)
+                .thenCompose(user -> userService.findFavouriteBooks(user.getId())
+                        .thenApply(favouriteBooks -> {
+                            model.addAttribute("favouriteBooks", favouriteBooks);
+                            return "favourites";
+                        })
+                        .exceptionally(ex -> {
+                            model.addAttribute("error", "Failed to fetch favourite books.");
+                            return "error/404";
+                        })
+                );
     }
 
     @PostMapping("/remove-favourite/{bookId}")
-    public String removeFavourite(@PathVariable int bookId, Authentication authentication) {
-        User user = authenticationService.getAuthenticatedUser(authentication);
-        userService.removeFavouriteFor(user, bookId);
-        return "redirect:/users/favourites";
+    public CompletableFuture<String> removeFavourite(@PathVariable int bookId, Authentication authentication) {
+        return getUser(authentication)
+                .thenCompose(user -> {
+                    userService.removeFavouriteFor(user, bookId);
+                    return CompletableFuture.completedFuture("redirect:/users/favourites");
+                });
     }
-
 
     @GetMapping("/borrow-history")
-    public String showHistory(Authentication authentication, Model model) {
-        User user = authenticationService.getAuthenticatedUser(authentication);
-        List<Borrow> borrowHistory = getBorrowList(user);
-        model.addAttribute("borrowHistory", borrowHistory);
-        return "history";
+    public CompletableFuture<String> showHistory(Authentication authentication, Model model) {
+        return getUser(authentication)
+                .thenCompose(user -> borrowService.findBorrowsOfUser(user.getId())
+                        .thenApply(borrowHistory -> {
+                            model.addAttribute("borrowHistory", borrowHistory);
+                            return "history";
+                        })
+                );
     }
 
-    private List<Borrow> getBorrowList(User user) {
-        CompletableFuture<List<Borrow>> borrowsFuture = borrowService.findBorrowsOfUser(user.getId());
-        return borrowsFuture.join();
+    private CompletableFuture<User> getUser(Authentication authentication) {
+        return authenticationService.getAuthenticatedUser(authentication);
     }
 }

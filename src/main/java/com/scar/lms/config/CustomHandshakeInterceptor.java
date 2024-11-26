@@ -42,7 +42,8 @@ public class CustomHandshakeInterceptor implements HandshakeInterceptor {
                     System.out.println("UsernamePassword detected");
                     String username = authentication.getName();
                     attributes.put("username", username);
-                    attributes.put("profilePictureUrl", userService.findUserByUsername(username).getProfilePictureUrl());
+                    attributes.put("profilePictureUrl",
+                            userService.findUserByUsername(username).join().getProfilePictureUrl());
                 } else if (authentication instanceof OAuth2AuthenticationToken token) {
                     System.out.println("OAuth2 detected");
                     Map<String, Object> attribute = token.getPrincipal().getAttributes();

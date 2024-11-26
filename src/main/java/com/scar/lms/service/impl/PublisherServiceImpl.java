@@ -23,19 +23,22 @@ public class PublisherServiceImpl implements PublisherService {
         this.publisherRepository = publisherRepository;
     }
 
+    @Async
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     @Override
     public CompletableFuture<List<Publisher>> findAllPublishers() {
         return CompletableFuture.supplyAsync(publisherRepository::findAll);
     }
 
+    @Async
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     @Override
-    public Publisher findPublisherById(int id) {
+    public CompletableFuture<Publisher> findPublisherById(int id) {
         return publisherRepository
                 .findById(id)
-                .orElseThrow(
-                        () -> new ResourceNotFoundException("Publisher with ID not found: " + id));
+                .map(CompletableFuture::completedFuture)
+                .orElse(CompletableFuture.failedFuture(
+                        new ResourceNotFoundException("Publisher with ID not found: " + id)));
     }
 
     @Async

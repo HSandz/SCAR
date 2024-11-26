@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Title Guessing Game</title>
+    <!-- Link to the CSS file -->
+    <link rel="stylesheet" th:href="@{/css/game.css}" />
+</head>
+<body>
+<h1>Guess the Book Title!</h1>
+
+<div th:if="${error}">
+    <p th:text="${error}" style="color: red;"></p>
+</div>
+
+<div th:if="${authors}">
+    <p><strong>Authors:</strong></p>
+    <ul>
+        <li th:each="author : ${authors}" th:text="${author.name}"></li>
+    </ul>
+    <p><strong>Hint:</strong> <span th:text="${hint}"></span></p>
+    <p><strong>Remaining Guesses:</strong> <span th:text="${remainingGuesses}"></span></p>
+    <p><strong>Current Points:</strong> <span th:text="${points}"></span></p>
+
+    <form action="/game/guess" method="post">
+        <input type="hidden" name="userId" value="[[${userId}]]" />
+        <label for="guess">Your Guess:</label>
+        <input type="text" id="guess" name="guess" required />
+        <button type="submit">Submit</button>
+    </form>
+</div>
+</body>
+</html>

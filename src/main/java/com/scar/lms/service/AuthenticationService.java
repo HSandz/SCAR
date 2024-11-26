@@ -6,7 +6,9 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
 import java.util.Collection;
+import java.util.concurrent.CompletableFuture;
 
+@SuppressWarnings("SameReturnValue")
 public interface AuthenticationService extends UserDetailsService {
 
     boolean validateRegistration(String username, String password, String displayName, String email);
@@ -15,11 +17,12 @@ public interface AuthenticationService extends UserDetailsService {
 
     String encryptPassword(String password);
 
+    @SuppressWarnings("unused")
     Collection<? extends GrantedAuthority> getAuthorities(String username);
 
-    String extractUsernameFromAuthentication(Authentication authentication);
+    CompletableFuture<String> extractUsernameFromAuthentication(Authentication authentication);
 
     boolean validateEditProfile(User currentUser, String newUsername, String newDisplayName, String newEmail);
 
-    User getAuthenticatedUser(Authentication authentication);
+    CompletableFuture<User> getAuthenticatedUser(Authentication authentication);
 }

@@ -9,13 +9,13 @@ public interface AuthorService {
 
     CompletableFuture<List<Author>> findAllAuthors();
 
-    List<Author> findAuthorsByCountry(String country);
+    CompletableFuture<List<Author>> findAuthorsByCountry(String country);
 
-    List<Author> findAuthorsByAge(int age);
+    CompletableFuture<List<Author>> findAuthorsByAge(int age);
 
-    Author findAuthorById(int id);
+    CompletableFuture<Author> findAuthorById(int id);
 
-    Author findAuthorByEmail(String email);
+    CompletableFuture<Author> findAuthorByEmail(String email);
 
     void addAuthor(Author author);
 

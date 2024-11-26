@@ -5,7 +5,6 @@ import com.scar.lms.entity.Role;
 import com.scar.lms.entity.User;
 
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
 public interface UserService {
@@ -14,11 +13,11 @@ public interface UserService {
 
     CompletableFuture<List<User>> searchUsers(String keyword);
 
-    User findUserById(int id);
+    CompletableFuture<User> findUserById(int id);
 
-    User findUserByUsername(String username);
+    CompletableFuture<User> findUserByUsername(String username);
 
-    User findUserByEmail(String email);
+    CompletableFuture<User> findUserByEmail(String email);
 
     void createUser(User user);
 

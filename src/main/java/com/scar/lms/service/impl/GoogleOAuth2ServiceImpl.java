@@ -38,10 +38,11 @@ public class GoogleOAuth2ServiceImpl implements GoogleOAuth2Service {
         getUser(email, username, displayName, userRepository, bCryptPasswordEncoder);
     }
 
-    private User getUser(String email, String username, String displayName, UserRepository userRepository, BCryptPasswordEncoder bCryptPasswordEncoder) {
+    private void getUser(String email, String username, String displayName, UserRepository userRepository, BCryptPasswordEncoder bCryptPasswordEncoder) {
         Optional<User> existingUser = userRepository.findByGoogleEmail(email);
+        //noinspection DuplicatedCode
         if (existingUser.isPresent()) {
-            return existingUser.get();
+            return;
         }
 
         User newUser = new User();
@@ -59,6 +60,6 @@ public class GoogleOAuth2ServiceImpl implements GoogleOAuth2Service {
         newUser.setPoints(0);
         // Default password to bypass non-null constraint
         newUser.setPassword(bCryptPasswordEncoder.encode(username + displayName)); // a default password pattern
-        return userRepository.save(newUser);
+        userRepository.save(newUser);
     }
 }

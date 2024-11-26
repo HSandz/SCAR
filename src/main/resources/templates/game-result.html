@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Game Result</title>
+    <!-- Link to the CSS file -->
+    <link rel="stylesheet" th:href="@{/css/game.css}" />
+</head>
+<body>
+<h1>Game Result</h1>
+
+<div th:if="${isCorrect}">
+    <p style="color: green;">Correct! The book title is <strong th:text="${correctTitle}"></strong>.</p>
+    <p>You earned <strong th:text="${pointsEarned}"></strong> points!</p>
+    <p>You now have <strong th:text="${userPoints}"></strong> points!</p>
+</div>
+<div th:if="${!isCorrect}">
+    <p style="color: red;">Game Over! The correct title was <strong th:text="${correctTitle}"></strong>.</p>
+    <p>You earned <strong th:text="${pointsEarned}"></strong> points!</p>
+</div>
+
+<a href="/game?mode=easy">Play Again (Easy)</a>
+<a href="/game?mode=hard">Play Again (Hard)</a>
+</body>
+</html>

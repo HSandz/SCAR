@@ -1,19 +1,15 @@
 package com.scar.lms.service.impl;
 
-import com.scar.lms.controller.UserController;
 import com.scar.lms.entity.User;
-import com.scar.lms.exception.InvalidDataException;
-import com.scar.lms.exception.LibraryException;
-import com.scar.lms.exception.OperationNotAllowedException;
-import com.scar.lms.exception.ResourceNotFoundException;
+import com.scar.lms.exception.*;
 import com.scar.lms.repository.UserRepository;
 import com.scar.lms.service.AuthenticationService;
 
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -21,7 +17,9 @@ import org.springframework.security.oauth2.client.authentication.OAuth2Authentic
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 
+@SuppressWarnings("SameReturnValue")
 @Service
 public class AuthenticationServiceImpl implements AuthenticationService, UserDetailsService {
 
@@ -39,16 +37,20 @@ public class AuthenticationServiceImpl implements AuthenticationService, UserDet
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
     }
 
+    @Async
     @Override
-    public String extractUsernameFromAuthentication(Authentication authentication) {
+    public CompletableFuture<String> extractUsernameFromAuthentication(Authentication authentication) {
         if (authentication instanceof OAuth2AuthenticationToken token) {
             if (token.getPrincipal() == null || token.getPrincipal().getAttributes() == null) {
                 throw new InvalidDataException("OAuth2 token principal or attributes are null");
             }
             Map<String, Object> attributes = token.getPrincipal().getAttributes();
-            return (String) attributes.get("login");
+            if (attributes.get("login") == null) {
+                return CompletableFuture.completedFuture((String) attributes.get("given_name"));
+            }
+            return CompletableFuture.completedFuture((String) attributes.get("login"));
         } else if (authentication instanceof UsernamePasswordAuthenticationToken) {
-            return authentication.getName();
+            return CompletableFuture.completedFuture(authentication.getName());
         } else {
             throw new InvalidDataException("Unsupported authentication type");
         }
@@ -58,7 +60,7 @@ public class AuthenticationServiceImpl implements AuthenticationService, UserDet
     public UserDetails loadUserByUsername(String username) {
         User user = userRepository
                 .findByUsername(username)
-                .orElseThrow(() -> new ResourceNotFoundException("User with username not found: " + username));
+                .orElseThrow(() -> new UserNotFoundException("User with username not found: " + username));
         return new org.springframework.security.core.userdetails.User(
                 user.getUsername(),
                 user.getPassword(),
@@ -131,7 +133,7 @@ public class AuthenticationServiceImpl implements AuthenticationService, UserDet
         }
 
         User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new ResourceNotFoundException("User with username not found: " + username));
+                .orElseThrow(() -> new UserNotFoundException("User with username not found: " + username));
 
         if (!bCryptPasswordEncoder.matches(oldPassword, user.getPassword())) {
             throw new OperationNotAllowedException("Old password is incorrect.");
@@ -150,7 +152,7 @@ public class AuthenticationServiceImpl implements AuthenticationService, UserDet
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities(String username) {
         User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new ResourceNotFoundException("User with username not found: " + username));
+                .orElseThrow(() -> new UserNotFoundException("User with username not found: " + username));
 
         Set<GrantedAuthority> authorities = new HashSet<>();
         authorities.add(new SimpleGrantedAuthority("ROLE_" + user.getRole().name()));
@@ -168,10 +170,12 @@ public class AuthenticationServiceImpl implements AuthenticationService, UserDet
                 validateDisplayName(newDisplayName);
     }
 
+    @Async
     @Override
-    public User getAuthenticatedUser(Authentication authentication) {
-        String username = extractUsernameFromAuthentication(authentication);
+    public CompletableFuture<User> getAuthenticatedUser(Authentication authentication) {
+        String username = extractUsernameFromAuthentication(authentication).join();
         return userRepository.findByUsername(username)
-                .orElseThrow(() -> new ResourceNotFoundException("User with username not found: " + username));
+                .map(CompletableFuture::completedFuture)
+                .orElseGet(() -> CompletableFuture.failedFuture(new UserNotFoundException("User with username notfound: " + username)));
     }
 }

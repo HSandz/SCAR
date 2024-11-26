@@ -37,3 +37,4 @@ build/
 
 ### JSON Key ###
 src/main/resources/scar.json
+src/main/resources/application.properties
