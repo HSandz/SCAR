@@ -1,10 +1,12 @@
 package com.scar.lms.controller;
 
 import com.scar.lms.entity.User;
-import com.scar.lms.service.*;
-
+import com.scar.lms.service.AuthenticationService;
+import com.scar.lms.service.BorrowService;
+import com.scar.lms.service.CloudStorageService;
+import com.scar.lms.service.UserService;
 import lombok.extern.slf4j.Slf4j;
-
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -44,7 +46,7 @@ public class UserController {
                     return "upload";
                 });
     }
-  
+
     @PostMapping("/upload")
     public CompletableFuture<String> uploadProfileImage(
             Authentication authentication,
@@ -174,7 +176,7 @@ public class UserController {
     }
 
     @PostMapping("/return/{bookId}")
-    public CompletableFuture<String> returnBook(@PathVariable int bookId, Authentication authentication) {
+    public CompletableFuture<ResponseEntity<String>> returnBook(@PathVariable int bookId, Authentication authentication) {
         return getUser(authentication)
                 .thenCompose(user -> borrowService.findBorrow(user.getId(), bookId)
                         .thenAccept(borrowOptional -> {
@@ -183,7 +185,8 @@ public class UserController {
                                 borrowService.updateBorrow(borrow);
                             });
                         })
-                        .thenApply(v -> "redirect:/users/borrowed-books"));
+                        .thenApply(v -> ResponseEntity.ok("Book returned successfully"))
+                        .exceptionally(ex -> ResponseEntity.status(500).body("Failed to return book")));
     }
 
     @GetMapping("/borrowed-books")
@@ -206,10 +209,10 @@ public class UserController {
         return getUser(authentication)
                 .thenCompose(user -> userService.findFavouriteBooks(user.getId())
                         .thenApply(favouriteBooks -> {
-                            model.addAttribute("favouriteBooks", favouriteBooks);
+                            model.addAttribute("books", favouriteBooks);
                             return "favourites";
                         })
-                        .exceptionally(ex -> {
+                        .exceptionally(_ -> {
                             model.addAttribute("error", "Failed to fetch favourite books.");
                             return "error/404";
                         })

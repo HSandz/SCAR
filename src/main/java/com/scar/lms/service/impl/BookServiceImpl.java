@@ -58,18 +58,19 @@ public class BookServiceImpl implements BookService {
     @Async
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     @Override
-    public CompletableFuture<List<Book>> findFiltered(String title,
+    public CompletableFuture<Page<Book>> findFiltered(String title,
                                                       String authorName,
                                                       String genreName,
                                                       String publisherName,
-                                                      Integer year) {
+                                                      Integer year,
+                                                      Pageable pageable) {
 
         Specification<Book> spec = Specification.where(null);
 
         spec = getSpecification(title, authorName, genreName, publisherName, year, spec);
 
         Specification<Book> finalSpec = spec;
-        return CompletableFuture.supplyAsync(() -> bookRepository.findAll(finalSpec));
+        return CompletableFuture.supplyAsync(() -> bookRepository.findAll(finalSpec, pageable));
     }
 
     private Specification<Book> getSpecification(String title,

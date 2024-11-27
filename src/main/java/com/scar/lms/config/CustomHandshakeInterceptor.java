@@ -34,10 +34,10 @@ public class CustomHandshakeInterceptor implements HandshakeInterceptor {
     }
 
     @Override
-    public boolean beforeHandshake(ServerHttpRequest request,
-                                   ServerHttpResponse response,
-                                   WebSocketHandler wsHandler,
-                                   Map<String, Object> attributes) {
+    public boolean beforeHandshake(@NonNull ServerHttpRequest request,
+                                   @NonNull ServerHttpResponse response,
+                                   @NonNull WebSocketHandler wsHandler,
+                                   @NonNull Map<String, Object> attributes) {
         if (request instanceof org.springframework.http.server.ServletServerHttpRequest servletRequest) {
             HttpSession session = servletRequest.getServletRequest().getSession(false);
             if (session != null) {
@@ -72,9 +72,9 @@ public class CustomHandshakeInterceptor implements HandshakeInterceptor {
     }
 
     @Override
-    public void afterHandshake(ServerHttpRequest request,
-                               ServerHttpResponse response,
-                               WebSocketHandler wsHandler,
+    public void afterHandshake(@NonNull ServerHttpRequest request,
+                               @NonNull ServerHttpResponse response,
+                               @NonNull WebSocketHandler wsHandler,
                                Exception ex) {
     }
 }

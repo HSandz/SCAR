@@ -1,11 +1,14 @@
 package com.scar.lms.controller;
 
-import com.scar.lms.entity.*;
+import com.scar.lms.entity.Book;
+import com.scar.lms.entity.Borrow;
+import com.scar.lms.entity.User;
 import com.scar.lms.service.*;
-
 import jakarta.validation.Valid;
-
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
@@ -17,7 +20,6 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.stream.Collectors;
 
 @SuppressWarnings("SameReturnValue")
 @Slf4j
@@ -45,9 +47,9 @@ public class BookController {
 
     @GetMapping("/api")
     public CompletableFuture<String> searchAPI(@RequestParam(value = "query", defaultValue = "") String query,
-                                                 @RequestParam(value = "startIndex", defaultValue = "0") int startIndex,
-                                                 @RequestParam(value = "maxResults", defaultValue = "40") int maxResults,
-                                                 Model model) {
+                                               @RequestParam(value = "startIndex", defaultValue = "0") int startIndex,
+                                               @RequestParam(value = "maxResults", defaultValue = "40") int maxResults,
+                                               Model model) {
 
         CompletableFuture<List<Book>> booksFuture = googleBooksService.searchBooks(query, startIndex, maxResults)
                 .thenApply(ArrayList::new);
@@ -65,14 +67,19 @@ public class BookController {
 
     @GetMapping("/search")
     public CompletableFuture<String> searchBooks(Model model,
-                                                  @RequestParam(required = false) String title,
-                                                  @RequestParam(required = false) String authorName,
-                                                  @RequestParam(required = false) String genreName,
-                                                  @RequestParam(required = false) String publisherName,
-                                                  @RequestParam(required = false) Integer year) {
+                                                 @RequestParam(required = false) String title,
+                                                 @RequestParam(required = false) String authorName,
+                                                 @RequestParam(required = false) String genreName,
+                                                 @RequestParam(required = false) String publisherName,
+                                                 @RequestParam(required = false) Integer year,
+                                                 @RequestParam(defaultValue = "0") int page,
+                                                 @RequestParam(defaultValue = "20") int size) {
 
-        CompletableFuture<List<Book>> booksFuture = bookService.findFiltered(
-                title, authorName, genreName, publisherName, year);
+        Pageable pageable = PageRequest.of(page, size);
+        CompletableFuture<Page<Book>> booksFuture = bookService.findFiltered(
+                title, authorName, genreName, publisherName, year, pageable);
+
+
 
         CompletableFuture<List<Book>> topBorrowedBooksFuture = bookService.findTopBorrowedBooks();
         CompletableFuture<Long> totalBooksFuture = bookService.countAllBooks();
@@ -82,6 +89,9 @@ public class BookController {
                     try {
                         var bookPage = booksFuture.get();
                         model.addAttribute("books", bookPage);
+                        model.addAttribute("currentPage", bookPage.getNumber());
+                        model.addAttribute("totalPages", bookPage.getTotalPages());
+                        model.addAttribute("bookPerPage", bookPage.getSize());
                         model.addAttribute("top", topBorrowedBooksFuture.get());
                         model.addAttribute("count", totalBooksFuture.get());
 
@@ -89,11 +99,11 @@ public class BookController {
                         log.error("Failed to load data: {}", e.getMessage());
                         model.addAttribute("error", "Failed to load data");
                     }
-                    return "view-books";
+                    return "book-search";
                 });
     }
 
-    @GetMapping({ "", "/" })
+    @GetMapping({"", "/"})
     public CompletableFuture<String> findAllBooks(Model model) {
         CompletableFuture<List<Book>> futureBooks = bookService.findAllBooks();
         CompletableFuture<List<Book>> futureTops = bookService.findTopBorrowedBooks();

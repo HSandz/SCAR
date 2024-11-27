@@ -21,7 +21,7 @@ th:nth-child(6), td:nth-child(6) {
     width: 14%;
 }
 .modal-overlay-user {
-    /*display: none;*/
+    display: none;
     position: fixed;
     top: 0;
     left: 0;
