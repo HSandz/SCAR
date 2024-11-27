@@ -37,10 +37,7 @@ public class Notify {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Notify notify = (Notify) o;
-        return id == notify.id &&
-                isRead == notify.isRead &&
-                Objects.equals(user, notify.user) &&
-                Objects.equals(notification, notify.notification);
+        return id == notify.id;
     }
 
     @Override

@@ -42,9 +42,28 @@ public class IndexController {
 
     @PostMapping("/register")
     public String registerUser(@ModelAttribute User user, Model model) {
+        if (!authenticationService.validateUsername(user.getUsername())) {
+            model.addAttribute("error",
+                    "Username is invalid or taken. Username must be between 6 and 20 characters.");
+            return "register";
+        }
+        if (!authenticationService.validatePassword(user.getPassword())) {
+            model.addAttribute("error",
+                    "Password is invalid. Password must be between 8 and 20 characters.");
+            return "register";
+        }
+        if (!authenticationService.validateEmail(user.getEmail())) {
+            model.addAttribute("error", "Email is invalid or taken.");
+            return "register";
+        }
+        if (!authenticationService.validateDisplayName(user.getDisplayName())) {
+            model.addAttribute("error",
+                    "Display name is invalid. Length must be between 3 and 20 characters.");
+            return "register";
+        }
         if (!authenticationService.validateRegistration(user.getUsername(), user.getPassword(),
                 user.getDisplayName(), user.getEmail())) {
-            model.addAttribute("error", "Invalid registration details.");
+            model.addAttribute("error", "Registration details are invalid or taken.");
             return "register";
         }
         extractedRegisterUser(user);

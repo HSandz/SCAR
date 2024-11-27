@@ -61,13 +61,16 @@ public class Book {
             mappedBy = "book")
     private Set<Borrow> borrows = new HashSet<>();
 
+    @OneToMany(fetch = FetchType.EAGER,
+            mappedBy = "book")
+    private Set<Rating> ratings = new HashSet<>();
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Book book = (Book) o;
-        return id == book.id &&
-                title.equals(book.title);
+        return id == book.id;
     }
 
     @Override

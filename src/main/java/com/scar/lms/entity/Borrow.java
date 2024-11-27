@@ -41,10 +41,7 @@ public class Borrow {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Borrow borrow = (Borrow) o;
-        return id == borrow.id &&
-                borrowDate.equals(borrow.borrowDate) &&
-                Objects.equals(user, borrow.user) &&
-                Objects.equals(book, borrow.book);
+        return id == borrow.id;
     }
 
     @Override

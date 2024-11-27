@@ -44,24 +44,15 @@ public class GoogleBooksServiceImpl implements GoogleBooksService {
                 + "&key=" + googleBooksApiProperties.getKey();
 
         try {
-            // Call Google Books API
             ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, null, String.class);
             String jsonResponse = response.getBody();
-
-            // Parse JSON response
             ObjectMapper objectMapper = new ObjectMapper();
             JsonNode rootNode = objectMapper.readTree(jsonResponse);
             JsonNode itemsNode = rootNode.path("items");
-
-            // Map JSON data to List<Book>
             List<Book> books = new ArrayList<>();
             for (JsonNode item : itemsNode) {
                 Book book = new Book();
-
-                // Title
                 book.setTitle(item.path("volumeInfo").path("title").asText());
-
-                // ISBN
                 JsonNode isbnNode = item.path("volumeInfo").path("industryIdentifiers");
                 if (isbnNode.isArray()) {
                     for (JsonNode identifier : isbnNode) {
@@ -71,43 +62,27 @@ public class GoogleBooksServiceImpl implements GoogleBooksService {
                         }
                     }
                 }
-
-                // Language
                 book.setLanguage(item.path("volumeInfo").path("language").asText());
-
-                // Rating
                 if (item.path("volumeInfo").has("averageRating")) {
                     book.setRating(item.path("volumeInfo").path("averageRating").asDouble());
                 }
-
-                // Publication Year
                 String publishedDate = item.path("volumeInfo").path("publishedDate").asText();
                 if (publishedDate.length() >= 4) {
                     book.setPublicationYear(Integer.parseInt(publishedDate.substring(0, 4)));
                 }
-
-                // Description
                 book.setDescription(item.path("volumeInfo").path("description").asText());
-
-                // Author
                 JsonNode authorsNode = item.path("volumeInfo").path("authors");
                 if (authorsNode.isArray() && !authorsNode.isEmpty()) {
                     book.setAuthor(authorsNode.get(0).asText());
                 }
-
-                // Image URL
                 JsonNode imageLinksNode = item.path("volumeInfo").path("imageLinks");
                 if (imageLinksNode.has("thumbnail")) {
                     book.setImageUrl(imageLinksNode.path("thumbnail").asText());
                 }
-
-                // Publisher
                 String publisherName = item.path("volumeInfo").path("publisher").asText();
                 if (!publisherName.isEmpty()) {
                     book.setPublisher(publisherName);
                 }
-
-                // Genre (Categories)
                 JsonNode categoriesNode = item.path("volumeInfo").path("categories");
                 if (categoriesNode.isArray() && categoriesNode.size() > 0) {
                     book.setGenre(categoriesNode.get(0).asText());
@@ -115,8 +90,6 @@ public class GoogleBooksServiceImpl implements GoogleBooksService {
 
                 books.add(book);
             }
-
-            // Return CompletableFuture
             return CompletableFuture.completedFuture(books);
         } catch (JsonProcessingException e) {
             log.error("Error parsing JSON response from Google Books API", e);

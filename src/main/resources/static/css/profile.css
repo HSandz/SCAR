@@ -31,6 +31,7 @@
         font-size: 19px;
         margin-top: 10px;
     }
+
     section {
         background-color: white;
         border: gray;
@@ -56,7 +57,7 @@
     }
 
     .day.active {
-        background-color: #90caf9; /* Light blue color */
+        background-color: #90caf9;
         color: white;
     }
 }
@@ -124,5 +125,6 @@
     width: 150px;
     justify-content: center;
     align-items: center;
-    !important;
+
+!important;
 }

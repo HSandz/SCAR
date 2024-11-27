@@ -1,5 +1,4 @@
 # Library Management System Project by SCAR
-___
 
 ### Table of contents:
 
@@ -11,13 +10,11 @@ ___
 6. [Cài đặt](#cài-đặt)
 
 # Thành viên:
-___
 * Lê Hoàng San
 * Trần Đình Quang Minh
 * Ngô Thị Tâm
 
 # Giới thiệu:
-___
 * Ứng dụng quản lý thư viện giúp quản lý thông tin sách, người dùng, mượn trả sách, thống kê, báo cáo theo thời gian thực.
 * Ứng dụng được viết chủ yếu bằng Java, sử dụng framework Spring Boot, Hibernate, MySQL, HTML, CSS, (JavaScript), Bootstrap.
 * Ứng dụng được phát triển dựa trên mô hình MVC (Model-View-Controller).
@@ -27,7 +24,6 @@ ___
 (chèn ảnh giao diện ở đây)
 
 # Chi tiết tính năng
-___
 ### Quản lý sách:
   * Thêm sách mới
   * Xóa sách
@@ -63,15 +59,12 @@ ___
   * **Google Cloud Storage API**: Lưu trữ dữ liệu ảnh trên Google Cloud Storage và lưu đường dẫn vào database
 
 # UML Diagram
-___
 (chèn ảnh UML)
 
 # Cách sử dụng
-___
 (chèn link youtube)
 
 # Cài đặt
-___
 ### Yêu cầu:
   * Java 8
   * Maven

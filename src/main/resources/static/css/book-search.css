@@ -1,6 +1,6 @@
 .container-search {
     display: grid;
-    gap: 0; /* Optional: Adds space between rows */
+    gap: 0;
     padding: 10px;
     margin: 10px 100px 10px 150px;
 }
@@ -62,21 +62,10 @@ body {
 }
 .book-container {
     display: grid;
-    grid-template-columns: auto auto auto auto;
-    gap: 10px;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
     justify-content: center;
     margin: 20px;
-}
-.book {
-    width: 150px;
-    height: 200px;
-    border: 1px solid #ccc;
-    border-radius: 10px;
-    background-color: #f9f9f9;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 .pagination {
     margin: 10px;
@@ -92,4 +81,9 @@ body {
 .pagination a.disabled {
     background-color: #ccc;
     pointer-events: none;
+}
+.book:host{
+    transform: scale(1.05);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
 }
