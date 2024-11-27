@@ -24,8 +24,24 @@
             color: #fff;
             padding: 10px 0;
             text-align: center;
+            position: relative;
         }
 
+        .back-button {
+            position: absolute;
+            left: 10%;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .back-button:hover {
+            color: #5e5b5b;
+        }
         .container {
             width: 80%;
             margin: 20px auto;
@@ -151,20 +167,25 @@
                 method: form.method,
                 body: formData
             })
-            .then(response => response.text())
-            .then(data => {
-                alert('Book added to database successfully!');
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('Failed to add book to database.');
-            });
+                .then(response => response.text())
+                .then(data => {
+                    alert('Book added to database successfully!');
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Failed to add book to database.');
+                });
+        }
+
+        function goBack() {
+            window.history.back();
         }
     </script>
 </head>
 <body>
 <header>
     <h1>Search Books from Google Books API</h1>
+    <button class="back-button" onclick="goBack()">&#8592;</button>
 </header>
 
 <div class="container">
@@ -181,28 +202,28 @@
         <h2>Results for: <span th:text="${query}"></span></h2>
         <div class="books">
             <th:block th:each="book : ${books}">
-                    <div class="book-item">
-                        <img th:src="@{${book.imageUrl}}" alt="Book Thumbnail" class="book-thumbnail">
-                        <div class="book-details">
-                            <h3 th:text="${book.title}"></h3>
-                            <p><strong>Author:</strong> <span th:text="${book.author}"></span></p>
-                            <p><strong>Publisher:</strong> <span th:text="${book.publisher}"></span></p>
-                            <p><strong>Genre:</strong> <span th:text="${book.genre}"></span></p>
-                            <p><strong>Rating:</strong> <span th:text="${book.rating}"></span></p>
-                            <p><strong>Publication Year:</strong> <span th:text="${book.publicationYear}"></span></p>
-                            <form method="post" action="/books/add/db" onsubmit="submitForm(event, this)">
-                                <input type="hidden" name="title" th:value="${book.title}">
-                                <input type="hidden" name="author" th:value="${book.author}">
-                                <input type="hidden" name="publisher" th:value="${book.publisher}">
-                                <input type="hidden" name="genre" th:value="${book.genre}">
-                                <input type="hidden" name="rating" th:value="${book.rating}">
-                                <input type="hidden" name="publicationYear" th:value="${book.publicationYear}">
-                                <input type="hidden" name="imageUrl" th:value="${book.imageUrl}">
-                                <input type="hidden" name="description" th:value="${book.description}">
-                                <button type="submit" class="btn-details">Add to Database</button>
-                            </form>
-                        </div>
+                <div class="book-item">
+                    <img th:src="@{${book.imageUrl}}" alt="Book Thumbnail" class="book-thumbnail">
+                    <div class="book-details">
+                        <h3 th:text="${book.title}"></h3>
+                        <p><strong>Author:</strong> <span th:text="${book.author}"></span></p>
+                        <p><strong>Publisher:</strong> <span th:text="${book.publisher}"></span></p>
+                        <p><strong>Genre:</strong> <span th:text="${book.genre}"></span></p>
+                        <p><strong>Rating:</strong> <span th:text="${book.rating}"></span></p>
+                        <p><strong>Publication Year:</strong> <span th:text="${book.publicationYear}"></span></p>
+                        <form method="post" action="/books/add/db" onsubmit="submitForm(event, this)">
+                            <input type="hidden" name="title" th:value="${book.title}">
+                            <input type="hidden" name="author" th:value="${book.author}">
+                            <input type="hidden" name="publisher" th:value="${book.publisher}">
+                            <input type="hidden" name="genre" th:value="${book.genre}">
+                            <input type="hidden" name="rating" th:value="${book.rating}">
+                            <input type="hidden" name="publicationYear" th:value="${book.publicationYear}">
+                            <input type="hidden" name="imageUrl" th:value="${book.imageUrl}">
+                            <input type="hidden" name="description" th:value="${book.description}">
+                            <button type="submit" class="btn-details">Add to Database</button>
+                        </form>
                     </div>
+                </div>
             </th:block>
         </div>
     </div>
