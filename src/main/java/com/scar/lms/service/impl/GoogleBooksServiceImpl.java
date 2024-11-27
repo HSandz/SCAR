@@ -9,6 +9,7 @@ import com.scar.lms.entity.Book;
 import com.scar.lms.service.GoogleBooksService;
 
 import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
@@ -109,14 +110,13 @@ public class GoogleBooksServiceImpl implements GoogleBooksService {
 
                 // Genre (Categories)
                 JsonNode categoriesNode = item.path("volumeInfo").path("categories");
-                if (categoriesNode.isArray() && categoriesNode.size() > 0) {
+                if (categoriesNode.isArray() && !categoriesNode.isEmpty()) {
                     book.setGenre(categoriesNode.get(0).asText());
                 }
 
                 books.add(book);
             }
 
-            // Return CompletableFuture
             return CompletableFuture.completedFuture(books);
         } catch (JsonProcessingException e) {
             log.error("Error parsing JSON response from Google Books API", e);
