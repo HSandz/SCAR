@@ -67,7 +67,6 @@ public class Book {
         if (o == null || getClass() != o.getClass()) return false;
         Book book = (Book) o;
         return id == book.id &&
-                isbn.equals(book.isbn) &&
                 title.equals(book.title);
     }
 
