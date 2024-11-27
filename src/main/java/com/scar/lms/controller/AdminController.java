@@ -1,16 +1,16 @@
 package com.scar.lms.controller;
 
+import com.scar.lms.entity.Role;
 import com.scar.lms.entity.User;
 import com.scar.lms.model.NotificationDTO;
 import com.scar.lms.service.AuthenticationService;
 import com.scar.lms.service.BookService;
 import com.scar.lms.service.BorrowService;
 import com.scar.lms.service.UserService;
-
 import jakarta.validation.Valid;
-
 import lombok.extern.slf4j.Slf4j;
-
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
@@ -68,7 +68,7 @@ public class AdminController {
                 });
     }
 
-    @GetMapping("books")
+    @GetMapping("/books")
     public CompletableFuture<String> listAllBooks(Model model) {
         return bookService.findAllBooks()
                 .thenApply(books -> {
@@ -87,7 +87,7 @@ public class AdminController {
                 });
     }
 
-    @GetMapping("user/search")
+    @GetMapping("/user/search")
     public CompletableFuture<String> searchUsers(@RequestParam String keyword, Model model) {
         return userService.searchUsers(keyword)
                 .thenApply(users -> {
@@ -105,34 +105,50 @@ public class AdminController {
                 });
     }
 
-
     @PostMapping("/user/update")
-    public CompletableFuture<String> updateUser(@Valid @ModelAttribute("user") User user, BindingResult result, Model model) {
+    public CompletableFuture<ResponseEntity<String>> updateUser(
+            @Valid @ModelAttribute("user") User user,
+            BindingResult result) {
+        // Handle validation errors
         if (result.hasErrors()) {
-            model.addAttribute("user", user);
-            return CompletableFuture.completedFuture("user-edit");
+            return CompletableFuture.completedFuture(
+                    ResponseEntity.badRequest().body("Validation failed: " + result.getFieldErrors())
+            );
         }
 
+        // Fetch and update the user asynchronously
         return userService.findUserById(user.getId())
                 .thenApply(existingUser -> {
                     if (existingUser != null) {
+                        // Update user fields
                         existingUser.setDisplayName(user.getDisplayName());
                         existingUser.setEmail(user.getEmail());
-                        userService.updateUser(existingUser);
-                        return "redirect:/admin/users";
+
+                        // Convert role string to Role enum
+                        try {
+                            existingUser.setRole(user.getRole());
+                        } catch (IllegalArgumentException e) {
+                            return ResponseEntity.badRequest().body("Invalid role: " + user.getRole());
+                        }
+
+                        userService.updateUser(existingUser); // Save the updated user
+
+                        // Return success response
+                        return ResponseEntity.ok("User updated successfully");
                     } else {
-                        model.addAttribute("error", "User not found.");
-                        return "error/404";
+                        // User not found
+                        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
                     }
                 })
                 .exceptionally(e -> {
+                    // Handle unexpected errors
                     log.error("Failed to update user.", e);
-                    model.addAttribute("error", "Failed to update user.");
-                    return "error/404";
+                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                            .body("Failed to update user due to an error");
                 });
     }
 
-    @PostMapping("/user/{userId}/delete")
+    @PostMapping("/user/delete/{userId}")
     public String deleteUser(@PathVariable int userId, RedirectAttributes redirectAttributes) {
         try {
             userService.deleteUser(userId);
@@ -152,7 +168,7 @@ public class AdminController {
         return "redirect:/admin/users";
     }
 
-    @PostMapping("/user/{userId}/grantAuthority")
+    @PostMapping("/user/grantAuthority/{userId}")
     @PreAuthorize("hasRole('ADMIN')")
     public CompletableFuture<String> grantAuthority(@PathVariable int userId, RedirectAttributes redirectAttributes) {
         return userService.findUserById(userId)
