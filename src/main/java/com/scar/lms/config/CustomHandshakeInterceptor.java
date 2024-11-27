@@ -4,6 +4,7 @@ import com.scar.lms.exception.InvalidDataException;
 import com.scar.lms.service.AuthenticationService;
 import com.scar.lms.service.UserService;
 
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
