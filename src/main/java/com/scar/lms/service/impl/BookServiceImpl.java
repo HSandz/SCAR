@@ -159,4 +159,9 @@ public class BookServiceImpl implements BookService {
     public CompletableFuture<Long> countAllBooks() {
         return CompletableFuture.supplyAsync(bookRepository::count);
     }
+
+    @Override
+    public CompletableFuture<List<Book>> findBooksByGenre(String genre) {
+        return CompletableFuture.supplyAsync(() -> bookRepository.findByGenre(genre));
+    }
 }

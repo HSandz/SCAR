@@ -34,4 +34,6 @@ public interface BookService {
     CompletableFuture<List<Book>> findTopBorrowedBooks();
 
     CompletableFuture<Long> countAllBooks();
+
+    CompletableFuture<List<Book>> findBooksByGenre(String genre);
 }
