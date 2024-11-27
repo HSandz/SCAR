@@ -58,7 +58,7 @@ public class AdminController {
                         return "error/404";
                     } else {
                         model.addAttribute("users", users);
-                        return "user-list";
+                        return "total-user";
                     }
                 })
                 .exceptionally(e -> {

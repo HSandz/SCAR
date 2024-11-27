@@ -29,20 +29,42 @@
                 <th>Book Title</th>
                 <th>Genre</th>
                 <th>Author</th>
-                <th>Remove</th>
+                <th style="text-align: center">Edit</th>
+                <th style="text-align: center">Remove</th>
             </tr>
             </thead>
             <tbody>
             <tr th:each="borrow : ${borrowHistory}">
                 <td th:text="${borrow.id}"></td>
-                <td th:text="${borrow.book.title}"></td>
+                <td th:text="${borrow.book != null ? borrow.book.title : 'Unknown'}"></td>
                 <td th:text="${borrow.genre}"></td>
                 <td th:text="${borrow.author}"></td>
-                <td th:style="${borrow.returnDate == null ? 'color: red;' : 'color: green;'}"
-                    th:text="${borrow.returnDate == null ? 'Not Returned' : 'Returned'}"></td>
+                <td><i class='bx bxs-edit'></i></td>
+                <td><i class='bx bxs-trash'></i></td>
             </tr>
             </tbody>
         </table>
+    </div>
+    <div class="modal-overlay" id="addBookModal">
+        <div class="modal-box">
+            <h3>Add New Book</h3>
+            <form id="addBookForm">
+                <label for="bookId">ID:</label>
+                <input type="text" id="bookId" name="bookId" required />
+
+                <label for="bookTitle">Title:</label>
+                <input type="text" id="bookTitle" name="bookTitle" required />
+
+                <label for="bookGenres">Genres:</label>
+                <input type="text" id="bookGenres" name="bookGenres" required />
+
+                <label for="bookImage">Image:</label>
+                <input type="file" id="bookImage" name="bookImage" accept="image/*" />
+
+                <button type="submit">Add to List</button>
+                <button type="button" id="closeModal">Cancel</button>
+            </form>
+        </div>
     </div>
 </div>
 </body>

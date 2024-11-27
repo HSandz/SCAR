@@ -161,31 +161,29 @@ h1 {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     text-align: center;
 }
-.icon-container {
-    cursor: pointer;
-    transition: color 0.3s ease;
-}
 
 .modal-box form {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
+    display: block;
 }
 
 .modal-box label {
-    text-align: left;
-    font-size: 14px;
-    margin-bottom: 5px;
+    display: inline-block;
+    width: auto;
+    margin-right: 10px;
 }
 
 .modal-box input {
+    display: inline-block;
+    width: auto;
+    margin-bottom: 10px;
     padding: 10px;
     border: 1px solid #ccc;
     border-radius: 4px;
 }
 
 .modal-box button {
-    padding: 10px;
+    padding: 10px 20px;
+    margin: 5px;
     border: none;
     border-radius: 4px;
     cursor: pointer;
