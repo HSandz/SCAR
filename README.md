@@ -61,8 +61,14 @@
 # UML Diagram
 (chèn ảnh UML)
 
-# Cách sử dụng
-(chèn link youtube)
+# Demo
+![1.png](demo-image/1.png)
+![2.png](demo-image/2.png)
+![4.png](demo-image/4.png)
+![5.png](demo-image/5.png)
+![7.png](demo-image/7.png)
+![8.png](demo-image/8.png)
+![9.png](demo-image/9.png)
 
 # Cài đặt
 ### Yêu cầu:
