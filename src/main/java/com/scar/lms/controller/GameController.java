@@ -45,6 +45,10 @@ public class GameController {
     public String startGame(@RequestParam(defaultValue = "easy") String mode,
                             Model model, Authentication authentication) {
 
+        // Always add default values for `isCorrect` and `gameOver`
+        model.addAttribute("isCorrect", false);
+        model.addAttribute("gameOver", false);
+
         if (authentication == null) {
             model.addAttribute("error", "Please login to play the game.");
             return "login";
@@ -74,7 +78,7 @@ public class GameController {
             remainingGuesses = maxGuesses;
 
             String title = currentBook.getTitle();
-            if (title == null || title.isEmpty()) {
+            if (title.isEmpty()) {
                 model.addAttribute("error", "The selected book has an invalid title.");
                 return "game";
             }
@@ -104,6 +108,11 @@ public class GameController {
     public String handleGuess(@RequestParam("guess") String guess,
                               Authentication authentication,
                               Model model) {
+
+        // Always add default values for `isCorrect` and `gameOver`
+        model.addAttribute("isCorrect", false);
+        model.addAttribute("gameOver", false);
+
         if (authentication == null) {
             model.addAttribute("error", "Please login to play the game.");
             return "login";
@@ -115,13 +124,8 @@ public class GameController {
         }
 
         String correctTitle = currentBook.getTitle();
-        if (correctTitle == null) {
-            model.addAttribute("error", "The book title is invalid.");
-            return "game";
-        }
 
         try {
-
             if (guess.equalsIgnoreCase(correctTitle)) {
                 CompletableFuture<User> userFuture = authenticationService.getAuthenticatedUser(authentication);
                 User user = userFuture.join();
@@ -157,11 +161,10 @@ public class GameController {
                     model.addAttribute("message", "Good guess!");
                 } else {
                     remainingGuesses--;
-                    points = Math.max(0, points - 1); // Deduct 0.5 points for incorrect guess
+                    points = Math.max(0, points - 1);
                     model.addAttribute("error", "Incorrect guess.");
                 }
             } else {
-
                 remainingGuesses--;
                 points = Math.max(0, points - 1);
                 model.addAttribute("error", "Invalid guess. Please guess a single letter or the full title.");
@@ -183,12 +186,7 @@ public class GameController {
                 model.addAttribute("isCorrect", true);
                 model.addAttribute("correctTitle", correctTitle);
                 model.addAttribute("pointsEarned", points);
-
                 return "game-result";
-            } else {
-                model.addAttribute("isCorrect", false);
-                model.addAttribute("correctTitle", correctTitle);
-                model.addAttribute("pointsEarned", 0);
             }
 
         } catch (Exception e) {
@@ -198,6 +196,4 @@ public class GameController {
 
         return "game";
     }
-
-
 }

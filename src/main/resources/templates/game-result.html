@@ -5,6 +5,7 @@
     <link rel="stylesheet" th:href="@{/css/game.css}" />
 </head>
 <body>
+<div class="container-game">
 <h1>Game Result</h1>
 
 <div th:if="${isCorrect}">
@@ -14,15 +15,15 @@
 </div>
 
 <div th:if="${gameOver}">
-    <p style="color: red;">Game Over! The correct title was <strong th:text="${correctTitle == null ? correctTitle : 'Unknown'}"></strong>.</p>
+    <p style="color: red;">Game Over! The correct title was <strong th:text="${correctTitle != null ? correctTitle : 'Unknown'}"></strong>.</p>
     <p>You earned <strong th:text="${pointsEarned ?: 0}"></strong> points!</p>
 </div>
 
 <div th:if="${!isCorrect and !gameOver}">
     <p>An unexpected error occurred. Please try again.</p>
 </div>
-
-<a th:href="@{/game?mode=easy}">Play Again (Easy)</a>
-<a th:href="@{/game?mode=hard}">Play Again (Hard)</a>
+</div>
+<a href="/game?mode=easy">Play Again (Easy)</a>
+<a href="/game?mode=hard">Play Again (Hard)</a>
 </body>
 </html>
