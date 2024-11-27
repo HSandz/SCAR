@@ -80,20 +80,20 @@ document.addEventListener('DOMContentLoaded', () => {
         })
             .then(response => {
                 if (response.ok) {
-                    return response.text(); // Read the response body as plain text
+                    return response.text();
                 } else {
                     return response.text().then(errMessage => {
-                        throw new Error(errMessage); // Throw an error with the backend's error message
+                        throw new Error(errMessage);
                     });
                 }
             })
             .then(message => {
-                alert(message); // Display success message
-                location.reload(); // Reload the page to show updated data
+                alert(message);
+                location.reload();
             })
             .catch(error => {
-                console.error('Error:', error.message); // Log the error
-                alert(`An error occurred: ${error.message}`); // Display error message
+                console.error('Error:', error.message);
+                alert(`An error occurred: ${error.message}`);
             });
 
         document.getElementById('editUser').style.display = 'none';

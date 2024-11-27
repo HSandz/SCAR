@@ -1,6 +1,8 @@
 package com.scar.lms.service;
 
 import com.scar.lms.entity.Book;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -15,11 +17,12 @@ public interface BookService {
 
     CompletableFuture<List<Book>> searchBooks(String keyword);
 
-    CompletableFuture<List<Book>> findFiltered(String title,
-                                                           String authorName,
-                                                           String genreName,
-                                                           String publisherName,
-                                                           Integer year);
+    CompletableFuture<Page<Book>> findFiltered(String title,
+                                               String authorName,
+                                               String genreName,
+                                               String publisherName,
+                                               Integer year,
+                                               Pageable pageable);
 
     CompletableFuture<Book> findBookById(int id);
 
