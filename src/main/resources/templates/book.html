@@ -2,9 +2,116 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>User Profile</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Library Management System</title>
+
+    <link rel="stylesheet" href="/css/favourites.css">
+    <link rel="stylesheet" href="/css/book-list.css">
+    <link rel="stylesheet" href="/css/chat.css">
+    <link rel="stylesheet" href="/css/frame.css">
+    <link rel="stylesheet" href="/css/edit-user.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Jost:ital,wght@0,100..900;1,100..900&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900&display=swap"
+          rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
+          integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg=="
+          crossorigin="anonymous" referrerpolicy="no-referrer"/>
+    <link rel="stylesheet" href="https://unpkg.com/boxicons@latest/css/boxicons.min.css">
+    <link rel="stylesheet" href="/css/book.css">
 </head>
 <body>
+<div th:replace="~{frame :: body}"></div>
 
+<div class="container-main">
+    <section class="display-main" style="background-color: transparent">
+        <div class="book-container">
+            <div class="book-item">
+                <div class="tile">
+                    <img th:src="${book.imageUrl}" th:alt="${book.title}">
+                    <div class="details">
+                        <p class="info" th:text="${book.title}">Book Title</p>
+                    </div>
+                </div>
+                <div class="actions">
+                    <button class="borrow-btn">Borrow</button>
+                    <i class='bx bx-heart'></i>
+                </div>
+            </div>
+            <div class="book-info" style="padding-left: 5%">
+                <h><strong>Book Title: </strong><span th:text="${book.title}"></span></h><br>
+                <h><strong>ISBN: </strong><span th:text="${book.isbn}"></span></h><br>
+                <h><strong>Author: </strong><span th:text="${book.author}"></span></h><br>
+                <h><strong>Genre: </strong><span th:text="${book.genre}"></span></h><br>
+                <h><strong>Year: </strong><span th:text="${book.publicationYear}"></span></h><br>
+                <h><strong>Rating: </strong><span th:text="${book.rating}"></span></h><br><br><br>
+
+                <label class="form-label"><strong>Description</strong></label><br>
+                <div class="box-description">
+                    <span th:text="${book.description}"></span>
+                </div>
+
+            </div>
+        </div>
+    </section>
+    <section class="display-main" style="border-radius: 5px; background-color: transparent">
+        <div class="container-cmt">
+            <label for="rate"><strong>Rate:</strong></label>
+            <div id="rate" class="stars">
+                <span data-value="1">★</span>
+                <span data-value="2">★</span>
+                <span data-value="3">★</span>
+                <span data-value="4">★</span>
+                <span data-value="5">★</span>
+            </div>
+
+            <label for="comment"><strong>Comment:</strong></label>
+            <textarea id="comment" placeholder="Enter your comment here"></textarea>
+            <button id="sendBtn">Send</button>
+
+            <div id="display" class="comments"></div>
+        </div>
+
+        <script>
+            // Select elements
+            const stars = document.querySelectorAll('.stars span');
+            const commentBox = document.getElementById('comment');
+            const sendButton = document.getElementById('sendBtn');
+            const displayBox = document.getElementById('display');
+
+            // Rating functionality
+            stars.forEach(star => {
+                star.addEventListener('click', function () {
+                    // Remove 'selected' class from all stars
+                    stars.forEach(s => s.classList.remove('selected'));
+                    // Add 'selected' class to clicked star and all previous ones
+                    this.classList.add('selected');
+                    let prevStar = this.previousElementSibling;
+                    while (prevStar) {
+                        prevStar.classList.add('selected');
+                        prevStar = prevStar.previousElementSibling;
+                    }
+                });
+            });
+
+            // Comment submission functionality
+            sendButton.addEventListener('click', function () {
+                const comment = commentBox.value.trim();
+                if (comment) {
+                    // Append the comment to the display box
+                    const username = "username"; // Replace this with dynamic username if needed
+                    const commentElement = document.createElement('div');
+                    commentElement.textContent = `${username}: ${comment}`;
+                    displayBox.appendChild(commentElement);
+                    // Clear the comment box
+                    commentBox.value = '';
+                }
+            });
+        </script>
+    </section>
+
+</div>
 </body>
 </html>
