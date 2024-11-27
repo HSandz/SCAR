@@ -1,6 +1,5 @@
 package com.scar.lms.controller;
 
-import com.scar.lms.entity.Role;
 import com.scar.lms.entity.User;
 import com.scar.lms.model.NotificationDTO;
 import com.scar.lms.service.AuthenticationService;

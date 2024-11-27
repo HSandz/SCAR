@@ -2,6 +2,7 @@ package com.scar.lms.service.impl;
 
 import com.scar.lms.entity.Rating;
 import com.scar.lms.repository.RatingRepository;
+import com.scar.lms.service.BookService;
 import com.scar.lms.service.RatingService;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -15,9 +16,12 @@ import java.util.concurrent.CompletableFuture;
 public class RatingServiceImpl implements RatingService {
 
     private final RatingRepository ratingRepository;
+    private final BookService bookService;
 
-    public RatingServiceImpl(final RatingRepository ratingRepository) {
+    public RatingServiceImpl(final RatingRepository ratingRepository,
+                             final BookService bookService) {
         this.ratingRepository = ratingRepository;
+        this.bookService = bookService;
     }
 
     @Async
@@ -38,6 +42,7 @@ public class RatingServiceImpl implements RatingService {
     @Override
     public void saveRating(Rating rating) {
         ratingRepository.save(rating);
+        bookService.updateBookRating(rating.getBook().getId(), ratingRepository.getAverageRating(rating.getBook().getId()));
     }
 
     @Async
