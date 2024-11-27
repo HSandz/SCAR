@@ -66,8 +66,7 @@ public class User {
         if (o == null || getClass() != o.getClass()) return false;
         User user = (User) o;
         return id == user.id &&
-                username.equals(user.username) &&
-                email.equals(user.email);
+                username.equals(user.username);
     }
 
     @Override

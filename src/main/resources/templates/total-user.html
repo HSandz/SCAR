@@ -20,7 +20,7 @@
     <link rel="stylesheet" href="https://unpkg.com/boxicons@latest/css/boxicons.min.css">
 </head>
 <body>
-<div th:replace="frame-admin :: body"></div>
+<div th:replace="~{frame-admin :: body}"></div>
 <div class="tabular-wrapper">
     <h class="main-title" style="font-size: 60px;"><strong>TOTAL USER</strong></h>
     <br>
@@ -37,43 +37,40 @@
             </tr>
             </thead>
             <tbody>
-            <tr>
-                <td>1</td>
-                <td>2</td>
-                <td>3</td>
-                <td>4</td>
-                <td><i class='bx bxs-edit edit-icon'></i></td>
-                <td><i class='bx bxs-trash delete-icon'></i></td>
+            <tr th:each="user : ${users}">
+                <td th:text="${user.id}">a user id</td>
+                <td th:text="${user.username}">a user username</td>
+                <td th:text="${user.displayName}">display name</td>
+                <td th:text="${user.role}">role</td>
+                <td>
+                    <i class='bx bxs-edit edit-icon'
+                       th:data-id="${user.id}"
+                       th:data-username="${user.username}"
+                       th:data-displayname="${user.displayName}"
+                       th:data-role="${user.role}"></i>
+                </td>
+                <td><i class='bx bxs-trash delete-icon' th:data-id="${user.id}"></i></td>
             </tr>
-            <!--            <tr th:each="borrow : ${borrowHistory}">-->
-            <!--                <td th:text="${borrow.id}"></td>-->
-            <!--                <td th:text="${borrow.book != null ? borrow.book.title : 'Unknown'}"></td>-->
-            <!--                <td th:text="${borrow.genre}"></td>-->
-            <!--                <td th:text="${borrow.author}"></td>-->
-            <!--                <td><i class='bx bxs-edit edit-icon'></i></td>-->
-            <!--                <td><i class='bx bxs-trash delete-icon' style="transform: scale(0.7)"></i></td>-->
-            <!--            </tr>-->
             </tbody>
         </table>
     </div>
     <div class="modal-overlay-user" id="editUser">
         <div class="modal-user-box">
             <h3>Edit User</h3>
-            <form id="user-list">
-                <label for="userId">ID:</label>
-                <input type="text" id="userId" name="userId" required />
+            <form id="user-list" th:action="@{/admin/user/update}" method="post">
+                <input type="hidden" id="userId" name="id"/>
 
                 <label for="Username">Username:</label>
-                <input type="text" id="Username" name="Username" required />
+                <input type="text" id="Username" name="username"/>
 
                 <label for="Display-name">Display name:</label>
-                <input type="text" id="Display-name" name="Display-name" required />
+                <input type="text" id="Display-name" name="displayName"/>
 
                 <label for="Role">Role:</label>
-                <input type="text" id="Role" name="Role" required />
+                <input type="text" id="Role" name="role"/>
 
-                    <button type="submit">Change</button>
-                    <button type="button" id="closeModal">Cancel</button>
+                <button type="submit">Change</button>
+                <button type="button" id="closeModal">Cancel</button>
             </form>
         </div>
     </div>

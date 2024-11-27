@@ -1,38 +1,102 @@
-// Get the necessary elements
-const editIcons = document.querySelectorAll('.edit-icon');
-const editUserModal = document.getElementById('editUser');
-const closeModal = document.getElementById('closeModal');
+document.addEventListener('DOMContentLoaded', () => {
 
-// Show modal when clicking on edit icon
-editIcons.forEach((icon) => {
-    icon.addEventListener('click', () => {
-        console.log('Edit icon clicked');
-        editUserModal.style.display = 'flex';
+    const editIcons = document.querySelectorAll('.edit-icon');
+    const deleteIcons = document.querySelectorAll('.delete-icon');
+    const editUserModal = document.getElementById('editUser');
+    const closeModal = document.getElementById('closeModal');
+
+    editIcons.forEach((icon) => {
+        icon.addEventListener('click', () => {
+            const userId = icon.getAttribute('data-id');
+            const username = icon.getAttribute('data-username');
+            const displayName = icon.getAttribute('data-displayname');
+            const role = icon.getAttribute('data-role');
+
+            document.getElementById('userId').value = userId;
+            document.getElementById('Username').value = username;
+            document.getElementById('Display-name').value = displayName;
+            document.getElementById('Role').value = role;
+
+            editUserModal.style.display = 'flex';
+        });
     });
-});
 
-// Hide modal when clicking on Cancel button
-closeModal.addEventListener('click', () => {
-    console.log('Close button clicked');
-    editUserModal.style.display = 'none';
-});
+    if (closeModal) {
+        closeModal.addEventListener('click', () => {
+            editUserModal.style.display = 'none';
+        });
+    } else {
+        console.error('Cancel button (closeModal) not found.');
+    }
 
-// Prevent form from reloading the page when submitted
-document.getElementById('user-list').addEventListener('submit', (e) => {
-    e.preventDefault();
+    deleteIcons.forEach((icon) => {
+        icon.addEventListener('click', () => {
+            const userId = icon.getAttribute('data-id');
+            if (userId && confirm('Are you sure you want to delete this user?')) {
+                fetch(`/admin/user/delete/${userId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    }
+                })
+                .then(response => {
+                    if (response.ok) {
+                        alert('User deleted successfully!');
+                        location.reload();
+                    } else {
+                        alert('Failed to delete user.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Failed to delete user.');
+                });
+            } else {
+                console.error('User ID is null or undefined.');
+            }
+        });
+    });
 
-    // Get data from the form
-    const userId = document.getElementById('userId').value;
-    const username = document.getElementById('Username').value;
-    const displayName = document.getElementById('Display-name').value;
-    const role = document.getElementById('Role').value;
+    const userForm = document.getElementById('user-list');
+    userForm.addEventListener('submit', (e) => {
+        e.preventDefault();
 
-    console.log({ userId, username, displayName, role });
+        const userId = document.getElementById('userId').value;
+        const username = document.getElementById('Username').value;
+        const displayName = document.getElementById('Display-name').value;
+        const role = document.getElementById('Role').value;
 
-    // Handle user information update logic here
-    alert('User details updated successfully!');
+        fetch('/admin/user/update', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: new URLSearchParams({
+                id: userId,
+                username: username,
+                displayName: displayName,
+                role: role
+            })
+        })
+            .then(response => {
+                if (response.ok) {
+                    return response.text(); // Read the response body as plain text
+                } else {
+                    return response.text().then(errMessage => {
+                        throw new Error(errMessage); // Throw an error with the backend's error message
+                    });
+                }
+            })
+            .then(message => {
+                alert(message); // Display success message
+                location.reload(); // Reload the page to show updated data
+            })
+            .catch(error => {
+                console.error('Error:', error.message); // Log the error
+                alert(`An error occurred: ${error.message}`); // Display error message
+            });
 
-    // Reset form and hide modal
-    e.target.reset();
-    editUserModal.style.display = 'none';
+        document.getElementById('editUser').style.display = 'none';
+    });
+
 });
