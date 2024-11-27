@@ -1,5 +1,7 @@
 package com.scar.lms.config;
 
+import com.scar.lms.exception.InvalidDataException;
+import com.scar.lms.service.AuthenticationService;
 import com.scar.lms.service.UserService;
 
 import lombok.NonNull;
@@ -24,9 +26,12 @@ import java.util.Map;
 public class CustomHandshakeInterceptor implements HandshakeInterceptor {
 
     private final UserService userService;
+    private final AuthenticationService authenticationService;
 
-    public CustomHandshakeInterceptor(final UserService userService) {
+    public CustomHandshakeInterceptor(final UserService userService,
+                                      final AuthenticationService authenticationService) {
         this.userService = userService;
+        this.authenticationService = authenticationService;
     }
 
     @Override
@@ -48,16 +53,15 @@ public class CustomHandshakeInterceptor implements HandshakeInterceptor {
                         attributes.put("profilePictureUrl", profilePictureUrl);
                     }
                 } else if (authentication instanceof OAuth2AuthenticationToken token) {
-
+                    if (token.getPrincipal() == null || token.getPrincipal().getAttributes() == null) {
+                        throw new InvalidDataException("OAuth2 token principal or attributes are null");
+                    }
                     System.out.println("OAuth2 detected");
                     Map<String, Object> attribute = token.getPrincipal().getAttributes();
-                    String username = (String) attribute.get("login");
-                    String profilePictureUrl = (String) attribute.get("avatar_url");
-                    if (username != null) {
-                        attributes.put("username", username);
-                    }
-                    if (profilePictureUrl != null) {
-                        attributes.put("profilePictureUrl", profilePictureUrl);
+                    String username = authenticationService.extractUsernameFromAuthentication(authentication).join();
+                    attributes.put("username", username);
+                    if (attribute.get("avatar_url") != null) {
+                        attributes.put("profilePictureUrl", attribute.get("avatar_url"));
                     }
                 } else {
                     attributes.put("username", "Anonymous");
