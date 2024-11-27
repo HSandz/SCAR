@@ -27,13 +27,13 @@
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     opacity: 0;
     transition: all 0.3s ease;
-    overflow: hidden; /* Đảm bảo không bị tràn nội dung khi width = 0 */
+    overflow: hidden;
     z-index: 5;
 }
 
 .search-bar.active {
-    right: 40px; /* Đưa thanh tìm kiếm gần icon khi hoạt động */
-    width: 180px; /* Chiều rộng thanh tìm kiếm */
+    right: 40px;
+    width: 180px;
     opacity: 1;
 }
 

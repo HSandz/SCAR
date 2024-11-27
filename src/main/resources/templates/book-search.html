@@ -40,24 +40,18 @@
         </div>
     </section>
     <section>
-
         <div class="book-container">
             <th:block th:each="book : ${books}">
                 <div class="book-item">
-                    <!-- Book Image -->
                     <div class="tile" style="object-fit: cover">
                         <img th:src="${book.imageUrl}" th:alt="${book.title}" class="book-image">
-                        <!-- Book Details -->
                         <div class="details">
                             <p class="info" th:text="${book.title}">Book Title</p>
                         </div>
                     </div>
-
                 </div>
             </th:block>
         </div>
-
-
         <div class="pagination">
             <th:block th:each="page : ${#numbers.sequence(1, totalPages)}">
                 <a th:classappend="${page == currentPage ? 'disabled' : ''}"
