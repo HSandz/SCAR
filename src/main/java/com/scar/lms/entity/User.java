@@ -60,13 +60,16 @@ public class User {
             mappedBy = "user")
     private Set<Notify> notifies = new HashSet<>();
 
+    @OneToMany(fetch = FetchType.EAGER,
+            mappedBy = "user")
+    private Set<Rating> ratings = new HashSet<>();
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         User user = (User) o;
-        return id == user.id &&
-                username.equals(user.username);
+        return id == user.id;
     }
 
     @Override

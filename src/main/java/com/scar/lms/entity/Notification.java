@@ -38,9 +38,7 @@ public class Notification {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Notification notification = (Notification) o;
-        return id == notification.id &&
-                content.equals(notification.content) &&
-                sendTime.equals(notification.sendTime);
+        return id == notification.id;
     }
 
     @Override
