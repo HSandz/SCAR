@@ -72,4 +72,13 @@ document.addEventListener("DOMContentLoaded", function () {
                 });
         });
     });
+
+    const bookImages = document.querySelectorAll(".book-item img");
+
+    bookImages.forEach(img => {
+        img.addEventListener("click", function () {
+            const bookId = this.getAttribute("data-book-id");
+            window.location.href = `/books/${bookId}`;
+        });
+    });
 });

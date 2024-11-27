@@ -34,14 +34,17 @@
                 <div class="book-item" th:each="book : ${tops}" th:attr="data-book-id=${book.id}">
                     <div class="tile">
                         <span class="book-number"></span>
-                        <img th:src="${book.imageUrl}" th:alt="${book.title}">
+                        <a th:href="@{/books/{bookId}(bookId=${book.id})}">
+                            <img th:src="${book.imageUrl}" th:alt="${book.title}">
+                        </a>
                         <div class="details">
                             <p class="info" th:text="${book.title}">Book Title</p>
                         </div>
                     </div>
                     <div class="actions">
                         <button class="borrow-btn">Borrow</button>
-                        <i class='bx bx-heart'></i>
+                        <i class="bx bx-heart"></i>
+                        <a th:href="@{/books/{bookId}(bookId=${book.id})}" class="book-page-btn">View</a>
                     </div>
                 </div>
             </div>
@@ -63,14 +66,17 @@
             <div class="scroll-content">
                 <div class="book-item" th:each="book : ${books}" th:if="${book.genre == 'Comics'}" th:attr="data-book-id=${book.id}">
                     <div class="tile">
-                        <img th:src="${book.imageUrl}" th:alt="${book.title}" th:attr="data-book-id=${book.id}">
+                        <a th:href="@{/books/{bookId}(bookId=${book.id})}">
+                            <img th:src="${book.imageUrl}" th:alt="${book.title}">
+                        </a>
                         <div class="details">
                             <p class="info" th:text="${book.title}">Book Title</p>
                         </div>
                     </div>
                     <div class="actions">
                         <button class="borrow-btn">Borrow</button>
-                        <i class='bx bx-heart'></i>
+                        <i class="bx bx-heart"></i>
+                        <a th:href="@{/books/{bookId}(bookId=${book.id})}" class="book-page-btn">View</a>
                     </div>
                 </div>
             </div>
@@ -85,14 +91,17 @@
             <div class="scroll-content">
                 <div class="book-item" th:each="book : ${books}" th:if="${book.genre == 'Romantic'}" th:attr="data-book-id=${book.id}">
                     <div class="tile">
-                        <img th:src="${book.imageUrl}" th:alt="${book.title}" th:attr="data-book-id=${book.id}">
+                        <a th:href="@{/books/{bookId}(bookId=${book.id})}">
+                            <img th:src="${book.imageUrl}" th:alt="${book.title}">
+                        </a>
                         <div class="details">
                             <p class="info" th:text="${book.title}">Book Title</p>
                         </div>
                     </div>
                     <div class="actions">
                         <button class="borrow-btn">Borrow</button>
-                        <i class='bx bx-heart'></i>
+                        <i class="bx bx-heart"></i>
+                        <a th:href="@{/books/{bookId}(bookId=${book.id})}" class="book-page-btn">View</a>
                     </div>
                 </div>
             </div>
@@ -107,14 +116,17 @@
             <div class="scroll-content">
                 <div class="book-item" th:each="book : ${books}" th:if="${book.genre == 'Novels'}" th:attr="data-book-id=${book.id}">
                     <div class="tile">
-                        <img th:src="${book.imageUrl}" th:alt="${book.title}" th:attr="data-book-id=${book.id}">
+                        <a th:href="@{/books/{bookId}(bookId=${book.id})}">
+                            <img th:src="${book.imageUrl}" th:alt="${book.title}">
+                        </a>
                         <div class="details">
                             <p class="info" th:text="${book.title}">Book Title</p>
                         </div>
                     </div>
                     <div class="actions">
                         <button class="borrow-btn">Borrow</button>
-                        <i class='bx bx-heart'></i>
+                        <i class="bx bx-heart"></i>
+                        <a th:href="@{/books/{bookId}(bookId=${book.id})}" class="book-page-btn">View</a>
                     </div>
                 </div>
             </div>
@@ -129,14 +141,17 @@
             <div class="scroll-content">
                 <div class="book-item" th:each="book : ${books}" th:if="${book.genre == 'Action'}" th:attr="data-book-id=${book.id}">
                     <div class="tile">
-                        <img th:src="${book.imageUrl}" th:alt="${book.title}" th:attr="data-book-id=${book.id}">
+                        <a th:href="@{/books/{bookId}(bookId=${book.id})}">
+                            <img th:src="${book.imageUrl}" th:alt="${book.title}">
+                        </a>
                         <div class="details">
                             <p class="info" th:text="${book.title}">Book Title</p>
                         </div>
                     </div>
                     <div class="actions">
                         <button class="borrow-btn">Borrow</button>
-                        <i class='bx bx-heart'></i>
+                        <i class="bx bx-heart"></i>
+                        <a th:href="@{/books/{bookId}(bookId=${book.id})}" class="book-page-btn">View</a>
                     </div>
                 </div>
             </div>
@@ -151,14 +166,17 @@
             <div class="scroll-content">
                 <div class="book-item" th:each="book : ${books}" th:if="${book.genre == 'Literature'}" th:attr="data-book-id=${book.id}">
                     <div class="tile">
-                        <img th:src="${book.imageUrl}" th:alt="${book.title}" th:attr="data-book-id=${book.id}">
+                        <a th:href="@{/books/{bookId}(bookId=${book.id})}">
+                            <img th:src="${book.imageUrl}" th:alt="${book.title}">
+                        </a>
                         <div class="details">
                             <p class="info" th:text="${book.title}">Book Title</p>
                         </div>
                     </div>
                     <div class="actions">
                         <button class="borrow-btn">Borrow</button>
-                        <i class='bx bx-heart'></i>
+                        <i class="bx bx-heart"></i>
+                        <a th:href="@{/books/{bookId}(bookId=${book.id})}" class="book-page-btn">View</a>
                     </div>
                 </div>
             </div>
@@ -173,14 +191,17 @@
             <div class="scroll-content">
                 <div class="book-item" th:each="book : ${books}" th:if="${book.genre == 'Technology'}" th:attr="data-book-id=${book.id}">
                     <div class="tile">
-                        <img th:src="${book.imageUrl}" th:alt="${book.title}" th:attr="data-book-id=${book.id}">
+                        <a th:href="@{/books/{bookId}(bookId=${book.id})}">
+                            <img th:src="${book.imageUrl}" th:alt="${book.title}">
+                        </a>
                         <div class="details">
                             <p class="info" th:text="${book.title}">Book Title</p>
                         </div>
                     </div>
                     <div class="actions">
                         <button class="borrow-btn">Borrow</button>
-                        <i class='bx bx-heart'></i>
+                        <i class="bx bx-heart"></i>
+                        <a th:href="@{/books/{bookId}(bookId=${book.id})}" class="book-page-btn">View</a>
                     </div>
                 </div>
             </div>
