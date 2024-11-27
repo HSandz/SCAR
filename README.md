@@ -59,10 +59,16 @@
   * **Google Cloud Storage API**: Lưu trữ dữ liệu ảnh trên Google Cloud Storage và lưu đường dẫn vào database
 
 # UML Diagram
-(chèn ảnh UML)
+![lms-uml.jpeg](lms-uml.jpeg)
 
-# Cách sử dụng
-(chèn link youtube)
+# Demo
+![1.png](1.png)
+![2.png](2.png)
+![4.png](4.png)
+![5.png](5.png)
+![7.png](7.png)
+![8.png](8.png)
+![9.png](9.png)
 
 # Cài đặt
 ### Yêu cầu:
