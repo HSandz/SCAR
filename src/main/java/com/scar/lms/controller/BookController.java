@@ -89,7 +89,7 @@ public class BookController {
                         log.error("Failed to load data: {}", e.getMessage());
                         model.addAttribute("error", "Failed to load data");
                     }
-                    return "view-books";
+                    return "book-search";
                 });
     }
 
