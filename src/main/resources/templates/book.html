@@ -2,9 +2,58 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>User Profile</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Library Management System</title>
+
+    <link rel="stylesheet" href="/css/favourites.css">
+    <link rel="stylesheet" href="/css/book-list.css">
+    <link rel="stylesheet" href="/css/chat.css">
+    <link rel="stylesheet" href="/css/frame.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Jost:ital,wght@0,100..900;1,100..900&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900&display=swap"
+          rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
+          integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg=="
+          crossorigin="anonymous" referrerpolicy="no-referrer"/>
+    <link rel="stylesheet" href="https://unpkg.com/boxicons@latest/css/boxicons.min.css">
 </head>
-<body>
+<html>
+
+<header th:replace="~{frame :: header}"></header>
+<nav th:replace="~{frame :: nav}"></nav>
+
+<body class="container-main">
+<section class="display-main">
+    <div class="book-container">
+            <div class="book-item">
+                <div class="tile">
+                    <img th:src="${book.imageUrl}" th:alt="${book.title}">
+                    <div class="details">
+                        <p class="info" th:text="${book.title}">Book Title</p>
+                    </div>
+                </div>
+                <div class="actions">
+                    <button class="borrow-btn">Borrow</button>
+                    <i class='bx bx-heart'></i>
+                </div>
+            </div>
+            <div class="book-info">
+                <h3>Book Title</h3>
+                <p>Author: Author Name</p>
+                <p>Genre: Genre</p>
+                <p>Year: Year</p>
+                <p>Rating: Rating</p>
+                <p>Price: Price</p>
+                <label class="form-label">About me</label>
+                <textarea name="aboutMe" class="form-control" rows="5"></textarea>
+            </div>
+    </div>
+    </section>
+    <section class="display-main">
+</section>
 
 </body>
 </html>
