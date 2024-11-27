@@ -221,12 +221,12 @@ a:hover {
 }
 
 .display-main {
-    border: 2px solid #ddd; /* Adds a border with a light gray color */
-    border-radius: 8px; /* Optional: Rounds the corners */
-    padding: 20px; /* Optional: Adds padding inside the section */
-    margin-bottom: 20px; /* Optional: Adds space below the section */
-    background-color: #fff; /* Optional: Sets a background color */
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Optional: Adds a shadow for better visibility */
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+    background-color: #fff;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 .book-list {
