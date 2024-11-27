@@ -106,44 +106,6 @@ public class AdminController {
     }
 
 
-//    @GetMapping("/user/{userId}")
-//    public CompletableFuture<String> showUserPage(@PathVariable int userId, Model model) {
-//        return userService.findUserById(userId)
-//                .thenApply(user -> {
-//                    if (user == null) {
-//                        model.addAttribute("error", "User not found.");
-//                        return "error/404";
-//                    } else {
-//                        model.addAttribute("user", user);
-//                        return "user-view";
-//                    }
-//                })
-//                .exceptionally(e -> {
-//                    log.error("Failed to fetch user.", e);
-//                    model.addAttribute("error", "Failed to fetch user.");
-//                    return "error/404";
-//                });
-//    }
-
-//    @GetMapping("/user/{userId}/edit")
-//    public CompletableFuture<String> showUpdateUserForm(@PathVariable int userId, Model model) {
-//        return userService.findUserById(userId)
-//                .thenApply(user -> {
-//                    if (user == null) {
-//                        model.addAttribute("error", "User not found.");
-//                        return "error/404";
-//                    } else {
-//                        model.addAttribute("user", user);
-//                        return "user-edit";
-//                    }
-//                })
-//                .exceptionally(e -> {
-//                    log.error("Failed to fetch user.", e);
-//                    model.addAttribute("error", "Failed to fetch user.");
-//                    return "error/404";
-//                });
-//    }
-
     @PostMapping("/user/update")
     public CompletableFuture<String> updateUser(@Valid @ModelAttribute("user") User user, BindingResult result, Model model) {
         if (result.hasErrors()) {
@@ -181,16 +143,10 @@ public class AdminController {
         return "redirect:/admin/users";
     }
 
-//    @GetMapping("/user/new")
-//    public CompletableFuture<String> showCreateUserForm(Model model) {
-//        model.addAttribute("user", new User());
-//        return CompletableFuture.completedFuture("user-create");
-//    }
-
     @PostMapping("/user/new")
     public String createUser(@Valid User user, BindingResult result) {
         if (result.hasErrors()) {
-            return "user-list";
+            return "total-user";
         }
         userService.createUser(user);
         return "redirect:/admin/users";
