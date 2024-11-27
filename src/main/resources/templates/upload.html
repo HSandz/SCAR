@@ -70,13 +70,11 @@
 <div class="container_image">
     <h1>Upload Profile Image</h1>
 
-    <!-- Display current profile picture -->
     <div class="profile-picture">
         <img th:src="${user.profilePictureUrl}" alt="Profile Picture" th:if="${user.profilePictureUrl != null}">
     </div>
     <p th:if="${user.profilePictureUrl == null}">No profile picture uploaded yet.</p>
 
-    <!-- Upload form -->
     <form th:action="@{'/users/upload'}" method="POST" enctype="multipart/form-data">
         <input type="file" name="file" accept="image/*" required>
         <button type="submit">Upload</button>

@@ -45,7 +45,6 @@ public class GameController {
     public String startGame(@RequestParam(defaultValue = "easy") String mode,
                             Model model, Authentication authentication) {
 
-        // Always add default values for `isCorrect` and `gameOver`
         model.addAttribute("isCorrect", false);
         model.addAttribute("gameOver", false);
 
@@ -109,7 +108,6 @@ public class GameController {
                               Authentication authentication,
                               Model model) {
 
-        // Always add default values for `isCorrect` and `gameOver`
         model.addAttribute("isCorrect", false);
         model.addAttribute("gameOver", false);
 

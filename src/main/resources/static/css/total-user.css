@@ -14,12 +14,15 @@ th:nth-child(3), td:nth-child(3) {
 th:nth-child(4), td:nth-child(4) {
     width: 23%;
 }
+
 th:nth-child(5), td:nth-child(5) {
     width: 12%;
 }
+
 th:nth-child(6), td:nth-child(6) {
     width: 14%;
 }
+
 .modal-overlay-user {
     display: none;
     position: fixed;
@@ -47,6 +50,7 @@ th:nth-child(6), td:nth-child(6) {
     flex-direction: column;
     gap: 10px;
 }
+
 .modal-user-box label {
     text-align: left;
     font-size: 14px;
@@ -80,7 +84,6 @@ th:nth-child(6), td:nth-child(6) {
     opacity: 0.8;
 }
 
-/* Căn chỉnh icon */
 .edit-icon,
 .delete-icon {
     font-size: 20px;

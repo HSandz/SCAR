@@ -36,8 +36,6 @@ public class OpenAIServiceImpl implements OpenAIService {
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", "Bearer " + apiKey);
         headers.set("Content-Type", "application/json");
-
-        // Create JSON request body
         String requestBody = String.format(
                 "{\"model\": \"gpt-3.5-turbo\", \"messages\": [{\"role\": \"user\", \"content\": \"%s\"}], \"max_tokens\": 100}",
                 userMessage
@@ -54,15 +52,12 @@ public class OpenAIServiceImpl implements OpenAIService {
     }
 
     private CompletableFuture<String> getChatResponseCompletableFuture(RestTemplate restTemplate, HttpEntity<String> entity) throws JsonProcessingException {
-        // Send POST request to OpenAI API
         ResponseEntity<String> response = restTemplate.exchange(
                 API_URL,
                 HttpMethod.POST,
                 entity,
                 String.class
         );
-
-        // Parse response to extract chat completion
         ObjectMapper mapper = new ObjectMapper();
         JsonNode jsonResponse = mapper.readTree(response.getBody());
         String chatResponse = jsonResponse.get("choices").get(0).get("message").get("content").asText();

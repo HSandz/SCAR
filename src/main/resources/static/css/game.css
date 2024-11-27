@@ -1,4 +1,3 @@
-/* General Reset and Body Styles */
 body {
     font-family: 'Arial', sans-serif;
     background-color: #f7f7f7;
@@ -11,7 +10,6 @@ body {
     height: 100vh;
 }
 
-/* Centering Container */
 .container {
     background-color: #ffffff;
     border-radius: 15px;
@@ -22,7 +20,6 @@ body {
     max-width: 600px;
 }
 
-/* Hint Text */
 .hint {
     font-size: 24px;
     font-weight: bold;
@@ -30,7 +27,6 @@ body {
     margin: 15px 0;
 }
 
-/* Error and Success Messages */
 .error-message {
     color: red;
     font-weight: bold;
@@ -41,7 +37,6 @@ body {
     font-weight: bold;
 }
 
-/* Button Styling */
 button {
     background-color: #007bff;
     color: white;

@@ -59,8 +59,7 @@ public class GoogleOAuth2ServiceImpl implements GoogleOAuth2Service {
         newUser.setEmail(email);
         newUser.setRole(USER);
         newUser.setPoints(0);
-        // Default password to bypass non-null constraint
-        newUser.setPassword(bCryptPasswordEncoder.encode(username + displayName)); // a default password pattern
+        newUser.setPassword(bCryptPasswordEncoder.encode(username + displayName));
         userRepository.save(newUser);
     }
 }

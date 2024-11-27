@@ -109,39 +109,32 @@ public class AdminController {
     public CompletableFuture<ResponseEntity<String>> updateUser(
             @Valid @ModelAttribute("user") User user,
             BindingResult result) {
-        // Handle validation errors
         if (result.hasErrors()) {
             return CompletableFuture.completedFuture(
                     ResponseEntity.badRequest().body("Validation failed: " + result.getFieldErrors())
             );
         }
 
-        // Fetch and update the user asynchronously
         return userService.findUserById(user.getId())
                 .thenApply(existingUser -> {
                     if (existingUser != null) {
-                        // Update user fields
                         existingUser.setDisplayName(user.getDisplayName());
                         existingUser.setEmail(user.getEmail());
 
-                        // Convert role string to Role enum
                         try {
                             existingUser.setRole(user.getRole());
                         } catch (IllegalArgumentException e) {
                             return ResponseEntity.badRequest().body("Invalid role: " + user.getRole());
                         }
 
-                        userService.updateUser(existingUser); // Save the updated user
+                        userService.updateUser(existingUser);
 
-                        // Return success response
                         return ResponseEntity.ok("User updated successfully");
                     } else {
-                        // User not found
                         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
                     }
                 })
                 .exceptionally(e -> {
-                    // Handle unexpected errors
                     log.error("Failed to update user.", e);
                     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                             .body("Failed to update user due to an error");

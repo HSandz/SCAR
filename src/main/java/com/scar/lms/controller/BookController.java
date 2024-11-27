@@ -22,7 +22,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.stream.Collectors;
 
 @SuppressWarnings("SameReturnValue")
 @Slf4j
@@ -146,9 +145,9 @@ public class BookController {
 
     @PostMapping("/rate/{bookId}")
     public CompletableFuture<ResponseEntity<String>> rateBook(@PathVariable int bookId,
-                                                             @RequestParam double points,
-                                                             @RequestParam String comment,
-                                                             Authentication authentication) {
+                                                              @RequestParam double points,
+                                                              @RequestParam String comment,
+                                                              Authentication authentication) {
         CompletableFuture<User> userFuture = authenticationService.getAuthenticatedUser(authentication);
         CompletableFuture<Book> bookFuture = bookService.findBookById(bookId);
 

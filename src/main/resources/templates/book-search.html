@@ -34,16 +34,13 @@
     <section>
         <h1>Book Display</h1>
 
-        <!-- Hiển thị danh sách sách -->
         <div class="book-container">
-            <!-- Sử dụng Thymeleaf để phân trang -->
             <th:block th:each="book, iterStat : ${books}">
                 <div class="book" th:text="${book}"></div>
                 <th:block th:if="${iterStat.index % booksPerPage == booksPerPage - 1}"></th:block>
             </th:block>
         </div>
 
-        <!-- Phân trang -->
         <div class="pagination">
             <th:block th:each="page : ${#numbers.sequence(1, totalPages)}">
                 <a th:classappend="${page == 1 ? 'disabled' : ''}"

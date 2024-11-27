@@ -46,11 +46,7 @@ public class CloudStorageServiceImpl implements CloudStorageService {
 
         BlobId blobId = BlobId.of(bucketName, fileName);
         BlobInfo blobInfo = BlobInfo.newBuilder(blobId).build();
-
-        // Upload file to Google Cloud Storage
         storage.create(blobInfo, Files.readAllBytes(tempFilePath));
-
-        // Generate URL of the uploaded image
         return "https://storage.cloud.google.com/" + bucketName + "/" + fileName;
     }
 
