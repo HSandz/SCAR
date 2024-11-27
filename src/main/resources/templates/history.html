@@ -16,6 +16,21 @@
           integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg=="
           crossorigin="anonymous" referrerpolicy="no-referrer"/>
     <link rel="stylesheet" href="https://unpkg.com/boxicons@latest/css/boxicons.min.css">
+    <style>
+        .return-button {
+            padding: 10px 15px;
+            background-color: #5cb85c;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .return-button:hover {
+            background-color: #4cae4c;
+        }
+    </style>
 </head>
 <body>
 <div th:replace="frame :: body"></div>
@@ -30,6 +45,7 @@
                 <th>Borrowed Date</th>
                 <th>Returned Date</th>
                 <th>Status</th>
+                <th>Action</th>
             </tr>
             </thead>
             <tbody>
@@ -40,10 +56,32 @@
                 <td th:text="${borrow.returnDate}"></td>
                 <td th:style="${borrow.returnDate == null ? 'color: red;' : 'color: green;'}"
                     th:text="${borrow.returnDate == null ? 'Not Returned' : 'Returned'}"></td>
+                <td>
+                    <button class="return-button" th:if="${borrow.returnDate == null}"
+                            th:attr="onclick=|returnBook(${borrow.book.id})|">
+                        Return Book
+                    </button>
+                </td>
             </tr>
             </tbody>
         </table>
     </div>
 </div>
+<script>
+    function returnBook(bookId) {
+        fetch(`/users/return/${bookId}`, {
+            method: "POST"
+        })
+            .then(response => response.text())
+            .then(data => {
+                alert(data);
+                location.reload();
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                alert("An error occurred while returning the book");
+            });
+    }
+</script>
 </body>
 </html>
