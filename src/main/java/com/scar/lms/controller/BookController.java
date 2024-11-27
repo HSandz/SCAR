@@ -138,22 +138,29 @@ public class BookController {
     }
 
     @GetMapping("/{id}")
-    public CompletableFuture<String> findBookById(@PathVariable("id") int id, Model model) {
-        return bookService.findBookById(id)
-                .thenApply(book -> {
-                    if (book != null) {
-                        model.addAttribute("book", book);
-                        model.addAttribute("ratings", ratingService.getBookRatings(id).join());
-                    } else {
-                        return "redirect:/error?message=Book+not+found";
-                    }
+    public CompletableFuture<String> findBookById(@PathVariable("id") int id, Model model, Authentication authentication) {
+        CompletableFuture<User> userFuture = authenticationService.getAuthenticatedUser(authentication);
+        CompletableFuture<Book> bookFuture = bookService.findBookById(id);
+        CompletableFuture<List<Rating>> ratingsFuture = ratingService.getBookRatings(id);
+
+        return CompletableFuture.allOf(userFuture, bookFuture, ratingsFuture)
+                .thenApply(v -> {
+                    User user = userFuture.join();
+                    Book book = bookFuture.join();
+                    List<Rating> ratings = ratingsFuture.join();
+
+                    model.addAttribute("book", book);
+                    model.addAttribute("ratings", ratings);
+                    model.addAttribute("user", user);
                     return "book";
                 })
                 .exceptionally(e -> {
-                    log.error("Failed to load book", e);
-                    return "redirect:/error?message=Failed+to+load+book";
+                    log.error("Failed to load book details", e);
+                    model.addAttribute("error", "Unable to load book details at the moment.");
+                    return "error";
                 });
     }
+
 
     @PostMapping("/rate/{bookId}")
     public CompletableFuture<ResponseEntity<String>> rateBook(@PathVariable int bookId,
