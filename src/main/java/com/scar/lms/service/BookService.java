@@ -34,6 +34,8 @@ public interface BookService {
 
     void deleteBook(int id);
 
+    void updateBookRating(int bookId, double rating);
+
     CompletableFuture<List<Book>> findTopBorrowedBooks();
 
     CompletableFuture<Long> countAllBooks();

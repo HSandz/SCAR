@@ -148,6 +148,16 @@ public class BookServiceImpl implements BookService {
     }
 
     @Async
+    @Override
+    public void updateBookRating(int bookId, double rating) {
+        Book book = bookRepository
+                .findById(bookId)
+                .orElseThrow(() -> new ResourceNotFoundException("Book with id not found: " + bookId));
+        book.setRating(rating);
+        bookRepository.save(book);
+    }
+
+    @Async
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     @Override
     public CompletableFuture<List<Book>> findTopBorrowedBooks() {
