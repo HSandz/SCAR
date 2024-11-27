@@ -194,6 +194,10 @@ public class UserController {
                             model.addAttribute("borrowedBooks", borrowedBooks);
                             return "borrowed-books";
                         })
+                        .exceptionally(_ -> {
+                            model.addAttribute("error", "Failed to fetch borrowed books.");
+                            return "error/404";
+                        })
                 );
     }
 
