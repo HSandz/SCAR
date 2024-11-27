@@ -13,6 +13,14 @@ public interface AuthenticationService extends UserDetailsService {
 
     boolean validateRegistration(String username, String password, String displayName, String email);
 
+    boolean validateUsername(String username);
+
+    boolean validatePassword(String password);
+
+    boolean validateEmail(String email);
+
+    boolean validateDisplayName(String displayName);
+
     boolean updatePassword(String username, String oldPassword, String newPassword);
 
     String encryptPassword(String password);

@@ -77,21 +77,25 @@ public class AuthenticationServiceImpl implements AuthenticationService, UserDet
                 validateDisplayName(displayName);
     }
 
-    private boolean validateUsername(String username) {
+    @Override
+    public boolean validateUsername(String username) {
         String usernameRegex = "^[A-Za-z][A-Za-z0-9_@#]{" + (MIN_USERNAME_LENGTH - 1) + "," + (MAX_USERNAME_LENGTH - 1) + "}$";
         return username.matches(usernameRegex) && userRepository.findByUsername(username).isEmpty();
     }
 
-    private boolean validatePassword(String password) {
+    @Override
+    public boolean validatePassword(String password) {
         return password.length() >= MIN_PASSWORD_LENGTH && password.length() <= MAX_PASSWORD_LENGTH;
     }
 
-    private boolean validateEmail(String email) {
+    @Override
+    public boolean validateEmail(String email) {
         String emailRegex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,6}$";
         return email.matches(emailRegex) && userRepository.findByEmail(email).isEmpty();
     }
 
-    private boolean validateDisplayName(String displayName) {
+    @Override
+    public boolean validateDisplayName(String displayName) {
         return MAX_USERNAME_LENGTH >= displayName.length() && displayName.length() >= MIN_USERNAME_LENGTH;
     }
 
