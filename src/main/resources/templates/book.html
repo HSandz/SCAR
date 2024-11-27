@@ -28,7 +28,7 @@
 <div class="container-main">
     <section class="display-main" style="background-color: transparent">
         <div class="book-container">
-            <div class="book-item">
+            <div class="book-item" th:attr="data-book-id=${book.id}">
                 <div class="tile">
                     <img th:src="${book.imageUrl}" th:alt="${book.title}">
                     <div class="details">
@@ -89,8 +89,6 @@
                     <p th:text="${rating.time}">Date and Time</p>
                     <hr>
                 </div>
-
-
             </div>
         </div>
         <script>
@@ -102,7 +100,6 @@
 
                 let selectedRating = 0;
 
-                // Star click event
                 stars.forEach(star => {
                     star.addEventListener("click", () => {
                         selectedRating = star.dataset.value;
@@ -113,7 +110,6 @@
                     });
                 });
 
-                // Send button event
                 sendBtn.addEventListener("click", async () => {
                     const comment = commentInput.value.trim();
                     if (selectedRating === 0 || comment === "") {
@@ -137,7 +133,6 @@
                         if (response.ok) {
                             const newRating = await response.json();
 
-                            // Append the new rating to the display
                             const newRatingHtml = `
                         <div class="rating-item">
                             <p>
@@ -152,7 +147,6 @@
                     `;
                             displayDiv.innerHTML += newRatingHtml;
 
-                            // Reset inputs
                             commentInput.value = "";
                             stars.forEach(s => s.classList.remove("selected"));
                         } else {
@@ -163,8 +157,60 @@
                     }
                 });
             });
-        </script>
 
+            const borrowButtons = document.querySelectorAll(".borrow-btn");
+            const favouriteButtons = document.querySelectorAll(".bx-heart");
+
+            borrowButtons.forEach(button => {
+                button.addEventListener("click", function () {
+                    const bookId = this.closest(".book-item").getAttribute("data-book-id");
+
+                    fetch(`/books/borrow/${bookId}`, {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json"
+                        }
+                    })
+                        .then(response => response.text())
+                        .then(data => {
+                            if (data === "Book borrowed successfully") {
+                                alert("Book borrowed successfully");
+                            } else {
+                                alert("Failed to borrow book");
+                            }
+                        })
+                        .catch(error => {
+                            console.error("Error:", error);
+                            alert("An error occurred while borrowing the book");
+                        });
+                });
+            });
+
+            favouriteButtons.forEach(button => {
+                button.addEventListener("click", function () {
+                    const bookId = this.closest(".book-item").getAttribute("data-book-id");
+
+                    fetch(`/books/add-favourite/${bookId}`, {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json"
+                        }
+                    })
+                        .then(response => response.text())
+                        .then(data => {
+                            if (data === "Book added to favourites") {
+                                alert("Book added to favourites");
+                            } else {
+                                alert("Failed to add favourite");
+                            }
+                        })
+                        .catch(error => {
+                            console.error("Error:", error);
+                            alert("An error occurred while adding the book to favourites");
+                        });
+                });
+            });
+        </script>
     </section>
 </div>
 </body>
