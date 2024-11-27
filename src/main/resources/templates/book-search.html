@@ -24,32 +24,48 @@
 <div class="container-search">
     <section class="display-filter">
         <div class="search-filter-box">
-            <input type="text" class="search-filter-txt" placeholder="Title">
-            <input type="text" class="search-filter-txt" placeholder="Author">
-            <input type="text" class="search-filter-txt" placeholder="Genre">
-            <input type="text" class="search-filter-txt" placeholder="Year">
+            <label>
+                <input type="text" class="search-filter-txt" placeholder="Title">
+            </label>
+            <label>
+                <input type="text" class="search-filter-txt" placeholder="Author">
+            </label>
+            <label>
+                <input type="text" class="search-filter-txt" placeholder="Genre">
+            </label>
+            <label>
+                <input type="text" class="search-filter-txt" placeholder="Year">
+            </label>
             <i class='bx bx-search'></i>
         </div>
     </section>
     <section>
 
-        <!-- Hiển thị danh sách sách -->
         <div class="book-container">
-            <!-- Sử dụng Thymeleaf để phân trang -->
-            <th:block th:each="book, iterStat : ${books}">
-                <div class="book" th:text="${book}"></div>
-                <th:block th:if="${iterStat.index % booksPerPage == booksPerPage - 1}"></th:block>
+            <th:block th:each="book : ${books}">
+                <div class="book-item">
+                    <!-- Book Image -->
+                    <div class="tile" style="object-fit: cover">
+                        <img th:src="${book.imageUrl}" th:alt="${book.title}" class="book-image">
+                        <!-- Book Details -->
+                        <div class="details">
+                            <p class="info" th:text="${book.title}">Book Title</p>
+                        </div>
+                    </div>
+
+                </div>
             </th:block>
         </div>
 
-        <!-- Phân trang -->
+
         <div class="pagination">
             <th:block th:each="page : ${#numbers.sequence(1, totalPages)}">
-                <a th:classappend="${page == 1 ? 'disabled' : ''}"
-                   th:href="@{/books(page=${page})}"
+                <a th:classappend="${page == currentPage ? 'disabled' : ''}"
+                   th:href="@{/books/search(page=${page - 1})}"
                    th:text="'Page ' + ${page}"></a>
             </th:block>
         </div>
+
     </section>
 </div>
 </body>

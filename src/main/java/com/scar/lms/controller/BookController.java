@@ -73,13 +73,11 @@ public class BookController {
                                                  @RequestParam(required = false) String publisherName,
                                                  @RequestParam(required = false) Integer year,
                                                  @RequestParam(defaultValue = "0") int page,
-                                                 @RequestParam(defaultValue = "20") int size) {
+                                                 @RequestParam(defaultValue = "8") int size) {
 
         Pageable pageable = PageRequest.of(page, size);
         CompletableFuture<Page<Book>> booksFuture = bookService.findFiltered(
                 title, authorName, genreName, publisherName, year, pageable);
-
-
 
         CompletableFuture<List<Book>> topBorrowedBooksFuture = bookService.findTopBorrowedBooks();
         CompletableFuture<Long> totalBooksFuture = bookService.countAllBooks();
@@ -87,14 +85,13 @@ public class BookController {
         return CompletableFuture.allOf(booksFuture, topBorrowedBooksFuture, totalBooksFuture)
                 .thenApply(_ -> {
                     try {
-                        var bookPage = booksFuture.get();
-                        model.addAttribute("books", bookPage);
-                        model.addAttribute("currentPage", bookPage.getNumber());
+                        Page<Book> bookPage = booksFuture.get();
+                        model.addAttribute("books", bookPage.getContent());
+                        model.addAttribute("currentPage", bookPage.getNumber() + 1);
                         model.addAttribute("totalPages", bookPage.getTotalPages());
-                        model.addAttribute("bookPerPage", bookPage.getSize());
+                        model.addAttribute("booksPerPage", bookPage.getSize());
                         model.addAttribute("top", topBorrowedBooksFuture.get());
                         model.addAttribute("count", totalBooksFuture.get());
-
                     } catch (Exception e) {
                         log.error("Failed to load data: {}", e.getMessage());
                         model.addAttribute("error", "Failed to load data");
