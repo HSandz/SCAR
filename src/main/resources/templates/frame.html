@@ -21,7 +21,7 @@
 <body>
 <header class="headpage">
     <ul class="navmenu">
-        <li><a href="/books/search">HOME</a></li>
+        <li><a href="/books">HOME</a></li>
         <li><a href="#">GENRES&nbsp;<i class='bx bxs-down-arrow' style="transform: scale(0.7);"></i></a>
             <ul class="drop-down">
                 <li><a href="#comics">Comics</a></li>
@@ -72,7 +72,7 @@
 <nav>
     <ul class="nav__list">
         <li class="nav__item" data-tooltip="Home">
-            <a href="/books/search">
+            <a href="/books">
                 <i class='bx bx-home-alt'></i>
             </a>
         </li>
@@ -106,7 +106,7 @@
             </a>
         </li>
     </ul>
-    <div th:replace="chat :: body"></div>
+    <div th:replace="~{chat :: body}"></div>
     <script>
         // JavaScript code to handle toggle
         const chatButton = document.querySelector('.nav__item[data-tooltip="Chat"]');
@@ -118,6 +118,6 @@
     </script>
 
 </nav>
-<script src="/js/searchbook.js"></script>
+<script src="/js/frame.js"></script>
 </body>
 </html>
