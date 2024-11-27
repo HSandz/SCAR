@@ -109,26 +109,12 @@ public class BookController {
     public CompletableFuture<String> findAllBooks(Model model) {
         CompletableFuture<List<Book>> futureBooks = bookService.findAllBooks();
         CompletableFuture<List<Book>> futureTops = bookService.findTopBorrowedBooks();
-        CompletableFuture<List<Book>> futureComics = bookService.findBooksByGenre("Comics");
-        CompletableFuture<List<Book>> futureRomantic = bookService.findBooksByGenre("Romantic");
-        CompletableFuture<List<Book>> futureNovel = bookService.findBooksByGenre("Novel");
-        CompletableFuture<List<Book>> futureAction = bookService.findBooksByGenre("Action");
-        CompletableFuture<List<Book>> futureLiterature = bookService.findBooksByGenre("Literature");
-        CompletableFuture<List<Book>> futureTechnology = bookService.findBooksByGenre("Technology");
 
         return CompletableFuture.allOf(
-                futureBooks, futureTops, futureComics, futureRomantic,
-                futureNovel, futureAction, futureLiterature, futureTechnology
-        ).thenApplyAsync(_ -> {
+                futureBooks, futureTops).thenApplyAsync(_ -> {
             try {
                 model.addAttribute("books", futureBooks.get());
                 model.addAttribute("tops", futureTops.get());
-                model.addAttribute("comics", futureComics.get());
-                model.addAttribute("romantic", futureRomantic.get());
-                model.addAttribute("novels", futureNovel.get());
-                model.addAttribute("action", futureAction.get());
-                model.addAttribute("literature", futureLiterature.get());
-                model.addAttribute("technology", futureTechnology.get());
             } catch (Exception ex) {
                 log.error("Error occurred while fetching books: {}", ex.getMessage());
                 model.addAttribute("error", "Failed to fetch books. Please try again later.");
