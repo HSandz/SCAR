@@ -79,7 +79,7 @@ public class BookController {
                                                  @RequestParam(required = false) String publisherName,
                                                  @RequestParam(required = false) Integer year,
                                                  @RequestParam(defaultValue = "0") int page,
-                                                 @RequestParam(defaultValue = "20") int size) {
+                                                 @RequestParam(defaultValue = "8") int size) {
 
         Pageable pageable = PageRequest.of(page, size);
         CompletableFuture<Page<Book>> booksFuture = bookService.findFiltered(
@@ -91,14 +91,13 @@ public class BookController {
         return CompletableFuture.allOf(booksFuture, topBorrowedBooksFuture, totalBooksFuture)
                 .thenApply(_ -> {
                     try {
-                        var bookPage = booksFuture.get();
-                        model.addAttribute("books", bookPage);
-                        model.addAttribute("currentPage", bookPage.getNumber());
+                        Page<Book> bookPage = booksFuture.get();
+                        model.addAttribute("books", bookPage.getContent());
+                        model.addAttribute("currentPage", bookPage.getNumber() + 1);
                         model.addAttribute("totalPages", bookPage.getTotalPages());
-                        model.addAttribute("bookPerPage", bookPage.getSize());
+                        model.addAttribute("booksPerPage", bookPage.getSize());
                         model.addAttribute("top", topBorrowedBooksFuture.get());
                         model.addAttribute("count", totalBooksFuture.get());
-
                     } catch (Exception e) {
                         log.error("Failed to load data: {}", e.getMessage());
                         model.addAttribute("error", "Failed to load data");
@@ -111,19 +110,32 @@ public class BookController {
     public CompletableFuture<String> findAllBooks(Model model) {
         CompletableFuture<List<Book>> futureBooks = bookService.findAllBooks();
         CompletableFuture<List<Book>> futureTops = bookService.findTopBorrowedBooks();
+        CompletableFuture<List<Book>> futureComics = bookService.findBooksByGenre("Comics");
+        CompletableFuture<List<Book>> futureRomantic = bookService.findBooksByGenre("Romantic");
+        CompletableFuture<List<Book>> futureNovel = bookService.findBooksByGenre("Novel");
+        CompletableFuture<List<Book>> futureAction = bookService.findBooksByGenre("Action");
+        CompletableFuture<List<Book>> futureLiterature = bookService.findBooksByGenre("Literature");
+        CompletableFuture<List<Book>> futureTechnology = bookService.findBooksByGenre("Technology");
 
-        return CompletableFuture.allOf(futureBooks, futureTops)
-                .thenApply(_ -> {
-                    try {
-                        model.addAttribute("books", futureBooks.get());
-                        model.addAttribute("tops", futureTops.get());
-                    } catch (Exception ex) {
-                        log.error("Error occurred while fetching books: {}", ex.getMessage());
-                        model.addAttribute("error",
-                                "Failed to fetch books. Please try again later.");
-                    }
-                    return "book-list";
-                });
+        return CompletableFuture.allOf(
+                futureBooks, futureTops, futureComics, futureRomantic,
+                futureNovel, futureAction, futureLiterature, futureTechnology
+        ).thenApplyAsync(_ -> {
+            try {
+                model.addAttribute("books", futureBooks.get());
+                model.addAttribute("tops", futureTops.get());
+                model.addAttribute("comics", futureComics.get());
+                model.addAttribute("romantic", futureRomantic.get());
+                model.addAttribute("novels", futureNovel.get());
+                model.addAttribute("action", futureAction.get());
+                model.addAttribute("literature", futureLiterature.get());
+                model.addAttribute("technology", futureTechnology.get());
+            } catch (Exception ex) {
+                log.error("Error occurred while fetching books: {}", ex.getMessage());
+                model.addAttribute("error", "Failed to fetch books. Please try again later.");
+            }
+            return "book-list";
+        });
     }
 
     @GetMapping("/{id}")
