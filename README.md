@@ -53,14 +53,6 @@ ___
   * Tìm kiếm sách
   * Tạo danh sách yêu thích
   * Xem sách đã mượn
-### Thống kê:
-  * Thống kê sách theo thể loại
-  * Thống kê sách theo tác giả
-  * Thống kê sách theo nhà xuất bản
-  * Thống kê sách theo năm xuất bản
-  * Thống kê sách theo số lượng
-  * Thống kê sách theo số lượt mượn
-  * Thống kê người dùng theo số lượt mượn
 ### Các tính năng nổi bật khác:
   * **Game**: Game đoán tên sách theo gợi ý
   * **Google Books API**: Tìm kiếm sách với Google Books API
@@ -103,4 +95,3 @@ ___
     ```
   * Tìm đến file `LmsApplication.java` và chạy ứng dụng
   * Mở trình duyệt yêu thích và truy cập vào `http://localhost:8080`
-

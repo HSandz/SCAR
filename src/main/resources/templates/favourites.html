@@ -20,6 +20,7 @@
 </head>
 <body>
 <div th:replace="frame :: body"></div>
+<div th:replace="~{frame :: body}"></div>
         <div class="video-background">
             <video autoplay loop muted playsinline>
                 <source src="/media/video/fav.mp4" type="video/mp4">
@@ -32,16 +33,12 @@
         <div class="book-list">
             <button class="scroll-btn left" onclick="scrollLeft()">❮</button>
             <div class="scroll-content">
-                <div class="book-item" th:each="book : ${books}" th:if="${book.genre == 'Computers'}">
+                <div class="book-item" th:each="book : ${books}">
                     <div class="tile">
                         <img th:src="${book.imageUrl}" th:alt="${book.title}">
                         <div class="details">
                             <p class="info" th:text="${book.title}">Book Title</p>
                         </div>
-                    </div>
-                    <div class="actions">
-                        <button class="borrow-btn">Borrow</button>
-                        <i class='bx bx-heart'></i>
                     </div>
                 </div>
             </div>
