@@ -79,7 +79,11 @@
         }
 
         .books {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr); /* 4 columns */
             gap: 20px;
+            overflow-y: auto; /* Make it scrollable if needed */
+            max-height: 80vh; /* Limit the height of the book list */
         }
 
         .book-item {
@@ -93,7 +97,7 @@
 
         .book-thumbnail {
             width: 100%;
-            height: auto;
+            height: 400px;
             border-radius: 4px;
         }
 
@@ -173,12 +177,10 @@
     <div class="error" th:if="${error}">
         <p th:text="${error}"></p>
     </div>
-
     <div class="book-list" th:if="${books}">
         <h2>Results for: <span th:text="${query}"></span></h2>
         <div class="books">
-            <ul>
-                <li th:each="book : ${books}">
+            <th:block th:each="book : ${books}">
                     <div class="book-item">
                         <img th:src="@{${book.imageUrl}}" alt="Book Thumbnail" class="book-thumbnail">
                         <div class="book-details">
@@ -201,8 +203,7 @@
                             </form>
                         </div>
                     </div>
-                </li>
-            </ul>
+            </th:block>
         </div>
     </div>
 </div>
