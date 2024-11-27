@@ -58,7 +58,7 @@ public class AdminController {
                         return "error/404";
                     } else {
                         model.addAttribute("users", users);
-                        return "user-list";
+                        return "total-user";
                     }
                 })
                 .exceptionally(e -> {
@@ -190,7 +190,7 @@ public class AdminController {
     @PostMapping("/user/new")
     public String createUser(@Valid User user, BindingResult result) {
         if (result.hasErrors()) {
-            return "user-list";
+            return "total-user";
         }
         userService.createUser(user);
         return "redirect:/admin/users";
