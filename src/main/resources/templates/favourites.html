@@ -8,10 +8,9 @@
     <title>Library Management System</title>
     <link rel="stylesheet" href="/css/favourites.css">
     <link rel="stylesheet" href="/css/book-list.css">
-    <link rel="stylesheet" href="/css/.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Jost:ital,wght@0,100..900;1,100..900&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap"
+    <link href="https://fonts.googleapis.com/css2?family=Jost:ital,wght@0,100..900;1,100..900&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900&display=swap"
           rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
           integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg=="
@@ -20,33 +19,32 @@
 </head>
 <body>
 <div th:replace="~{frame :: body}"></div>
-        <div class="video-background">
-            <video autoplay loop muted playsinline>
-                <source src="/media/video/fav.mp4" type="video/mp4">
-            </video>
-        </div>
-        <div class="main-text box1">
-            <h1 style="color: lightpink">MY FAVORITE BOOK</h1>
-        </div>
-    <section class="display-main">
-        <div class="book-list">
-            <button class="scroll-btn left" onclick="scrollLeft()">❮</button>
-            <div class="scroll-content">
-                <div class="book-item" th:each="book : ${books}">
-                    <div class="tile">
-                        <img th:src="${book.imageUrl}" th:alt="${book.title}">
-                        <div class="details">
-                            <p class="info" th:text="${book.title}">Book Title</p>
-                        </div>
+<div class="video-background" style="opacity: 0.6">
+    <video autoplay loop muted playsinline>
+        <source src="/media/video/fav.mp4" type="video/mp4">
+    </video>
+</div>
+<div class="main-text">
+    <h1 style="color: #ff8497; font-size: 5rem; top: 0; padding-top: 0; margin-top: 0;"><br>MY FAVORITE BOOK<br></h1>
+</div>
+<section class="display-main">
+    <div class="book-list">
+        <div class="books">
+            <th:block th:each="book : ${books}">
+                <div class="book-item">
+                    <img th:src="${book.imageUrl}" alt="Book Thumbnail" class="book-thumbnail">
+                    <div class="book-details">
+                        <h3 th:text="${book.title}"></h3>
+                        <p><strong>Author:</strong> <span th:text="${book.author}"></span></p>
+                        <p><strong>Publisher:</strong> <span th:text="${book.publisher}"></span></p>
+                        <p><strong>Genre:</strong> <span th:text="${book.genre}"></span></p>
+                        <p><strong>Rating:</strong> <span th:text="${book.rating}"></span></p>
+                        <p><strong>Publication Year:</strong> <span th:text="${book.publicationYear}"></span></p>
                     </div>
                 </div>
-            </div>
-            <button class="scroll-btn right" onclick="scrollRight()">❯</button>
+            </th:block>
         </div>
-    </section>
-<div class="right-panel" id="rightScreen">
-    <h2>Chat with friends</h2>
-</div>
-<script src="/js/notifications.js"></script>
+    </div>
+</section>
 </body>
 </html>

@@ -142,7 +142,7 @@ body {
     .nav__item {
         list-style: none;
         position: relative;
-
+        z-index: 1000;
         &:first-child {
             margin-bottom: 2rem;
         }
