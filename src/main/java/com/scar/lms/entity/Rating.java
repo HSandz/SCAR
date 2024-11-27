@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 
 @Getter
 @Setter
@@ -27,7 +28,7 @@ public class Rating {
     private String comment;
 
     @Column(name = "TIME")
-    private LocalDateTime time;
+    private Date time;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "BOOK_ID")

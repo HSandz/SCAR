@@ -28,7 +28,7 @@
 <div class="container-main">
     <section class="display-main" style="background-color: transparent">
         <div class="book-container">
-            <div class="book-item">
+            <div class="book-item" th:attr="data-book-id=${book.id}">
                 <div class="tile">
                     <img th:src="${book.imageUrl}" th:alt="${book.title}">
                     <div class="details">
@@ -77,43 +77,138 @@
             <button id="sendBtn">Send</button>
 
             <div id="display" class="comments">
-                <div th:each="rating : ${ratings}">
-                    <p><strong th:text="${rating.user.username}">Username</strong>:
-                        <span th:text="${rating.comment}">Comment</span></p>
+                <div th:each="rating : ${ratings}" class="rating-item">
+                    <p>
+                        <strong th:text="${rating.user.username}">Username</strong> rated:
+                        <span>
+                            <span th:each="i : ${#numbers.sequence(1, rating.points)}">&#9733;</span>
+                        </span>
+                        <span th:text="'(' + rating.points + ' stars)'"></span>
+                    </p>
+                    <p th:text="${rating.comment}">Comment</p>
+                    <p th:text="${rating.time}">Date and Time</p>
+                    <hr>
                 </div>
             </div>
         </div>
-
         <script>
-            // Select elements
-            const stars = document.querySelectorAll('.stars span');
-            const commentBox = document.getElementById('comment');
-            const sendButton = document.getElementById('sendBtn');
-            const displayBox = document.getElementById('display');
+            document.addEventListener("DOMContentLoaded", function () {
+                const stars = document.querySelectorAll("#rate span");
+                const sendBtn = document.getElementById("sendBtn");
+                const commentInput = document.getElementById("comment");
+                const displayDiv = document.getElementById("display");
 
-            // Rating functionality
-            stars.forEach(star => {
-                star.addEventListener('click', function () {
-                    stars.forEach(s => s.classList.remove('selected'));
-                    this.classList.add('selected');
-                    let prevStar = this.previousElementSibling;
-                    while (prevStar) {
-                        prevStar.classList.add('selected');
-                        prevStar = prevStar.previousElementSibling;
+                let selectedRating = 0;
+
+                stars.forEach(star => {
+                    star.addEventListener("click", () => {
+                        selectedRating = star.dataset.value;
+                        stars.forEach(s => s.classList.remove("selected"));
+                        for (let i = 0; i < selectedRating; i++) {
+                            stars[i].classList.add("selected");
+                        }
+                    });
+                });
+
+                sendBtn.addEventListener("click", async () => {
+                    const comment = commentInput.value.trim();
+                    if (selectedRating === 0 || comment === "") {
+                        alert("Please select a rating and enter a comment!");
+                        return;
+                    }
+
+                    const bookId = window.location.pathname.split("/").pop();
+                    try {
+                        const response = await fetch(`/books/rate/${bookId}`, {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/x-www-form-urlencoded"
+                            },
+                            body: new URLSearchParams({
+                                points: selectedRating,
+                                comment: comment
+                            })
+                        });
+
+                        if (response.ok) {
+                            const newRating = await response.json();
+
+                            const newRatingHtml = `
+                        <div class="rating-item">
+                            <p>
+                                <strong>${newRating.username}</strong> rated:
+                                ${'&#9733;'.repeat(newRating.points)}
+                                <span>(${newRating.points} stars)</span>
+                            </p>
+                            <p>${newRating.comment}</p>
+                            <p><small>${new Date(newRating.time).toLocaleString()}</small></p>
+                            <hr>
+                        </div>
+                    `;
+                            displayDiv.innerHTML += newRatingHtml;
+
+                            commentInput.value = "";
+                            stars.forEach(s => s.classList.remove("selected"));
+                        } else {
+                            alert("Failed to submit rating. Please try again.");
+                        }
+                    } catch (error) {
+                        console.error("Error submitting rating:", error);
                     }
                 });
             });
 
-            // Comment submission functionality
-            sendButton.addEventListener('click', function () {
-                const comment = commentBox.value.trim();
-                if (comment) {
-                    const username = "Username";
-                    const commentElement = document.createElement('p');
-                    commentElement.innerHTML = `<strong>${username}</strong>: ${comment}`;
-                    displayBox.appendChild(commentElement);
-                    commentBox.value = '';
-                }
+            const borrowButtons = document.querySelectorAll(".borrow-btn");
+            const favouriteButtons = document.querySelectorAll(".bx-heart");
+
+            borrowButtons.forEach(button => {
+                button.addEventListener("click", function () {
+                    const bookId = this.closest(".book-item").getAttribute("data-book-id");
+
+                    fetch(`/books/borrow/${bookId}`, {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json"
+                        }
+                    })
+                        .then(response => response.text())
+                        .then(data => {
+                            if (data === "Book borrowed successfully") {
+                                alert("Book borrowed successfully");
+                            } else {
+                                alert("Failed to borrow book");
+                            }
+                        })
+                        .catch(error => {
+                            console.error("Error:", error);
+                            alert("An error occurred while borrowing the book");
+                        });
+                });
+            });
+
+            favouriteButtons.forEach(button => {
+                button.addEventListener("click", function () {
+                    const bookId = this.closest(".book-item").getAttribute("data-book-id");
+
+                    fetch(`/books/add-favourite/${bookId}`, {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json"
+                        }
+                    })
+                        .then(response => response.text())
+                        .then(data => {
+                            if (data === "Book added to favourites") {
+                                alert("Book added to favourites");
+                            } else {
+                                alert("Failed to add favourite");
+                            }
+                        })
+                        .catch(error => {
+                            console.error("Error:", error);
+                            alert("An error occurred while adding the book to favourites");
+                        });
+                });
             });
         </script>
     </section>

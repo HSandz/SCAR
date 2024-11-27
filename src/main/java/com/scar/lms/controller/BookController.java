@@ -4,6 +4,7 @@ import com.scar.lms.entity.Book;
 import com.scar.lms.entity.Borrow;
 import com.scar.lms.entity.Rating;
 import com.scar.lms.entity.User;
+import com.scar.lms.model.RatingDTO;
 import com.scar.lms.service.*;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
@@ -19,7 +20,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
@@ -138,6 +141,7 @@ public class BookController {
                     model.addAttribute("book", book);
                     model.addAttribute("ratings", ratings);
                     model.addAttribute("user", user);
+
                     return "book";
                 })
                 .exceptionally(e -> {
@@ -147,12 +151,11 @@ public class BookController {
                 });
     }
 
-
     @PostMapping("/rate/{bookId}")
-    public CompletableFuture<ResponseEntity<String>> rateBook(@PathVariable int bookId,
-                                                              @RequestParam double points,
-                                                              @RequestParam String comment,
-                                                              Authentication authentication) {
+    public CompletableFuture<ResponseEntity<RatingDTO>> rateBook(@PathVariable int bookId,
+                                                                 @RequestParam double points,
+                                                                 @RequestParam String comment,
+                                                                 Authentication authentication) {
         CompletableFuture<User> userFuture = authenticationService.getAuthenticatedUser(authentication);
         CompletableFuture<Book> bookFuture = bookService.findBookById(bookId);
 
@@ -164,16 +167,19 @@ public class BookController {
                     Rating rating = new Rating();
                     rating.setPoints(points);
                     rating.setComment(comment);
-                    rating.setTime(LocalDateTime.now());
+                    rating.setTime(Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant()));
                     rating.setUser(user);
                     rating.setBook(book);
 
                     ratingService.saveRating(rating);
-                    return ResponseEntity.ok("Book rated successfully");
+
+                    RatingDTO ratingDto = new RatingDTO(user.getUsername(), comment, points,
+                            Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant()));
+                    return ResponseEntity.ok(ratingDto);
                 })
                 .exceptionally(e -> {
                     log.error("Failed to rate book", e);
-                    return ResponseEntity.badRequest().body("Failed to rate book");
+                    return ResponseEntity.badRequest().body(null);
                 });
     }
 
