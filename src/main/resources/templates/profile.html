@@ -22,7 +22,7 @@
 <body>
 <header class="headpage">
     <ul class="navmenu">
-        <li><a href="/home">HOME</a></li>
+        <li><a href="/books">HOME</a></li>
         <li><a href="#">GENRES<i class='bx bxs-down-arrow' style="transform: scale(0.7);"></i></a>
             <ul class="drop-down">
                 <li><a href="#">Computers</a></li>
@@ -45,7 +45,7 @@
 <navbar>
     <ul class="nav__list">
         <li class="nav__item" data-tooltip="Home">
-            <a href="/home">
+            <a href="/books">
                 <i class='bx bx-home-alt'></i>
             </a>
         </li>
@@ -77,8 +77,8 @@
         <li class="nav__item" data-tooltip="Account">
             <a href="/users/profile">
                 <i class='bx bx-user-circle'></i>
-                <br></br>
-                <br></br>
+                <br>
+                <br>
                 <i class='bx bx-log-out'></i>
             </a>
         </li>
@@ -146,16 +146,15 @@
                 <div class="container_image">
                     <!-- Display current profile picture -->
                     <div class="profile-picture">
-                        <img th:src="${user.profilePictureUrl}" alt="Profile Picture"
-                             th:if="${user.profilePictureUrl != null}">
+                        <img th:src="${user.profilePictureUrl}" alt="Profile Picture" th:if="${user.profilePictureUrl != null}">
                     </div>
                     <p th:if="${user.profilePictureUrl == null}">No profile picture uploaded yet.</p>
-
-                    <!-- Upload form -->
-                    <form th:action="@{'/users/upload'}" method="POST" enctype="multipart/form-data">
-                        <input type="file" name="file" accept="image/*" required>
-                        <button type="submit">Upload</button>
-                    </form>
+                    <!-- Add button below the profile picture -->
+                    <div style="margin-top: 10px; text-align: center;">
+                        <form action="/users/profile/edit" method="get">
+                            <button type="submit" class="btn" style="margin-left: -5px;">Edit Profile</button>
+                        </form>
+                    </div>
                 </div>
             </section>
 
@@ -173,7 +172,7 @@
                     <p class="number" th:text="${borrowCount}">30</p>
                     <p class="label">Total borrowed books</p>
                 </div>
-                <button class="btn">Click</button>
+                <button class="btn" onclick="window.location.href='/users/borrow-history';">Go to Borrow History</button>
             </section>
 
             <section class="card" style="margin: auto">
@@ -181,7 +180,7 @@
                     <p class="number" th:text="${favouriteCount}">30</p>
                     <p class="label">Total favourite books</p>
                 </div>
-                <button class="btn">Click</button>
+                <button class="btn" onclick="window.location.href='/users/favourites';">Go to Favorites</button>
             </section>
         </div>
     </section>
