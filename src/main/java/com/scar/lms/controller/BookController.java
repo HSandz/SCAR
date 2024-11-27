@@ -131,7 +131,7 @@ public class BookController {
                     } else {
                         return "redirect:/error?message=Book+not+found";
                     }
-                    return "view-book";
+                    return "book";
                 })
                 .exceptionally(e -> {
                     log.error("Failed to load book", e);

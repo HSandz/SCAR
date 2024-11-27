@@ -266,7 +266,7 @@ a:hover {
     justify-content: flex-start;
     flex: 0 0 auto;
     /*margin-right: 20px; !* Khoảng cách giữa các item *!*/
-    min-width: 150px; /* Đặt kích thước tối đa phù hợp */
+    min-width: 150px;
     /*box-sizing: border-box;*/
     word-wrap: break-word;
     border: none;
