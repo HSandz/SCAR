@@ -2,6 +2,7 @@ package com.scar.lms.controller;
 
 import com.scar.lms.entity.Book;
 import com.scar.lms.entity.Borrow;
+import com.scar.lms.entity.Rating;
 import com.scar.lms.entity.User;
 import com.scar.lms.service.*;
 import jakarta.validation.Valid;
@@ -17,9 +18,11 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 @SuppressWarnings("SameReturnValue")
 @Slf4j
@@ -32,17 +35,20 @@ public class BookController {
     private final GoogleBooksService googleBooksService;
     private final AuthenticationService authenticationService;
     private final BorrowService borrowService;
+    private final RatingService ratingService;
 
     public BookController(final UserService userService,
                           final BookService bookService,
                           final GoogleBooksService googleBooksService,
                           final AuthenticationService authenticationService,
-                          final BorrowService borrowService) {
+                          final BorrowService borrowService,
+                          final RatingService ratingService) {
         this.userService = userService;
         this.bookService = bookService;
         this.googleBooksService = googleBooksService;
         this.authenticationService = authenticationService;
         this.borrowService = borrowService;
+        this.ratingService = ratingService;
     }
 
     @GetMapping("/api")
@@ -78,8 +84,6 @@ public class BookController {
         Pageable pageable = PageRequest.of(page, size);
         CompletableFuture<Page<Book>> booksFuture = bookService.findFiltered(
                 title, authorName, genreName, publisherName, year, pageable);
-
-
 
         CompletableFuture<List<Book>> topBorrowedBooksFuture = bookService.findTopBorrowedBooks();
         CompletableFuture<Long> totalBooksFuture = bookService.countAllBooks();
@@ -128,14 +132,44 @@ public class BookController {
                 .thenApply(book -> {
                     if (book != null) {
                         model.addAttribute("book", book);
+                        model.addAttribute("ratings", ratingService.getBookRatings(id).join());
                     } else {
                         return "redirect:/error?message=Book+not+found";
                     }
-                    return "view-book";
+                    return "book";
                 })
                 .exceptionally(e -> {
                     log.error("Failed to load book", e);
                     return "redirect:/error?message=Failed+to+load+book";
+                });
+    }
+
+    @PostMapping("/rate/{bookId}")
+    public CompletableFuture<ResponseEntity<String>> rateBook(@PathVariable int bookId,
+                                                             @RequestParam double points,
+                                                             @RequestParam String comment,
+                                                             Authentication authentication) {
+        CompletableFuture<User> userFuture = authenticationService.getAuthenticatedUser(authentication);
+        CompletableFuture<Book> bookFuture = bookService.findBookById(bookId);
+
+        return CompletableFuture.allOf(userFuture, bookFuture)
+                .thenApply(_ -> {
+                    User user = userFuture.join();
+                    Book book = bookFuture.join();
+
+                    Rating rating = new Rating();
+                    rating.setPoints(points);
+                    rating.setComment(comment);
+                    rating.setTime(LocalDateTime.now());
+                    rating.setUser(user);
+                    rating.setBook(book);
+
+                    ratingService.saveRating(rating);
+                    return ResponseEntity.ok("Book rated successfully");
+                })
+                .exceptionally(e -> {
+                    log.error("Failed to rate book", e);
+                    return ResponseEntity.badRequest().body("Failed to rate book");
                 });
     }
 
