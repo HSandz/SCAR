@@ -36,22 +36,25 @@
     </ul>
     <ul class="navmenu" style="display: flex; align-items: center; gap: 0; list-style: none; padding: 0; margin: 0;">
         <li style="display: flex; align-items: center; gap: 2px;">
-            <input
-                    type="text"
-                    id="searchBook"
-                    placeholder="Search books..."
-                    style="
-                padding: 5px 10px;
-                font-size: 14px;
-                border: 1px solid #ccc;
-                border-radius: 5px;
-                width: 200px;
-                height: 40px;
-            "
-            >
-            <a href="#" style="display: flex; align-items: center;">
-                <i class='bx bx-search' style="transform: scale(1.5);"></i>
-            </a>
+            <form action="/books/search" method="get" style="display: flex; align-items: center;">
+                <input
+                        type="text"
+                        id="searchBook"
+                        name="title"
+                        placeholder="Search books..."
+                        style="
+                    padding: 5px 10px;
+                    font-size: 14px;
+                    border: 1px solid #ccc;
+                    border-radius: 5px;
+                    width: 200px;
+                    height: 40px;
+                "
+                >
+                <button type="submit" style="background: none; border: none; padding: 0; margin: 0;">
+                    <i class='bx bx-search' style="transform: scale(1.5);"></i>
+                </button>
+            </form>
         </li>
         <li><a href="/users/profile"><i class='bx bx-user-circle' style="transform: scale(1.5);"></i></a></li>
     </ul>
