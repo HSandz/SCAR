@@ -4,6 +4,7 @@ import com.scar.lms.entity.Book;
 import com.scar.lms.entity.Borrow;
 import com.scar.lms.entity.Rating;
 import com.scar.lms.entity.User;
+import com.scar.lms.exception.OperationNotAllowedException;
 import com.scar.lms.model.RatingDTO;
 import com.scar.lms.service.*;
 import jakarta.validation.Valid;
@@ -234,13 +235,12 @@ public class BookController {
                 .thenApply(_ -> "redirect:/books");
     }
 
-    private void extractedBorrowBook(User user, Book book) {
+    private void extractedBorrowBook(User user, Book book) throws OperationNotAllowedException {
         Borrow borrow = new Borrow();
         borrow.setUser(user);
         borrow.setBook(book);
         borrow.setBorrowDate(LocalDate.now());
         borrowService.addBorrow(borrow);
-
         user.setPoints(user.getPoints() + 1);
         userService.updateUser(user);
     }

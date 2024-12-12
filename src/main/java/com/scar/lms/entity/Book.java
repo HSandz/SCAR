@@ -53,15 +53,17 @@ public class Book {
     @Column(name = "PUBLISHER")
     private String publisher;
 
-    @ManyToMany(fetch = FetchType.EAGER,
-            mappedBy = "favouriteBooks")
+    @ManyToMany(fetch = FetchType.EAGER, mappedBy = "favouriteBooks",
+            cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     private Set<User> favouriteUsers = new HashSet<>();
 
     @OneToMany(fetch = FetchType.EAGER,
+            cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH},
             mappedBy = "book")
     private Set<Borrow> borrows = new HashSet<>();
 
     @OneToMany(fetch = FetchType.EAGER,
+            cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH},
             mappedBy = "book")
     private Set<Rating> ratings = new HashSet<>();
 

@@ -143,7 +143,7 @@ public class UserController {
             userService.updateUser(currentUser);
             model.addAttribute("success", "Profile updated successfully.");
         }
-        return "redirect:/users/profile/edit";
+        return "edit-user";
     }
 
     @PostMapping("/updatePassword")

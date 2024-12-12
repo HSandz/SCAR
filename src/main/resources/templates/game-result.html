@@ -3,10 +3,20 @@
 <head>
     <title>Game Result</title>
     <link rel="stylesheet" th:href="@{/css/game.css}" />
+    <link rel="stylesheet" th:href="@{/css/home.css}" />
 </head>
 <body>
+
+<div class="video-background">
+    <video autoplay loop muted playsinline>
+        <source src="/media/video/game.mp4" type="video/mp4">
+    </video>
+</div>
+
+<button class="back-button" onclick="goBack()">&#8592;</button>
+
 <div class="container-game">
-<h1>Game Result</h1>
+    <h1>Game Result</h1>
 
 <div th:if="${isCorrect}">
     <p style="color: green;">Correct! The book title is <strong th:text="${correctTitle != null ? correctTitle : 'Unknown'}"></strong>.</p>
@@ -22,8 +32,17 @@
 <div th:if="${!isCorrect and !gameOver}">
     <p>An unexpected error occurred. Please try again.</p>
 </div>
+    <div style="display: flex; flex-direction: column">
+        <a href="/game?mode=easy">Play Again (Easy)</a>
+        <a href="/game?mode=hard">Play Again (Hard)</a>
+    </div>
+
 </div>
-<a href="/game?mode=easy">Play Again (Easy)</a>
-<a href="/game?mode=hard">Play Again (Hard)</a>
+
+<script>
+    function goBack() {
+        window.history.back();
+    }
+</script>
 </body>
 </html>

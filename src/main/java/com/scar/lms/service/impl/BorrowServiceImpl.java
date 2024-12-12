@@ -24,7 +24,6 @@ public class BorrowServiceImpl implements BorrowService {
         this.borrowRepository = borrowRepository;
     }
 
-    @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     @Override
     public boolean isBookBorrowedBy(int userId, int bookId) {
         return borrowRepository.existsByUserIdAndBookId(userId, bookId);
@@ -33,7 +32,7 @@ public class BorrowServiceImpl implements BorrowService {
     @Async
     @Override
     public void addBorrow(Borrow borrow) {
-        if (borrowRepository.existsById(borrow.getId())) {
+        if (isBookBorrowedBy(borrow.getUser().getId(), borrow.getBook().getId())) {
             throw new OperationNotAllowedException("Unable to borrow book");
         }
         extractedAddBorrow(borrow);
