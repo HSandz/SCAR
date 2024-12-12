@@ -67,7 +67,7 @@ public class AdminController {
                 });
     }
 
-    @GetMapping("/books")
+    @GetMapping("/total-book")
     public CompletableFuture<String> listAllBooks(Model model) {
         return bookService.findAllBooks()
                 .thenApply(books -> {
@@ -76,7 +76,7 @@ public class AdminController {
                         return "error/404";
                     } else {
                         model.addAttribute("books", books);
-                        return "book-list";
+                        return "total-book";
                     }
                 })
                 .exceptionally(e -> {
@@ -84,6 +84,17 @@ public class AdminController {
                     model.addAttribute("error", "Failed to fetch books.");
                     return "error/404";
                 });
+    }
+
+    @DeleteMapping("/book/delete/{bookId}")
+    public String deleteBook(@PathVariable int bookId, RedirectAttributes redirectAttributes) {
+        try {
+            bookService.deleteBook(bookId);
+            redirectAttributes.addFlashAttribute("successMessage", "Book deleted successfully.");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Failed to delete book.");
+        }
+        return "redirect:/admin/total-book";
     }
 
     @GetMapping("/user/search")
@@ -220,9 +231,12 @@ public class AdminController {
                             model.addAttribute("bookCount", bookCountFuture.get());
                             model.addAttribute("borrowCount", borrowCountFuture.get());
 
-                            for (int i = 1; i <= 12; i++) {
-                                model.addAttribute("borrowCountMonth" + i, borrowCountMonthFutures.get(i - 1).get());
+                            List<Long> borrowCounts = new ArrayList<>();
+                            for (CompletableFuture<Long> future : borrowCountMonthFutures) {
+                                borrowCounts.add(future.get());
                             }
+
+                            model.addAttribute("borrowCounts", borrowCounts);
                         } catch (Exception e) {
                             log.error("Error fetching admin profile data", e);
                             model.addAttribute("error", "Failed to load admin profile data.");

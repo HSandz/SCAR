@@ -10,15 +10,15 @@ public class BookSpecification {
     }
 
     public static Specification<Book> hasAuthor(String authorName) {
-        return (root, _, criteriaBuilder) -> criteriaBuilder.like(root.join("authors").get("name"), "%" + authorName + "%");
+        return (root, _, criteriaBuilder) -> criteriaBuilder.like(root.get("author"), "%" + authorName + "%");
     }
 
     public static Specification<Book> hasGenre(String genreName) {
-        return (root, _, criteriaBuilder) -> criteriaBuilder.like(root.join("genres").get("name"), "%" + genreName + "%");
+        return (root, _, criteriaBuilder) -> criteriaBuilder.like(root.get("genre"), "%" + genreName + "%");
     }
 
     public static Specification<Book> hasPublisher(String publisherName) {
-        return (root, _, criteriaBuilder) -> criteriaBuilder.like(root.join("publishers").get("name"), "%" + publisherName + "%");
+        return (root, _, criteriaBuilder) -> criteriaBuilder.like(root.get("publisher"), "%" + publisherName + "%");
     }
 
     public static Specification<Book> hasYear(Integer year) {

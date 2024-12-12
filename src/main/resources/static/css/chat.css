@@ -54,10 +54,7 @@ form {
     left: 0;
     right: 0;
     display: flex;
-    gap: 10px;
     padding: 10px;
-    background-color: #fff;
-    border-top: 1px solid #ccc;
 }
 
 .input-form {

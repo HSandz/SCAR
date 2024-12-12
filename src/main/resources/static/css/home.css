@@ -186,3 +186,23 @@ section {
     gap: 10px;
     color: black;
 }
+
+.contact-container {
+    display: flex;
+    justify-content: space-around;
+    width: 100%;
+    max-width: 1000px;
+    gap: 100px;
+}
+
+.contact-item {
+    text-align: center;
+}
+
+.contact-icon {
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 10px;
+}

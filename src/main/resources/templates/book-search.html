@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="/css/book-list.css">
     <link rel="stylesheet" href="/css/chat.css">
     <link rel="stylesheet" href="/css/book-search.css">
+    <link rel="stylesheet" href="/css/frame.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Jost:ital,wght@0,100..900;1,100..900&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap"
@@ -24,30 +25,39 @@
 <div class="container-search">
     <section class="display-filter">
         <div class="search-filter-box">
-            <label>
-                <input type="text" class="search-filter-txt" placeholder="Title">
-            </label>
-            <label>
-                <input type="text" class="search-filter-txt" placeholder="Author">
-            </label>
-            <label>
-                <input type="text" class="search-filter-txt" placeholder="Genre">
-            </label>
-            <label>
-                <input type="text" class="search-filter-txt" placeholder="Year">
-            </label>
-            <i class='bx bx-search'></i>
+            <form id="searchForm" action="/books/search" method="get" style="position: relative; align-items: center;">
+                <div class="form-group" style="margin-right: 5px;">
+                    <input type="text" id="title" name="title" class="search-filter-txt" placeholder="Title">
+                </div>
+                <div class="form-group" style="margin-right: 5px;">
+                    <input type="text" id="authorName" name="authorName" class="search-filter-txt" placeholder="Author">
+                </div>
+                <div class="form-group" style="margin-right: 5px;">
+                    <input type="text" id="genreName" name="genreName" class="search-filter-txt" placeholder="Genre">
+                </div>
+                <div class="form-group">
+                    <input type="text" id="year" name="year" class="search-filter-txt" placeholder="Year">
+                </div>
+                <button type="submit" class="search-button" style="height: 39px; display: flex;">
+                    <i class='bx bx-search'></i>
+                </button>
+            </form>
         </div>
     </section>
     <section>
         <div class="book-container">
             <th:block th:each="book : ${books}">
-                <div class="book-item">
-                    <div class="tile" style="object-fit: cover">
-                        <img th:src="${book.imageUrl}" th:alt="${book.title}" class="book-image">
+                <div class="book-item" th:attr="data-book-id=${book.id}">
+                    <div class="tile">
+                        <a th:href="@{/books/{bookId}(bookId=${book.id})}">
+                            <img th:src="${book.imageUrl}" th:alt="${book.title}">
+                        </a>
                         <div class="details">
                             <p class="info" th:text="${book.title}">Book Title</p>
                         </div>
+                    </div>
+                    <div class="actions">
+                        <a th:href="@{/books/{bookId}(bookId=${book.id})}" class="book-page-btn">View</a>
                     </div>
                 </div>
             </th:block>
@@ -59,7 +69,19 @@
                    th:text="'Page ' + ${page}"></a>
             </th:block>
         </div>
-
+        <script>
+            document.getElementById("searchForm").addEventListener("submit", function (event) {
+                event.preventDefault();
+                const form = event.target;
+                const params = new URLSearchParams(new FormData(form));
+                for (const [key, value] of params.entries()) {
+                    if (!value.trim()) {
+                        params.delete(key);
+                    }
+                }
+                window.location.href = form.action + "?" + params.toString();
+            });
+        </script>
     </section>
 </div>
 </body>
